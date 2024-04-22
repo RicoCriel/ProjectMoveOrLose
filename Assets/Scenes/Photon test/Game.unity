@@ -123,6 +123,59 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &435310951
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 435310953}
+  - component: {fileID: 435310952}
+  m_Layer: 0
+  m_Name: PhotonLevelGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &435310952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435310951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d604a0c0098c794dbe59a6e42e0a548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gridSizeX: 30
+  _gridSizeZ: 30
+  _chunkSize: 5
+  _scale: 2.5
+  _heightMultiplier: 2
+  _tilePrefabs:
+  - {fileID: 8664867346358182300, guid: b0c02b5cd71c6f140b99a00d116e1aee, type: 3}
+  - {fileID: 412532726183883083, guid: 3211f495b4b15cb4da3e2112b2687815, type: 3}
+  - {fileID: 8843719531502345537, guid: a8e56de12e4a96b468cb730ac035591e, type: 3}
+--- !u!4 &435310953
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435310951}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &831298804
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,6 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8637514482255404287, guid: fb5d628d79397024c9ed33e660b1dbf2, type: 3}
+  Tiles: {fileID: 0}
   minX: -19
   maxX: 19
   minY: -10
@@ -434,3 +488,4 @@ SceneRoots:
   - {fileID: 856061231}
   - {fileID: 1475093616}
   - {fileID: 831298806}
+  - {fileID: 435310953}

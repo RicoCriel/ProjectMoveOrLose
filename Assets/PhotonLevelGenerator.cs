@@ -1,7 +1,10 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class GridGenerator : MonoBehaviour
+public class PhotonLevelGenerator : MonoBehaviourPunCallbacks
 {
     [SerializeField] private int _gridSizeX = 10;
     [SerializeField] private int _gridSizeZ = 10;
@@ -15,9 +18,10 @@ public class GridGenerator : MonoBehaviour
 
     void Start()
     {
-
-        GenerateGrid();
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            GenerateGrid();
+        }
     }
 
     void GenerateGrid()
@@ -44,7 +48,7 @@ public class GridGenerator : MonoBehaviour
                 {
                     GameObject selectedPrefab = _tilePrefabs[i];
                     Vector3 position = new Vector3(x * _tileWidth, startY - (i * _tileHeight), z * _tileWidth);
-                    GameObject newTile = Instantiate(selectedPrefab, position, Quaternion.identity);
+                    PhotonNetwork.Instantiate(selectedPrefab.name, position, Quaternion.identity);
                 }
             }
         }
