@@ -152,15 +152,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d604a0c0098c794dbe59a6e42e0a548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridSizeX: 30
-  _gridSizeZ: 30
+  _gridSizeX: 10
+  _gridSizeZ: 10
   _chunkSize: 5
-  _scale: 2.5
+  _scale: 15
   _heightMultiplier: 2
   _tilePrefabs:
-  - {fileID: 8664867346358182300, guid: b0c02b5cd71c6f140b99a00d116e1aee, type: 3}
-  - {fileID: 412532726183883083, guid: 3211f495b4b15cb4da3e2112b2687815, type: 3}
-  - {fileID: 8843719531502345537, guid: a8e56de12e4a96b468cb730ac035591e, type: 3}
+  - {fileID: 6087729683630323512, guid: b107bbcccd5c5284d890b4bb836c3948, type: 3}
 --- !u!4 &435310953
 Transform:
   m_ObjectHideFlags: 0

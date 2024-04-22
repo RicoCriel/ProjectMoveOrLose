@@ -48,7 +48,8 @@ public class PhotonLevelGenerator : MonoBehaviourPunCallbacks
                 {
                     GameObject selectedPrefab = _tilePrefabs[i];
                     Vector3 position = new Vector3(x * _tileWidth, startY - (i * _tileHeight), z * _tileWidth);
-                    PhotonNetwork.Instantiate(selectedPrefab.name, position, Quaternion.identity);
+                    GameObject tile =  PhotonNetwork.Instantiate(selectedPrefab.name, position, Quaternion.identity);
+                    tile.transform.SetParent(transform);
                 }
             }
         }

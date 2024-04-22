@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5283159761733441080}
   - component: {fileID: 7013604726586238209}
   - component: {fileID: 1609673333738979898}
-  - component: {fileID: 4742092519695026561}
+  - component: {fileID: 7460002448922743354}
   m_Layer: 8
   m_Name: Tile1 Pview
   m_TagString: Untagged
@@ -106,7 +106,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &4742092519695026561
+--- !u!114 &7460002448922743354
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
