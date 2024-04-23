@@ -277,7 +277,7 @@ MonoBehaviour:
   playerId: 0
   rocketLauncher: {fileID: 1147029815062415003}
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
-  rocketBulletSpeed: 20
+  rocketBulletSpeed: 50
 --- !u!114 &6749649928363499948
 MonoBehaviour:
   m_ObjectHideFlags: 0
