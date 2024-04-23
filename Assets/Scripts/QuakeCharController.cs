@@ -72,9 +72,10 @@ public class QuakeCharController : MonoBehaviour
     private PhotonView _photonView;
 
     //Gun and bullets
+    public int playerId;
     [SerializeField] private GameObject rocketLauncher;
     [SerializeField] private GameObject rocketBullet;
-    public float rocketBulletSpeed = 5f;
+    public float rocketBulletSpeed = 40f;
     private Vector3 impact;
 
     private void Start()
@@ -120,6 +121,7 @@ public class QuakeCharController : MonoBehaviour
             {
                 if (Input.GetButtonDown("Fire1"))
                     Cursor.lockState = CursorLockMode.Locked;
+                
             }
 
             /* Camera rotation stuff, mouse controls this shit */
@@ -160,6 +162,15 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.x,
                 transform.position.y + playerViewYOffset,
                 transform.position.z);
+            rocketLauncher.transform.SetParent(playerView);
+            
+            //player shoots
+            if (Input.GetButtonDown("Fire1"))
+            {
+                Shoot();
+                         Debug.Log("shoot");   
+            }
+            
         }
     }
 
@@ -167,9 +178,11 @@ public class QuakeCharController : MonoBehaviour
     {
         GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketLauncher.transform.position, Quaternion.identity);
         Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+        bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
+        
         if (rbBullet != null)
         {
-            rbBullet.velocity = 
+            rbBullet.velocity = playerView.transform.forward * rocketBulletSpeed;
         }
     }
 
@@ -184,8 +197,9 @@ public class QuakeCharController : MonoBehaviour
         impact = Vector3.Lerp(impact, Vector3.zero, 5 * Time.deltaTime);
     }
 
-    public void AddImpact(Vector3 dir, float force)
+    public void AddImpact(Vector3 explosionOrigin, float force)
     {
+        Vector3 dir = this.transform.position - explosionOrigin;
         dir.Normalize();
         if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
         impact += dir.normalized * force / 3;
@@ -313,7 +327,7 @@ public class QuakeCharController : MonoBehaviour
 
         // Do not apply friction if the player is queueing up the next jump
         if (!wishJump)
-            ApplyFriction(1.0f);
+            ApplyFriction(0.5f);
         else
             ApplyFriction(0);
 

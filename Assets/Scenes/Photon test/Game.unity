@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 6678742899389751404, guid: 43abe3bd7e1c8a14dabb4ad3fb306fbf, type: 3}
-  Tiles: {fileID: 0}
+  playersActive: []
   minX: -19
   maxX: 19
   minY: -10

@@ -7,7 +7,7 @@ using Photon.Pun;
 public class SpawnPlayers : MonoBehaviour
 {
    public GameObject playerPrefab;
-   public GameObject Tiles;
+   public List<GameObject> playersActive;
 
    public float minX;
    public float maxX;
@@ -18,6 +18,7 @@ public class SpawnPlayers : MonoBehaviour
    private void Awake()
    {
       Vector2 randomPosition = new Vector3(UnityEngine.Random.Range(minX, maxX),4, UnityEngine.Random.Range(minY, maxY));
-      PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+       PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+      
    }
 }

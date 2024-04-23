@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1659907751521113155}
   - component: {fileID: 7621161380306642954}
+  - component: {fileID: 863292105969103838}
   - component: {fileID: 5739631269575915201}
   - component: {fileID: 2526701192106005256}
   - component: {fileID: 281235638628061306}
@@ -60,6 +61,21 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &863292105969103838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701560607116327262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfdb142cebe38524dbdfee656af674c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerOwner: 0
+  explosionRadius: 6
+  explosionForce: 200
 --- !u!54 &5739631269575915201
 Rigidbody:
   m_ObjectHideFlags: 0
