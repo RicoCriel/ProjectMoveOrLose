@@ -176,13 +176,13 @@ public class QuakeCharController : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketLauncher.transform.position, Quaternion.identity);
+        GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketLauncher.transform.position, rocketLauncher.transform.rotation);
         Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
         bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
         
         if (rbBullet != null)
         {
-            rbBullet.velocity = playerView.transform.forward * rocketBulletSpeed;
+            rbBullet.velocity = rocketLauncher.transform.forward * rocketBulletSpeed;
         }
     }
 
