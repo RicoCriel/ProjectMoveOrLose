@@ -10,7 +10,7 @@ public class Rocket : MonoBehaviour
     private Vector3 explosionOrigin;
     public float explosionRadius = 10f;
     public float explosionForce = 200f;
-
+    [SerializeField] private GameObject explosion;
     
 
     
@@ -28,6 +28,7 @@ public class Rocket : MonoBehaviour
             else
             {
                 Debug.Log("activate");
+                PhotonNetwork.Instantiate(explosion.name, explosionOrigin, Quaternion.identity);
                 Collider[] objectsInRange = Physics.OverlapSphere(explosionOrigin, explosionRadius);
          
                 foreach (Collider collision in objectsInRange)
@@ -46,6 +47,7 @@ public class Rocket : MonoBehaviour
         else
         {
             Debug.Log("activate");
+            PhotonNetwork.Instantiate(explosion.name, explosionOrigin, Quaternion.identity);
             Collider[] objectsInRange = Physics.OverlapSphere(explosionOrigin, explosionRadius);
          
             foreach (Collider collision in objectsInRange)
@@ -57,7 +59,8 @@ public class Rocket : MonoBehaviour
                     player.AddImpact(explosionOrigin, explosionForce);
                 }
             }
-            Destroy(this.gameObject); 
+            
+            PhotonNetwork.Destroy(this.gameObject); 
             
         }
         

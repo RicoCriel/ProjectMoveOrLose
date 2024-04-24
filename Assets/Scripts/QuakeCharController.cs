@@ -193,11 +193,10 @@ public class QuakeCharController : MonoBehaviour
                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
                  bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
                  
-                 if (rbBullet != null)
-                 {
+                 
                      rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;
                      animator.SetTrigger("Shot");
-                 }
+                 
 
                  canShoot = false;
                  StartCoroutine(ShootCooldown(ShootCD));
