@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using Photon.Pun;
+using Unity.VisualScripting;
 
 struct Cmd
 {
@@ -75,6 +76,7 @@ public class QuakeCharController : MonoBehaviour
     public int playerId;
     [SerializeField] private GameObject rocketLauncher;
     [SerializeField] private GameObject rocketBullet;
+    [SerializeField] private GameObject rocketBulletExit;
     public float rocketBulletSpeed = 40f;
     private Vector3 impact;
 
@@ -96,6 +98,9 @@ public class QuakeCharController : MonoBehaviour
             transform.position.x,
             transform.position.y + playerViewYOffset,
             transform.position.z);
+        rocketLauncher.transform.position = playerView.position;
+        
+        
 
         _controller = GetComponent<CharacterController>();
 
@@ -136,7 +141,7 @@ public class QuakeCharController : MonoBehaviour
 
             this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
             playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
-
+            rocketLauncher.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
 
             /* Movement, here's the important part */
             QueueJump();
@@ -162,7 +167,9 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.x,
                 transform.position.y + playerViewYOffset,
                 transform.position.z);
-            rocketLauncher.transform.SetParent(playerView);
+            //rocketLauncher.transform.position = playerView.position;
+            
+            
             
             //player shoots
             if (Input.GetButtonDown("Fire1"))
@@ -176,13 +183,13 @@ public class QuakeCharController : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketLauncher.transform.position, rocketLauncher.transform.rotation);
+        GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
         Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
         bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
         
         if (rbBullet != null)
         {
-            rbBullet.velocity = rocketLauncher.transform.forward * rocketBulletSpeed;
+            rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;
         }
     }
 
