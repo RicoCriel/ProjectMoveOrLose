@@ -12,6 +12,8 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
     
     public TMP_InputField CreateInput;
     public TMP_InputField JoinInput;
+    
+    public string GameSceneToLoadString = "Game";
     // Start is called before the first frame update
 
     private void Awake()
@@ -35,7 +37,7 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
     
     {
         Debug.Log("Successfully joined room: " + PhotonNetwork.CurrentRoom.Name);
-        PhotonNetwork.LoadLevel("Game");
+        PhotonNetwork.LoadLevel(GameSceneToLoadString);
     }
     
     public override void OnCreateRoomFailed(short returnCode, string message)
