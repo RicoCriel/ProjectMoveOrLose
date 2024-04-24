@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using DefaultNamespace;
 using UnityEngine;
 using Photon.Pun;
 using Unity.VisualScripting;
@@ -191,7 +192,7 @@ public class QuakeCharController : MonoBehaviour
         {
          GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-                 bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
+                 bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
                  
                  
                      rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;

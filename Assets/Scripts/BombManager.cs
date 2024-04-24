@@ -2,6 +2,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 namespace DefaultNamespace
 {
@@ -27,14 +28,17 @@ namespace DefaultNamespace
             PhotonView targetView = PhotonView.Find(viewID);
             if (targetView == null) return;
             if (!targetView.IsMine) return;
+           targetView.GetComponent<QuakeCharController>()
+                .AddImpact(explosionPosition, explosionforce);
 
-            Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
+
+            /*Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
             if (targetRigidbody == null) return;
 
             Vector3 direction = targetView.transform.position - explosionPosition;
             float distance = direction.magnitude;
             float force = explosionforce * (1 - distance / explosionRadius);
-            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);
+            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);*/
         }
 
         public void DestroyBomb(int viewID)

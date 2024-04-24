@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 1659907751521113155}
   - component: {fileID: 7621161380306642954}
-  - component: {fileID: 863292105969103838}
   - component: {fileID: 5739631269575915201}
   - component: {fileID: 2526701192106005256}
   - component: {fileID: 1819000157804749366}
   - component: {fileID: 8456682766080117065}
+  - component: {fileID: 5463733314715850194}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -61,22 +61,6 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &863292105969103838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6701560607116327262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfdb142cebe38524dbdfee656af674c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerOwner: 0
-  explosionRadius: 6
-  explosionForce: 300
-  explosion: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
 --- !u!54 &5739631269575915201
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,6 +133,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2476345, y: 0.18386069, z: 0.54341686}
   m_Center: {x: -0.0056607313, y: 0.043005243, z: -0.0035848022}
+--- !u!114 &5463733314715850194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701560607116327262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30023199957d411ca21bcfdc3d435bf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 3
+  destroyBlocks: 1
+  explosionForce: 300
+  view: {fileID: 0}
+  explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
 --- !u!1001 &308571202086423862
 PrefabInstance:
   m_ObjectHideFlags: 0

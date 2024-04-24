@@ -154,6 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CreateInput: {fileID: 864860062}
   JoinInput: {fileID: 1417997211}
+  GameSceneToLoadString: NewGame
 --- !u!4 &80286026
 Transform:
   m_ObjectHideFlags: 0

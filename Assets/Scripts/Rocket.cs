@@ -11,7 +11,7 @@ namespace DefaultNamespace
         [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
 
-        private PhotonView view;
+        public PhotonView view;
 
         [Header("refs")]
         [SerializeField] GameObject explosionEffect;
@@ -58,7 +58,7 @@ namespace DefaultNamespace
                 yield return null;
             }
 
-            // view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
+            //view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
 
             Collider[] colliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
 
