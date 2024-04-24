@@ -79,13 +79,17 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject rocketBulletExit;
     public float rocketBulletSpeed = 40f;
     private Vector3 impact;
+    public bool canShoot;
+    public float ShootCD = 1f;
+    [SerializeField] private Animator animator;
+    
 
     private void Start()
     {
         // Hide the cursor
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
+        canShoot = true;
         if (playerView == null)
         {
             Camera mainCamera = Camera.main;
@@ -183,14 +187,30 @@ public class QuakeCharController : MonoBehaviour
 
     private void Shoot()
     {
-        GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
-        Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-        bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
-        
-        if (rbBullet != null)
+        if (canShoot)
         {
-            rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;
+         GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
+                 Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+                 bullet.GetComponent<Rocket>().playerOwner = _photonView.ViewID;
+                 
+                 if (rbBullet != null)
+                 {
+                     rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;
+                     animator.SetTrigger("Shot");
+                 }
+
+                 canShoot = false;
+                 StartCoroutine(ShootCooldown(ShootCD));
+
         }
+        
+    }
+
+    IEnumerator ShootCooldown(float cd)
+    {
+        yield return new WaitForSeconds(cd);
+        canShoot = true;
+        animator.ResetTrigger("Shot");
     }
 
     private void Explosions()
