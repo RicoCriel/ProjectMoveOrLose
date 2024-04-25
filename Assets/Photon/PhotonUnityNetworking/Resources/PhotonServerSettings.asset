@@ -47,6 +47,11 @@ MonoBehaviour:
   - PushTargetRPC
   - triggerEffectRPC
   - SetRoomDirtyRPC
+  - PlayerSpawnRPC
+  - StartButton
+  - Endgame
+  - ReloadScene
+  - ReloadSceneButRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

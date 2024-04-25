@@ -58,10 +58,10 @@ namespace DefaultNamespace
                 yield return null;
             }
 
-            //view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
+            view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
 
             Collider[] colliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
-
+            
             foreach (var hit in colliders)
             {
                 if (hit.tag == "Block")

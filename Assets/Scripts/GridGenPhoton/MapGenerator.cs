@@ -14,6 +14,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     public GameObject unitBlock; // Prefab for the basic building block
     public Transform blockHolder; // Parent object to hold all the blocks
+    public bool AutoDestroyBlocks = true;
 
     private PhotonView view; // Reference to the PhotonView component
 
@@ -98,7 +99,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             }
         }
 
-        StartCoroutine(RemoveBlockRoutine());
+        StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
     }
 
     private void Update()
@@ -273,9 +274,9 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         mapState[(int)intPos.x, (int)intPos.y, (int)intPos.z] = state;
     }
 
-    IEnumerator RemoveBlockRoutine()
+    IEnumerator RemoveBlockRoutine(bool destroyblocks)
     {
-        while (true)
+        while (destroyblocks)
         {
             yield return new WaitForSeconds(0.1f);
             Removeblock();

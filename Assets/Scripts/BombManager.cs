@@ -50,7 +50,7 @@ namespace DefaultNamespace
         void DestroyBombRPC(int viewID)
         {
             PhotonView bombview = PhotonView.Find(viewID);
-            if (bombview != null) return;
+            if (bombview == null) return;
             if (!bombview.IsMine) return;
 
             PhotonNetwork.Destroy(bombview.gameObject);

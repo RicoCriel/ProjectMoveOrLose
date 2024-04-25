@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7863420854968597748}
   - component: {fileID: 5051754997709792862}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 6388209307705076089}
   - component: {fileID: 4242954554511885544}
   - component: {fileID: 639142053555491084}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 6646051402071859025}
   - component: {fileID: 6749649928363499948}
   - component: {fileID: 5396954892230958291}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: PlayerFPS
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -221,7 +221,7 @@ MonoBehaviour:
   airControl: 0.3
   sideStrafeAcceleration: 50
   sideStrafeSpeed: 1
-  jumpSpeed: 8
+  jumpSpeed: 10
   holdJumpToBhop: 0
   style:
     m_Name: 
@@ -314,7 +314,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 1
+  Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
@@ -367,7 +367,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2468296727248080561}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -399,7 +399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7008548823508932867}
   - component: {fileID: 2213034959450421593}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CameraPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -486,14 +486,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6487994197024019727, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Name
       value: ArmCannonRig
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2404758737116867117, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528860797864257434, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 4eeaa15adc49ff84c92fe552a23f40aa, type: 2}
+    - target: {fileID: 7036213049465896255, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

@@ -193,9 +193,13 @@ public class QuakeCharController : MonoBehaviour
          GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
                  bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+
                  
                  
-                     rbBullet.velocity = rocketBulletExit.transform.forward * rocketBulletSpeed;
+                     Debug.DrawRay(playerView.position, playerView.forward,Color.green,5f);
+                     rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
+                 
+                     
                      animator.SetTrigger("Shot");
                  
 
@@ -228,7 +232,7 @@ public class QuakeCharController : MonoBehaviour
     {
         Vector3 dir = this.transform.position - explosionOrigin;
         dir.Normalize();
-        if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
+        //if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
         impact += dir.normalized * force / 3;
     }
     /*******************************************************************************************************\
@@ -433,10 +437,10 @@ public class QuakeCharController : MonoBehaviour
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(0, 0, 400, 100), "FPS: " + fps, style);
-        var ups = _controller.velocity;
-        ups.y = 0;
-        GUI.Label(new Rect(0, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
-        GUI.Label(new Rect(0, 30, 400, 100), "Top Speed: " + Mathf.Round(playerTopVelocity * 100) / 100 + "ups", style);
+        //GUI.Label(new Rect(0, 0, 400, 100), "FPS: " + fps, style);
+        //var ups = _controller.velocity;
+        //ups.y = 0;
+        //GUI.Label(new Rect(0, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
+        //GUI.Label(new Rect(0, 30, 400, 100), "Top Speed: " + Mathf.Round(playerTopVelocity * 100) / 100 + "ups", style);
     }
 }
