@@ -83,6 +83,10 @@ public class QuakeCharController : MonoBehaviour
     public bool canShoot;
     public float ShootCD = 1f;
     [SerializeField] private Animator animator;
+
+    public float ShotgunCD = 1f;
+    [SerializeField]private float ShotgunForce = 400f;
+    public bool canShotgun = true;
     
 
     private void Start()
@@ -182,6 +186,11 @@ public class QuakeCharController : MonoBehaviour
                 Shoot();
                          Debug.Log("shoot");   
             }
+            if (Input.GetButtonDown("Fire2"))
+            {
+                SecondaryShoot();
+                Debug.Log("shoot");   
+            }
             
         }
     }
@@ -193,6 +202,7 @@ public class QuakeCharController : MonoBehaviour
          GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
                  bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+                 bullet.GetComponent<Rocket>().player = this.gameObject;
 
                  
                  
@@ -210,6 +220,23 @@ public class QuakeCharController : MonoBehaviour
         
     }
 
+    private void SecondaryShoot()
+    {
+        if (canShotgun)
+        {
+          Vector3 pushdirection = -playerView.forward;
+                  AddPush(pushdirection, ShotgunForce);
+                  canShotgun = false;
+                  StartCoroutine(ShotgunCooldown(ShotgunCD));  
+        }
+        
+    }
+    IEnumerator ShotgunCooldown(float cd)
+    {
+        yield return new WaitForSeconds(cd);
+        canShotgun = true;
+        animator.ResetTrigger("Shot");
+    }
     IEnumerator ShootCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
@@ -225,15 +252,30 @@ public class QuakeCharController : MonoBehaviour
         }
 
         // consumes the impact energy each cycle:
-        impact = Vector3.Lerp(impact, Vector3.zero, 5 * Time.deltaTime);
+        impact = Vector3.Lerp(impact, Vector3.zero, 15 * Time.deltaTime);
     }
 
     public void AddImpact(Vector3 explosionOrigin, float force)
     {
         Vector3 dir = this.transform.position - explosionOrigin;
         dir.Normalize();
-        //if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
-        impact += dir.normalized * force / 3;
+        if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
+
+        // Subtract player's current velocity from the impact force
+        Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;
+
+        // Add the adjusted impact to the current impact
+        impact += adjustedImpact;
+    }
+    public void AddPush(Vector3 direction, float force)
+    {
+        Vector3 dir = direction;
+
+        // Subtract player's current velocity from the impact force
+        Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;
+
+        // Add the adjusted impact to the current impact
+        impact += adjustedImpact;
     }
     /*******************************************************************************************************\
    |* MOVEMENT

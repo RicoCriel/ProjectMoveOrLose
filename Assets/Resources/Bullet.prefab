@@ -145,9 +145,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30023199957d411ca21bcfdc3d435bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 3
+  explosionRadius: 4.5
   destroyBlocks: 1
-  explosionForce: 300
+  explosionForce: 800
+  player: {fileID: 0}
   view: {fileID: 0}
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
 --- !u!1001 &308571202086423862

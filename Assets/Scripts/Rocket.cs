@@ -11,6 +11,7 @@ namespace DefaultNamespace
         [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
 
+        public GameObject player;
         public PhotonView view;
 
         [Header("refs")]
@@ -23,10 +24,14 @@ namespace DefaultNamespace
 
         private void OnTriggerEnter(Collider other)
         {
-            if (exploded) return;
-            collHappened = true;
-            collisionpoint = other.transform.position;
-            Explode();
+            if (other.gameObject != player)
+            {
+              if (exploded) return;
+                          collHappened = true;
+                          collisionpoint = other.transform.position;
+                          Explode();  
+            }
+            
         }
 
         public void Explode()
@@ -58,24 +63,36 @@ namespace DefaultNamespace
                 yield return null;
             }
 
-            view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
-
-            Collider[] colliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
             
-            foreach (var hit in colliders)
+            view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
+            BombManager.instance.DestroyBomb(view.ViewID);
+            
+            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
+            
+            foreach (var hit in Playercolliders)
             {
-                if (hit.tag == "Block")
-                {
-                    MapGenerator.instance.DestroyBlock(hit.transform.position);
-                    MapGenerator.instance.SetRoomDirty();
-                }
+                
                 if (hit.tag == "Player")
                 {
                     Debug.Log("Pushing Player with id" + hit.GetComponent<PhotonView>().ViewID);
                     BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
 
-                BombManager.instance.DestroyBomb(view.ViewID);
+                
+                
+            }
+            
+            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius /2);
+            foreach (var hit in BlockCollider)
+            {
+                if (hit.tag == "Block")
+                {
+                    MapGenerator.instance.DestroyBlock(hit.transform.position);
+                    MapGenerator.instance.SetRoomDirty();
+                }
+
+                
+                
             }
 
         }

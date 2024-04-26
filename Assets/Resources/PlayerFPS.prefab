@@ -216,12 +216,12 @@ MonoBehaviour:
   moveSpeed: 7
   runAcceleration: 14
   runDeacceleration: 10
-  airAcceleration: 2
-  airDecceleration: 2
-  airControl: 0.3
-  sideStrafeAcceleration: 50
+  airAcceleration: 4
+  airDecceleration: 4
+  airControl: 0.4
+  sideStrafeAcceleration: 5
   sideStrafeSpeed: 1
-  jumpSpeed: 10
+  jumpSpeed: 8
   holdJumpToBhop: 0
   style:
     m_Name: 
@@ -297,8 +297,11 @@ MonoBehaviour:
   rocketBulletExit: {fileID: 6700377822086425601}
   rocketBulletSpeed: 50
   canShoot: 0
-  ShootCD: 2
+  ShootCD: 1
   animator: {fileID: 1722350878608328595}
+  ShotgunCD: 1
+  ShotgunForce: 600
+  canShotgun: 1
 --- !u!114 &6749649928363499948
 MonoBehaviour:
   m_ObjectHideFlags: 0
