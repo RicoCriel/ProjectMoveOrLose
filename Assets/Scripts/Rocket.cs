@@ -10,6 +10,7 @@ namespace DefaultNamespace
         [SerializeField] private float explosionRadius = 5f;
         [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
+        [SerializeField] private float radiusdestroymult = 1.5f;
 
         public GameObject player;
         public PhotonView view;
@@ -67,7 +68,7 @@ namespace DefaultNamespace
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
             BombManager.instance.DestroyBomb(view.ViewID);
             
-            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
+            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusdestroymult);
             
             foreach (var hit in Playercolliders)
             {
@@ -82,7 +83,7 @@ namespace DefaultNamespace
                 
             }
             
-            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius /2);
+            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius );
             foreach (var hit in BlockCollider)
             {
                 if (hit.tag == "Block")

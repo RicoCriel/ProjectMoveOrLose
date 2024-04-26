@@ -19,6 +19,7 @@ public class SpawnPlayers : MonoBehaviour
     [SerializeField]private GameObject ReloadSceneButton;
     private GameObject player;
 
+    [SerializeField] private GameObject spawnlocation; 
     public float minX;
     public float maxX;
     public float minY;
@@ -75,7 +76,9 @@ public class SpawnPlayers : MonoBehaviour
 
     void PlayerSpawnRPC()
     {
-        Vector2 randomPosition = new Vector3(UnityEngine.Random.Range(minX, maxX), 4, UnityEngine.Random.Range(minY, maxY));
+        Vector2 randomPosition = new Vector3(spawnlocation.transform.position.x +UnityEngine.Random.Range(minX, maxX),
+            spawnlocation.transform.position.y,
+            spawnlocation.transform.position.z +UnityEngine.Random.Range(minY, maxY));
         player = PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
         startbuttonobject.SetActive(false);
         Canvas.SetActive(false);

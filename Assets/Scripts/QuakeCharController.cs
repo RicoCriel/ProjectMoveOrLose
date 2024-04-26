@@ -84,9 +84,14 @@ public class QuakeCharController : MonoBehaviour
     public float ShootCD = 1f;
     [SerializeField] private Animator animator;
 
+    
+    [SerializeField] private Animator ShotgunAnimator;
     public float ShotgunCD = 1f;
     [SerializeField]private float ShotgunForce = 400f;
     public bool canShotgun = true;
+    [SerializeField] private GameObject ShotgunBullet;
+    [SerializeField] private GameObject ShotgunBulletExit;
+    public float ShotgunBulletSpeed = 70f;
     
 
     private void Start()
@@ -151,6 +156,7 @@ public class QuakeCharController : MonoBehaviour
             this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
             playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
             rocketLauncher.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
+            
 
             /* Movement, here's the important part */
             QueueJump();
@@ -160,7 +166,10 @@ public class QuakeCharController : MonoBehaviour
                 AirMove();
 
             Explosions();
-
+            if (playerVelocity.magnitude > 20f)
+            {
+                playerVelocity = playerVelocity.normalized * 20f;
+            }
             // Move the controller
             _controller.Move(playerVelocity * Time.deltaTime);
 
@@ -181,12 +190,12 @@ public class QuakeCharController : MonoBehaviour
             
             
             //player shoots
-            if (Input.GetButtonDown("Fire1"))
+            if (Input.GetButtonDown("Fire2"))
             {
                 Shoot();
                          Debug.Log("shoot");   
             }
-            if (Input.GetButtonDown("Fire2"))
+            if (Input.GetButtonDown("Fire1"))
             {
                 SecondaryShoot();
                 Debug.Log("shoot");   
@@ -206,7 +215,7 @@ public class QuakeCharController : MonoBehaviour
 
                  
                  
-                     Debug.DrawRay(playerView.position, playerView.forward,Color.green,5f);
+                     
                      rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
                  
                      
@@ -224,18 +233,28 @@ public class QuakeCharController : MonoBehaviour
     {
         if (canShotgun)
         {
+            GameObject bullet = PhotonNetwork.Instantiate(ShotgunBullet.name, ShotgunBulletExit.transform.position, rocketBulletExit.transform.rotation);
+                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+                  bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+                  bullet.GetComponent<Rocket>().player = this.gameObject;
+                  
+                  rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
           Vector3 pushdirection = -playerView.forward;
                   AddPush(pushdirection, ShotgunForce);
                   canShotgun = false;
-                  StartCoroutine(ShotgunCooldown(ShotgunCD));  
+                  StartCoroutine(ShotgunCooldown(ShotgunCD));
+                  ShotgunAnimator.SetTrigger("shot");
+                  
         }
         
     }
+    
+    
     IEnumerator ShotgunCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
         canShotgun = true;
-        animator.ResetTrigger("Shot");
+        ShotgunAnimator.ResetTrigger("shot");
     }
     IEnumerator ShootCooldown(float cd)
     {

@@ -21,6 +21,10 @@ namespace DefaultNamespace
         {
             view.RPC("PushTargetRPC", RpcTarget.All, viewID, explosionforce, explosionPosition, explosionRadius);
         }
+        public void PushShotTarget(int viewID, float explosionforce, Vector3 direction)
+        {
+            view.RPC("PushShotTargetRPC", RpcTarget.All, viewID, explosionforce, direction);
+        }
 
         [PunRPC]
         void PushTargetRPC(int viewID, float explosionforce, Vector3 explosionPosition, float explosionRadius)
@@ -39,6 +43,19 @@ namespace DefaultNamespace
             float distance = direction.magnitude;
             float force = explosionforce * (1 - distance / explosionRadius);
             targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);*/
+        }
+        
+        [PunRPC]
+        void PushShotTargetRPC(int viewID, float explosionforce, Vector3 direction)
+        {
+            PhotonView targetView = PhotonView.Find(viewID);
+            if (targetView == null) return;
+            if (!targetView.IsMine) return;
+            targetView.GetComponent<QuakeCharController>()
+                .AddPush(direction, explosionforce);
+
+
+            
         }
 
         public void DestroyBomb(int viewID)
