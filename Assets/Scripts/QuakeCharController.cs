@@ -92,6 +92,8 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject ShotgunBullet;
     [SerializeField] private GameObject ShotgunBulletExit;
     public float ShotgunBulletSpeed = 70f;
+
+    [SerializeField] private GameObject RobotBody;
     
 
     private void Start()
@@ -100,6 +102,11 @@ public class QuakeCharController : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         canShoot = true;
+        if (_photonView.IsMine)
+        {
+            // If the PhotonView is owned by the local player, disable the MeshRenderer of the RobotBody
+            RobotBody.GetComponent<MeshRenderer>().enabled = false;
+        }
         if (playerView == null)
         {
             Camera mainCamera = Camera.main;

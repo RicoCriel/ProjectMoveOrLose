@@ -66,7 +66,7 @@ namespace DefaultNamespace
 
             
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
-            BombManager.instance.DestroyBomb(view.ViewID);
+            
             
             Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusdestroymult);
             
@@ -95,7 +95,7 @@ namespace DefaultNamespace
                 
                 
             }
-
+            BombManager.instance.DestroyBomb(view.ViewID);
         }
 
         [PunRPC]
