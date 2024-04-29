@@ -16,7 +16,7 @@ struct Cmd
 public class QuakeCharController : MonoBehaviour
 {
     public Transform playerView; // Camera
-    public float playerViewYOffset = 0.6f; // The height at which the camera is bound to
+    public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
     public float xMouseSensitivity = 30.0f;
 
     public float yMouseSensitivity = 30.0f;
