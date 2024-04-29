@@ -180,7 +180,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 73da4c684fc17a14f915c8275a81fd98, type: 3}
---- !u!1001 &249587427
+--- !u!1001 &160666268
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -188,55 +188,55 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.3693402
+    - target: {fileID: 144998954202872909, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
+      propertyPath: m_Name
+      value: ShotgunRig
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 1.0977173
+      objectReference: {fileID: 0}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.20983237
+      value: -0.28790385
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+    - target: {fileID: 9059414903344515848, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
-      propertyPath: m_Name
-      value: Shotgun
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6a1a94b68b6fa6042bd82eadca9d7528, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 37b870b47928b8e439ae9f9c6f6ab7aa, type: 3}
 --- !u!1 &283027288
 GameObject:
   m_ObjectHideFlags: 0
@@ -554,4 +554,4 @@ SceneRoots:
   - {fileID: 7526616675019907078}
   - {fileID: 368039241}
   - {fileID: 149865283}
-  - {fileID: 249587427}
+  - {fileID: 160666268}
