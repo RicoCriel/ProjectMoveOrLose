@@ -1,3 +1,4 @@
+using DefaultNamespace;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
@@ -13,6 +14,12 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     public static MapGenerator instance; // Singleton instance of MapGenerator
 
     public GameObject unitBlock; // Prefab for the basic building block
+
+    [Header("BlocksWithHealth")]
+    public BlockWithHealth blockWithHealth;
+    public int BlockHealth = 3;
+    public bool usingBlockWithHealth = false;
+
     public Transform blockHolder; // Parent object to hold all the blocks
     public bool AutoDestroyBlocks = true;
 
@@ -22,17 +29,30 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     private Vector3 mapSize; /*= new Vector3(29, 3, 29);*/ // Size of the map
 
+    [Header("BaseMapGen")]
     public int MapSizeXZ = 30; // Size of the map
     public int MapSizeY = 50; // Size of the map
-    
+
     public int WallThickness = 1; // Thickness of the walls
     public int GroundHeight = 1; // Height of the ground
+
+
+
+    [Header("mapClumps")]
+    public bool GenerateClumps = false;
+    [Space]
+    public int minclumpSize = 2;
+    public int maxclumpSize = 4;
+    [Space]
+    public int minClumpAmount = 3;
+    public int maxClumpAmount = 10;
+
 
     [HideInInspector] public Vector2Int xBoundary /*= new Vector2Int(1, 30)*/; // X boundaries of the map
     [HideInInspector] public Vector2Int yBoundary /*= new Vector2Int(1, 50)*/; // Y boundaries of the map
     [HideInInspector] public Vector2Int zBoundary /*= new Vector2Int(1, 30)*/; // Z boundaries of the map
-    
-    
+
+
 
     public int[,,] mapState; // 3D array to store the state of each block in the map
 
@@ -90,21 +110,37 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 {
                     for (int z = 0; z < maxBoundaries.z; z++)
                     {
-                        if (slice[MapSizeXZ * x + z] > 1)
+                        if (slice[MapSizeXZ * x + z] > BlockHealth)
                             Debug.Log("Data's corrupted");
-                        else if (slice[MapSizeXZ * x + z] != 1)
+                        else if (slice[MapSizeXZ * x + z] > 0)
                             continue;
+                  
 
-                        // Instantiate a block based on room data
-                        GameObject block = Instantiate(unitBlock, new Vector3(x, y, z), quaternion.identity);
-                        block.name = $"Block ({x}, {y}, {z})";
-                        block.transform.SetParent(transform);
+                        InstantiateBlock(x, y, z, BlockHealth);
+
+                   
                     }
                 }
             }
         }
 
-        StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
+        // StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
+    }
+    private void InstantiateBlock(int x, int y, int z, int blockHealth)
+    {
+        if (usingBlockWithHealth)
+        {
+            BlockWithHealth blockWHealth = Instantiate(blockWithHealth, new Vector3(x, y, z), quaternion.identity);
+            blockWHealth.InitializeBlockWithHealth(BlockHealth);
+            blockWHealth.name = $"Block ({x}, {y}, {z})";
+            blockWHealth.transform.SetParent(transform);
+        }
+        else
+        {
+            GameObject block = Instantiate(unitBlock, new Vector3(x, y, z), quaternion.identity);
+            block.name = $"Block ({x}, {y}, {z})";
+            block.transform.SetParent(transform);
+        }
     }
 
     private void Update()
@@ -168,10 +204,46 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                         // Assign different integer values to different block types
                         mapState[pos.x, pos.y, pos.z] = 1;
                     }
-                    
                 }
             }
         }
+
+        if (GenerateClumps)
+        {
+            for (int i = 0; i < Random.Range(minClumpAmount, maxClumpAmount); i++)
+            {
+                GenerateClump();
+            }
+        }
+    }
+    private void GenerateClump()
+    {
+        //generateClumps
+        int clumpSizeX = Random.Range(minclumpSize, maxclumpSize);
+        int clumpX = Random.Range(WallThickness, MapSizeXZ - WallThickness - clumpSizeX);
+        int clumpSizeZ = Random.Range(minclumpSize, maxclumpSize);
+        int clumpZ = Random.Range(WallThickness, MapSizeXZ - WallThickness - clumpSizeZ);
+        int clumpSizeY = Random.Range(minclumpSize, maxclumpSize);
+        int clumpY = Random.Range(GroundHeight, MapSizeY - 1 - clumpSizeY);
+
+        for (int y = clumpY; y < clumpY + clumpSizeY; y++)
+        {
+            for (int x = clumpX; x < clumpX + clumpSizeX; x++)
+            {
+                for (int z = clumpZ; z < clumpZ + clumpSizeZ; z++)
+                {
+                    Vector3Int pos = new Vector3Int(x, y, z);
+                    GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
+                    block.name = $"Block ({x}, {y}, {z})";
+                    block.transform.parent = blockHolder;
+
+                    // Assign different integer values to different block types
+                    mapState[pos.x, pos.y, pos.z] = 1;
+                }
+            }
+        }
+
+
     }
 
     private void ZeroMap()
@@ -210,7 +282,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 for (int z = 0; z < mapState.GetUpperBound(2); z++)
                 {
                     Vector3Int pos = new Vector3Int(x, y, z);
-                    slice[MapSizeXZ * x + z ] = (byte)mapState[x, y, z];
+                    slice[MapSizeXZ * x + z] = (byte)mapState[x, y, z];
                 }
             }
             properties.Add(y.ToString(), slice);
@@ -296,31 +368,35 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         mapState[(int)intPos.x, (int)intPos.y, (int)intPos.z] = state;
     }
 
-    IEnumerator RemoveBlockRoutine(bool destroyblocks)
-    {
-        while (destroyblocks)
-        {
-            yield return new WaitForSeconds(0.1f);
-            Removeblock();
-        }
-    }
-
-    public void Removeblock()
-    {
-        int randomX = Random.Range(0, MapSizeXZ);
-        int randomY = 2;
-        int randomZ = Random.Range(0, MapSizeXZ);
-
-        DestroyBlock(new Vector3(randomX, randomY, randomZ));
-    }
+    // IEnumerator RemoveBlockRoutine(bool destroyblocks)
+    // {
+    //     while (destroyblocks)
+    //     {
+    //         yield return new WaitForSeconds(0.1f);
+    //         Removeblock();
+    //     }
+    // }
+    //
+    // public void Removeblock()
+    // {
+    //     int randomX = Random.Range(0, MapSizeXZ);
+    //     int randomY = 2;
+    //     int randomZ = Random.Range(0, MapSizeXZ);
+    //
+    //     DestroyBlock(new Vector3(randomX, randomY, randomZ));
+    // }
     public void SetRoomDirty()
     {
         view.RPC("SetRoomDirtyRPC", RpcTarget.MasterClient);
     }
-    
+
     [PunRPC]
     void SetRoomDirtyRPC()
     {
         roomDirty = true;
+    }
+    public void DamageBlock(Vector3 transformPosition, int i)
+    {
+        throw new NotImplementedException();
     }
 }

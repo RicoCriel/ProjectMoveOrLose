@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &2127635
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -638,7 +638,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &246564867
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1115,7 +1115,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &550575191
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1593,7 +1593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &742595354
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1911,7 +1911,14 @@ MonoBehaviour:
   blockHolder: {fileID: 1094528341}
   AutoDestroyBlocks: 0
   MapSizeXZ: 40
-  MapSizeY: 3
+  MapSizeY: 30
+  WallThickness: 2
+  GroundHeight: 5
+  GenerateClumps: 1
+  minclumpSize: 2
+  maxclumpSize: 6
+  minClumpAmount: 10
+  maxClumpAmount: 16
   xBoundary: {x: 1, y: 30}
   yBoundary: {x: 1, y: 50}
   zBoundary: {x: 1, y: 30}
