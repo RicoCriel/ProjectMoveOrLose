@@ -4,7 +4,6 @@ namespace DefaultNamespace
 {
     public class BlockWithHealth : MonoBehaviour
     {
-        [SerializeField]
         private int _health = 0;
 
         [SerializeField]
@@ -12,33 +11,44 @@ namespace DefaultNamespace
 
         [SerializeField]
         private MeshRenderer _myMeshRenderer;
+
+        [SerializeField]
         private MeshFilter _myMeshFilter;
 
         public void InitializeBlockWithHealth(int startingHealth)
         {
             _health = startingHealth;
-            ChangeBlockView(_health); 
+            ChangeBlockView(_health);
         }
 
         public bool TakeDamageAndCheckIfDead(int damage)
         {
             _health -= damage;
-            ChangeBlockView(_health);
-
-            return _health <= 0;
-        }
-        private void ChangeBlockView(int CurrentHealth)
-        {
-            if (CurrentHealth < blockData.Count)
+            if (_health <= 0)
             {
-                Debug.LogError("Health cannot be greater than the number of blocksData's");
+                return true;
             }
             else
             {
-                _myMeshFilter.mesh = blockData[CurrentHealth].Mesh;
-                _myMeshRenderer.material = blockData[CurrentHealth].Material;
+                ChangeBlockView(_health);
+                return false;
             }
         }
+
+        public int GetCurrentHealth()
+        {
+            return _health;
+        }
+
+        private void ChangeBlockView(int CurrentHealth)
+        {
+           
+                // _myMeshFilter.mesh = blockData[CurrentHealth - 1].Mesh;
+                _myMeshRenderer.material = blockData[CurrentHealth - 1].Material;
+            
+        }
+
+
 
 
     }

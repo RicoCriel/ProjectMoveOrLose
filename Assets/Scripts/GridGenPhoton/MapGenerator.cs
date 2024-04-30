@@ -17,7 +17,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     [Header("BlocksWithHealth")]
     public BlockWithHealth blockWithHealth;
-    public int BlockHealth = 3;
+    public int BlockHealth = 5;
     public bool usingBlockWithHealth = false;
 
     public Transform blockHolder; // Parent object to hold all the blocks
@@ -112,13 +112,10 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                     {
                         if (slice[MapSizeXZ * x + z] > BlockHealth)
                             Debug.Log("Data's corrupted");
-                        else if (slice[MapSizeXZ * x + z] > 0)
+                        else if (slice[MapSizeXZ * x + z] == 0)
                             continue;
-                  
 
                         InstantiateBlock(x, y, z, BlockHealth);
-
-                   
                     }
                 }
             }
@@ -169,7 +166,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     private void UpdatePUNRoomProperties()
     {
         // Not implemented yet
-        throw new NotImplementedException();
+        // throw new NotImplementedException();
     }
 
     private void GenerateGrid()
@@ -186,23 +183,16 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                         if (x < WallThickness || x > mapSize.x - WallThickness - 1 || z < WallThickness || z > mapSize.z - WallThickness - 1)
                         {
                             Vector3Int pos = new Vector3Int(x, y, z);
-                            GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
-                            block.name = $"Block ({x}, {y}, {z})";
-                            block.transform.parent = blockHolder;
 
-                            // Assign different integer values to different block types
-                            mapState[pos.x, pos.y, pos.z] = 1;
+                            InstantiateBlock(x, y, z, BlockHealth);
+                            mapState[pos.x, pos.y, pos.z] = BlockHealth;
                         }
                     }
                     else
                     {
                         Vector3Int pos = new Vector3Int(x, y, z);
-                        GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
-                        block.name = $"Block ({x}, {y}, {z})";
-                        block.transform.parent = blockHolder;
-
-                        // Assign different integer values to different block types
-                        mapState[pos.x, pos.y, pos.z] = 1;
+                        InstantiateBlock(x, y, z, BlockHealth);
+                        mapState[pos.x, pos.y, pos.z] = BlockHealth;
                     }
                 }
             }
@@ -233,12 +223,8 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 for (int z = clumpZ; z < clumpZ + clumpSizeZ; z++)
                 {
                     Vector3Int pos = new Vector3Int(x, y, z);
-                    GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
-                    block.name = $"Block ({x}, {y}, {z})";
-                    block.transform.parent = blockHolder;
-
-                    // Assign different integer values to different block types
-                    mapState[pos.x, pos.y, pos.z] = 1;
+                    InstantiateBlock(x, y, z, BlockHealth);
+                    mapState[pos.x, pos.y, pos.z] = BlockHealth;
                 }
             }
         }
@@ -255,7 +241,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             {
                 for (int z = 0; z < mapState.GetUpperBound(2); z++)
                 {
-                    if (mapState[x, y, z] != 1)
+                    if (mapState[x, y, z] > BlockHealth)
                     {
                         mapState[x, y, z] = 0;
                     }
@@ -321,6 +307,51 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     }
 
     // Destroy a block at a given position
+    public void DamageBlock(Vector3 transformPosition, int damage)
+    {
+        if (usingBlockWithHealth)
+        {
+            view.RPC("DamageBlockRPC", RpcTarget.All, transformPosition, damage);
+        }
+        else
+        {
+            view.RPC("DestroyBlockRPC", RpcTarget.All, transformPosition);
+        }
+
+    }
+    // RPC call to destroy a block
+    [PunRPC]
+    void DamageBlockRPC(Vector3 pos, int damage)
+    {
+        Transform blockT = null;
+
+        // Find the block at the given position
+        foreach (Transform child in blockHolder)
+        {
+            if (child.position == pos)
+            {
+                blockT = child;
+                break;
+            }
+        }
+
+        if (blockT != null)
+        {
+            BlockWithHealth block = blockT.gameObject.GetComponent<BlockWithHealth>();
+            Vector3 intPos = Vector3Int.FloorToInt(pos);
+
+            if (block.TakeDamageAndCheckIfDead(damage))
+            {
+                Destroy(block.gameObject);
+                MapGenerator.instance.EditMapState(intPos, 0);
+            }
+            else
+            {
+                MapGenerator.instance.EditMapState(intPos, block.GetCurrentHealth());
+            }
+        }
+    }
+
     public void DestroyBlock(Vector3 pos)
     {
         view.RPC("DestroyBlockRPC", RpcTarget.All, pos);
@@ -394,9 +425,5 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     void SetRoomDirtyRPC()
     {
         roomDirty = true;
-    }
-    public void DamageBlock(Vector3 transformPosition, int i)
-    {
-        throw new NotImplementedException();
     }
 }

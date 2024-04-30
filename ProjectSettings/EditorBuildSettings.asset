@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Photon test/NewGame.unity
     guid: c2dc1297a979e4146a143697156ff9c4
+  - enabled: 1
+    path: Assets/Scenes/Photon test/NewGameDestructableBlocks.unity
+    guid: 80f1afb717c9d8445a5fc5b2aa6be311
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}

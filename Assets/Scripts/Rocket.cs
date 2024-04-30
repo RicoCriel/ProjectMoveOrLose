@@ -26,6 +26,10 @@ namespace DefaultNamespace
         bool collHappened = false;
         Vector3 collisionpoint;
 
+        private void Awake()
+        {
+            // view = GetComponent<PhotonView>();
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -92,8 +96,8 @@ namespace DefaultNamespace
             {
                 if (hit.tag == "Block")
                 {
-                    MapGenerator.instance.DestroyBlock(hit.transform.position);
-                    // MapGenerator.instance.DamageBlock(hit.transform.position, damage);
+                    // MapGenerator.instance.DestroyBlock(hit.transform.position);
+                    MapGenerator.instance.DamageBlock(hit.transform.position, damage);
                     
                     MapGenerator.instance.SetRoomDirty();
                 }

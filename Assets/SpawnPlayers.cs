@@ -76,7 +76,7 @@ public class SpawnPlayers : MonoBehaviour
 
     void PlayerSpawnRPC()
     {
-        Vector2 randomPosition = new Vector3(spawnlocation.transform.position.x +UnityEngine.Random.Range(minX, maxX),
+        Vector3 randomPosition = new Vector3(spawnlocation.transform.position.x +UnityEngine.Random.Range(minX, maxX),
             spawnlocation.transform.position.y,
             spawnlocation.transform.position.z +UnityEngine.Random.Range(minY, maxY));
         player = PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
