@@ -669,7 +669,7 @@ MonoBehaviour:
   canShotgun: 1
   ShotgunBullet: {fileID: 6701560607116327262, guid: 04bd869058a01f84593e886abbd9553d, type: 3}
   ShotgunBulletExit: {fileID: 668906700169332713}
-  ShotgunBulletSpeed: 100
+  ShotgunBulletSpeed: 80
   robotParts:
   - {fileID: 2475738695220793577}
   - {fileID: 1826036716133925945}
