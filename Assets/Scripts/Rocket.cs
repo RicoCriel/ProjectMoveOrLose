@@ -11,6 +11,10 @@ namespace DefaultNamespace
         [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
         [SerializeField] private float radiusdestroymult = 1.5f;
+        
+        [SerializeField] private int damage = 3;
+        
+        
 
         public GameObject player;
         public PhotonView view;
@@ -89,6 +93,8 @@ namespace DefaultNamespace
                 if (hit.tag == "Block")
                 {
                     MapGenerator.instance.DestroyBlock(hit.transform.position);
+                    // MapGenerator.instance.DamageBlock(hit.transform.position, damage);
+                    
                     MapGenerator.instance.SetRoomDirty();
                 }
 
