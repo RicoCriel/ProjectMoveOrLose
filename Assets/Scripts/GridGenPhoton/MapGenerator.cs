@@ -24,10 +24,15 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     public int MapSizeXZ = 30; // Size of the map
     public int MapSizeY = 50; // Size of the map
+    
+    public int WallThickness = 1; // Thickness of the walls
+    public int GroundHeight = 1; // Height of the ground
 
     [HideInInspector] public Vector2Int xBoundary /*= new Vector2Int(1, 30)*/; // X boundaries of the map
     [HideInInspector] public Vector2Int yBoundary /*= new Vector2Int(1, 50)*/; // Y boundaries of the map
     [HideInInspector] public Vector2Int zBoundary /*= new Vector2Int(1, 30)*/; // Z boundaries of the map
+    
+    
 
     public int[,,] mapState; // 3D array to store the state of each block in the map
 
@@ -140,13 +145,30 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             {
                 for (int z = 0; z < mapSize.z; z++)
                 {
-                    Vector3Int pos = new Vector3Int(x, y, z);
-                    GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
-                    block.name = $"Block ({x}, {y}, {z})";
-                    block.transform.parent = blockHolder;
+                    if (y > GroundHeight - 1)
+                    {
+                        if (x < WallThickness || x > mapSize.x - WallThickness - 1 || z < WallThickness || z > mapSize.z - WallThickness - 1)
+                        {
+                            Vector3Int pos = new Vector3Int(x, y, z);
+                            GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
+                            block.name = $"Block ({x}, {y}, {z})";
+                            block.transform.parent = blockHolder;
 
-                    // Assign different integer values to different block types
-                    mapState[pos.x, pos.y, pos.z] = 1;
+                            // Assign different integer values to different block types
+                            mapState[pos.x, pos.y, pos.z] = 1;
+                        }
+                    }
+                    else
+                    {
+                        Vector3Int pos = new Vector3Int(x, y, z);
+                        GameObject block = Instantiate(unitBlock, pos, quaternion.identity);
+                        block.name = $"Block ({x}, {y}, {z})";
+                        block.transform.parent = blockHolder;
+
+                        // Assign different integer values to different block types
+                        mapState[pos.x, pos.y, pos.z] = 1;
+                    }
+                    
                 }
             }
         }
