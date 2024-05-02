@@ -5,6 +5,7 @@ using DefaultNamespace;
 using UnityEngine;
 using Photon.Pun;
 using Unity.VisualScripting;
+using System;
 
 struct Cmd
 {
@@ -13,12 +14,21 @@ struct Cmd
     public float upMove;
 }
 
+enum RobotState
+{
+    Idle,
+    Running,
+    Jumping,
+    StartJump,
+    Midair,
+    Land,
+}
+
 public class QuakeCharController : MonoBehaviour
 {
     public Transform playerView; // Camera
     public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
     public float xMouseSensitivity = 30.0f;
-
     public float yMouseSensitivity = 30.0f;
     
     /*Frame occuring factors*/
@@ -65,27 +75,31 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject rocketBulletExit;
     public float rocketBulletSpeed = 40f;
     private Vector3 impact;
-    public bool canShoot;
-    public float ShootCD = 1f;
-    [SerializeField] private Animator canonAnimator;
+    public bool canShootCanon;
+    public bool canShootShotgun = true;
 
-    
+    public float CanonCountDown = 1f;
+    public float ShotgunCountDown = 1f;
+
+    [SerializeField] private Animator canonAnimator;
     [SerializeField] private Animator shotgunAnimator;
-    public float ShotgunCD = 1f;
-    [SerializeField]private float ShotgunForce = 400f;
-    public bool canShotgun = true;
+    [SerializeField] private Animator robotAnimator;
+
+    [SerializeField] private float ShotgunForce = 400f;
     [SerializeField] private GameObject ShotgunBullet;
     [SerializeField] private GameObject ShotgunBulletExit;
     public float ShotgunBulletSpeed = 70f;
 
-    [SerializeField] private List<MeshRenderer> robotParts;
-    
+    //[SerializeField] private List<MeshRenderer> robotParts;
+    [SerializeField] private SkinnedMeshRenderer _robotMesh;
+    private RobotState robotState = RobotState.Idle;
+    private bool isGroundedPreviously;
 
     private void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        canShoot = true;
+        canShootCanon = true;
         
         if (playerView == null)
         {
@@ -104,12 +118,10 @@ public class QuakeCharController : MonoBehaviour
         _controller = GetComponent<CharacterController>();
         _photonView = GetComponent<PhotonView>();
         
+        
         if (_photonView.IsMine)
         {
-            foreach (var mesh in robotParts)
-            {
-                mesh.enabled = false;
-            }
+            _robotMesh.enabled = false;
         }
     }
 
@@ -117,6 +129,8 @@ public class QuakeCharController : MonoBehaviour
     {
         if (_photonView.IsMine)
         {
+            isGroundedPreviously = _controller.isGrounded;
+
             /* Ensure that the cursor is locked into the screen */
             if (Cursor.lockState != CursorLockMode.Locked)
             {
@@ -168,6 +182,75 @@ public class QuakeCharController : MonoBehaviour
             //rocketLauncher.transform.position = playerView.position;
 
             HandleShootingInput();
+            UpdateRobotState();
+            UpdateAnimations();
+        }
+    }
+
+    private void UpdateRobotState()
+    {
+        if (_controller.isGrounded)
+        {
+            if (_cmd.forwardMove == 0 && _cmd.rightMove == 0)
+            {
+                robotState = RobotState.Idle;
+            }
+            else
+            {
+                robotState = RobotState.Running;
+            }
+
+            if (wishJump && (robotState == RobotState.Idle || robotState == RobotState.Running))
+            {
+                robotState = RobotState.Jumping;
+            }
+        }
+        else
+        {
+            if (isGroundedPreviously)
+            {
+                robotState = RobotState.StartJump; 
+            }
+            else
+            {
+                robotState = RobotState.Midair; 
+            }
+        }
+    }
+
+    private void UpdateAnimations()
+    {
+        switch (robotState)
+        {
+            case RobotState.Idle:
+                robotAnimator.SetTrigger("Stop");
+                break;
+            case RobotState.Running:
+                robotAnimator.SetTrigger("Run");
+                Debug.Log("Running");
+                break;
+            case RobotState.Jumping:
+                robotAnimator.SetTrigger("StartJump");
+                Debug.Log("Jumping");
+                break;
+            case RobotState.Midair:
+                robotAnimator.SetTrigger("Jump");
+                Debug.Log("InTheAir");
+                break;
+            case RobotState.Land:
+                robotAnimator.SetTrigger("EndJump");
+                Debug.Log("Landing");
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!isGroundedPreviously && _controller.isGrounded)
+        {
+            robotState = RobotState.Land;
         }
     }
 
@@ -187,7 +270,7 @@ public class QuakeCharController : MonoBehaviour
 
     private void PrimaryShoot()
     {
-        if (canShoot)
+        if (canShootCanon)
         {
             GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
@@ -197,14 +280,14 @@ public class QuakeCharController : MonoBehaviour
             rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
-            canShoot = false;
-            StartCoroutine(CanonCooldown(ShootCD));
+            canShootCanon = false;
+            StartCoroutine(CanonCooldown(CanonCountDown));
         }
     }
 
     private void SecondaryShoot()
     {
-        if (canShotgun)
+        if (canShootShotgun)
         {
             GameObject bullet = PhotonNetwork.Instantiate(ShotgunBullet.name, ShotgunBulletExit.transform.position, rocketBulletExit.transform.rotation);
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
@@ -214,8 +297,8 @@ public class QuakeCharController : MonoBehaviour
             rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
             Vector3 pushdirection = -playerView.forward;
             AddPush(pushdirection, ShotgunForce);
-            canShotgun = false;
-            StartCoroutine(ShotgunCooldown(ShotgunCD));
+            canShootShotgun = false;
+            StartCoroutine(ShotgunCooldown(ShotgunCountDown));
             shotgunAnimator.SetTrigger("shot");
         }
     }
@@ -223,13 +306,13 @@ public class QuakeCharController : MonoBehaviour
     IEnumerator ShotgunCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
-        canShotgun = true;
+        canShootShotgun = true;
         shotgunAnimator.ResetTrigger("shot");
     }
     IEnumerator CanonCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
-        canShoot = true;
+        canShootCanon = true;
         canonAnimator.ResetTrigger("Shot");
     }
 
@@ -242,7 +325,6 @@ public class QuakeCharController : MonoBehaviour
 
         // consumes the impact energy each cycle:
         impact = Vector3.Lerp(impact, Vector3.zero, 15 * Time.deltaTime);
-        Debug.Log("Adding explosionforce");
     }
 
     public void AddImpact(Vector3 explosionOrigin, float force)
