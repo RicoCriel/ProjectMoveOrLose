@@ -20,14 +20,12 @@ public class QuakeCharController : MonoBehaviour
     public float xMouseSensitivity = 30.0f;
 
     public float yMouseSensitivity = 30.0f;
-
-    //
+    
     /*Frame occuring factors*/
     public float gravity = 20.0f;
-
     public float friction = 6; //Ground friction
 
-    /* Movement stuff */
+    /* Movement */
     public float moveSpeed = 7.0f; // Ground move speed
     public float runAcceleration = 14.0f; // Ground accel
     public float runDeacceleration = 10.0f; // Deacceleration that occurs when running on the ground
@@ -37,20 +35,7 @@ public class QuakeCharController : MonoBehaviour
     public float sideStrafeAcceleration = 50.0f; // How fast acceleration occurs to get up to sideStrafeSpeed when
     public float sideStrafeSpeed = 1.0f; // What the max speed to generate when side strafing
     public float jumpSpeed = 8.0f; // The speed at which the character's up axis gains when hitting jump
-
-    public bool
-        holdJumpToBhop =
-            false; // When enabled allows player to just hold jump button to keep on bhopping perfectly. Beware: smells like casual.
-
-    /*print() style */
-    public GUIStyle style;
-
-    /*FPS Stuff */
-    public float fpsDisplayRate = 4.0f; // 4 updates per sec
-
-    private int frameCount = 0;
-    private float dt = 0.0f;
-    private float fps = 0.0f;
+    public bool holdJumpToBhop = false; // When enabled allows player to just hold jump button to keep on bhopping perfectly. 
 
     private CharacterController _controller;
 
@@ -82,10 +67,10 @@ public class QuakeCharController : MonoBehaviour
     private Vector3 impact;
     public bool canShoot;
     public float ShootCD = 1f;
-    [SerializeField] private Animator animator;
+    [SerializeField] private Animator canonAnimator;
 
     
-    [SerializeField] private Animator ShotgunAnimator;
+    [SerializeField] private Animator shotgunAnimator;
     public float ShotgunCD = 1f;
     [SerializeField]private float ShotgunForce = 400f;
     public bool canShotgun = true;
@@ -98,8 +83,6 @@ public class QuakeCharController : MonoBehaviour
 
     private void Start()
     {
-       
-        // Hide the cursor
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         canShoot = true;
@@ -117,11 +100,8 @@ public class QuakeCharController : MonoBehaviour
             transform.position.y + playerViewYOffset,
             transform.position.z);
         rocketLauncher.transform.position = playerView.position;
-        
-        
 
         _controller = GetComponent<CharacterController>();
-
         _photonView = GetComponent<PhotonView>();
         
         if (_photonView.IsMine)
@@ -137,22 +117,11 @@ public class QuakeCharController : MonoBehaviour
     {
         if (_photonView.IsMine)
         {
-            // Do FPS calculation
-            frameCount++;
-            dt += Time.deltaTime;
-            if (dt > 1.0 / fpsDisplayRate)
-            {
-                fps = Mathf.Round(frameCount / dt);
-                frameCount = 0;
-                dt -= 1.0f / fpsDisplayRate;
-            }
-
             /* Ensure that the cursor is locked into the screen */
             if (Cursor.lockState != CursorLockMode.Locked)
             {
                 if (Input.GetButtonDown("Fire1"))
                     Cursor.lockState = CursorLockMode.Locked;
-                
             }
 
             /* Camera rotation stuff, mouse controls this shit */
@@ -168,16 +137,15 @@ public class QuakeCharController : MonoBehaviour
             this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
             playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
             rocketLauncher.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
-            
 
-            /* Movement, here's the important part */
+            //Movement
             QueueJump();
             if (_controller.isGrounded)
                 GroundMove();
             else if (!_controller.isGrounded)
                 AirMove();
 
-            Explosions();
+            AddExplosionForce();
             if (playerVelocity.magnitude > 20f)
             {
                 playerVelocity = playerVelocity.normalized * 20f;
@@ -198,47 +166,40 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.y + playerViewYOffset,
                 transform.position.z);
             //rocketLauncher.transform.position = playerView.position;
-            
-            
-            
-            //player shoots
-            if (Input.GetButtonDown("Fire2"))
-            {
-                Shoot();
-                         Debug.Log("shoot");   
-            }
-            if (Input.GetButtonDown("Fire1"))
-            {
-                SecondaryShoot();
-                Debug.Log("shoot");   
-            }
-            
+
+            HandleShootingInput();
         }
     }
 
-    private void Shoot()
+    private void HandleShootingInput()
+    {
+        if (Input.GetButtonDown("Fire2"))
+        {
+            PrimaryShoot();
+            Debug.Log("shoot");
+        }
+        if (Input.GetButtonDown("Fire1"))
+        {
+            SecondaryShoot();
+            Debug.Log("shoot");
+        }
+    }
+
+    private void PrimaryShoot()
     {
         if (canShoot)
         {
-         GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
-                 Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-                 bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-                 bullet.GetComponent<Rocket>().player = this.gameObject;
+            GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+            bullet.GetComponent<Rocket>().player = this.gameObject;
+            
+            rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
+            canonAnimator.SetTrigger("Shot");
 
-                 
-                 
-                     
-                     rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
-                 
-                     
-                     animator.SetTrigger("Shot");
-                 
-
-                 canShoot = false;
-                 StartCoroutine(ShootCooldown(ShootCD));
-
+            canShoot = false;
+            StartCoroutine(CanonCooldown(ShootCD));
         }
-        
     }
 
     private void SecondaryShoot()
@@ -246,36 +207,33 @@ public class QuakeCharController : MonoBehaviour
         if (canShotgun)
         {
             GameObject bullet = PhotonNetwork.Instantiate(ShotgunBullet.name, ShotgunBulletExit.transform.position, rocketBulletExit.transform.rotation);
-                  Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-                  bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-                  bullet.GetComponent<Rocket>().player = this.gameObject;
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+            bullet.GetComponent<Rocket>().player = this.gameObject;
                   
-                  rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
-          Vector3 pushdirection = -playerView.forward;
-                  AddPush(pushdirection, ShotgunForce);
-                  canShotgun = false;
-                  StartCoroutine(ShotgunCooldown(ShotgunCD));
-                  ShotgunAnimator.SetTrigger("shot");
-                  
+            rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
+            Vector3 pushdirection = -playerView.forward;
+            AddPush(pushdirection, ShotgunForce);
+            canShotgun = false;
+            StartCoroutine(ShotgunCooldown(ShotgunCD));
+            shotgunAnimator.SetTrigger("shot");
         }
-        
     }
-    
     
     IEnumerator ShotgunCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
         canShotgun = true;
-        ShotgunAnimator.ResetTrigger("shot");
+        shotgunAnimator.ResetTrigger("shot");
     }
-    IEnumerator ShootCooldown(float cd)
+    IEnumerator CanonCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
         canShoot = true;
-        animator.ResetTrigger("Shot");
+        canonAnimator.ResetTrigger("Shot");
     }
 
-    private void Explosions()
+    private void AddExplosionForce()
     {
         if (impact.magnitude > 0.2F)
         {
@@ -284,6 +242,7 @@ public class QuakeCharController : MonoBehaviour
 
         // consumes the impact energy each cycle:
         impact = Vector3.Lerp(impact, Vector3.zero, 15 * Time.deltaTime);
+        Debug.Log("Adding explosionforce");
     }
 
     public void AddImpact(Vector3 explosionOrigin, float force)
@@ -298,19 +257,15 @@ public class QuakeCharController : MonoBehaviour
         // Add the adjusted impact to the current impact
         impact += adjustedImpact;
     }
+
     public void AddPush(Vector3 direction, float force)
     {
         Vector3 dir = direction;
-
         // Subtract player's current velocity from the impact force
         Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;
-
         // Add the adjusted impact to the current impact
         impact += adjustedImpact;
     }
-    /*******************************************************************************************************\
-   |* MOVEMENT
-   \*******************************************************************************************************/
 
     /**
      * Sets the movement direction based on player input
@@ -375,7 +330,6 @@ public class QuakeCharController : MonoBehaviour
         Accelerate(wishdir, wishspeed, accel);
         if (airControl > 0)
             AirControl(wishdir, wishspeed2);
-        // !CPM: Aircontrol
 
         // Apply gravity
         playerVelocity.y -= gravity * Time.deltaTime;
@@ -506,14 +460,5 @@ public class QuakeCharController : MonoBehaviour
 
         playerVelocity.x += accelspeed * wishdir.x;
         playerVelocity.z += accelspeed * wishdir.z;
-    }
-
-    private void OnGUI()
-    {
-        //GUI.Label(new Rect(0, 0, 400, 100), "FPS: " + fps, style);
-        //var ups = _controller.velocity;
-        //ups.y = 0;
-        //GUI.Label(new Rect(0, 15, 400, 100), "Speed: " + Mathf.Round(ups.magnitude * 100) / 100 + "ups", style);
-        //GUI.Label(new Rect(0, 30, 400, 100), "Top Speed: " + Mathf.Round(playerTopVelocity * 100) / 100 + "ups", style);
     }
 }

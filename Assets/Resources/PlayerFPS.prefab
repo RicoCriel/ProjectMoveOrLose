@@ -662,8 +662,8 @@ MonoBehaviour:
   rocketBulletSpeed: 80
   canShoot: 0
   ShootCD: 2
-  animator: {fileID: 1722350878608328595}
-  ShotgunAnimator: {fileID: 1862779835884359592}
+  canonAnimator: {fileID: 1722350878608328595}
+  shotgunAnimator: {fileID: 1862779835884359592}
   ShotgunCD: 1
   ShotgunForce: 800
   canShotgun: 1
