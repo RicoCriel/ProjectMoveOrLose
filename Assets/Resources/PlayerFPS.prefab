@@ -355,6 +355,7 @@ MonoBehaviour:
   ShotgunBulletSpeed: 80
   RocketBulletSpeed: 25
   _robotMesh: {fileID: 4876374231691440632}
+  shotGun: {fileID: 4559968274623016354}
 --- !u!114 &6749649928363499948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -505,6 +506,8 @@ GameObject:
   m_Component:
   - component: {fileID: 751364763014027350}
   - component: {fileID: 7881110051033235570}
+  - component: {fileID: 4559968274623016354}
+  - component: {fileID: 8644131685037422978}
   m_Layer: 2
   m_Name: Shotgun
   m_TagString: Untagged
@@ -552,6 +555,39 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &4559968274623016354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8101660491239938458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 668397ac1384b584687e77c26d5e230e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shotgunBulletExit: {fileID: 419822868530360893}
+  shotgunRange: 5
+  shotgunAnimator: {fileID: 1862779835884359592}
+  explosionManager: {fileID: 0}
+--- !u!114 &8644131685037422978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8101660491239938458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 619778cbbc310604d894d9b5512af046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 1
+  radiusDestroyMultiplier: 1.5
+  explosionForce: 10
+  minDamage: 1
+  maxDamage: 10
 --- !u!1001 &5083879354296482306
 PrefabInstance:
   m_ObjectHideFlags: 0

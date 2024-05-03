@@ -90,10 +90,11 @@ public class QuakeCharController : MonoBehaviour
     public float ShotgunBulletSpeed = 70f;
     public float RocketBulletSpeed = 40f;
 
-    //[SerializeField] private List<MeshRenderer> robotParts;
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
     private RobotState robotState = RobotState.Idle;
     private bool isGroundedPreviously;
+
+    [SerializeField] private Shotgun shotGun;
 
     private void Start()
     {
@@ -179,11 +180,10 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.x,
                 transform.position.y + playerViewYOffset,
                 transform.position.z);
-            //rocketLauncher.transform.position = playerView.position;
 
             HandleShootingInput();
-            UpdateRobotState();
-            UpdateAnimations();
+            //UpdateRobotState();
+            //UpdateAnimations();
         }
     }
 
@@ -255,12 +255,10 @@ public class QuakeCharController : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             PrimaryShoot();
-            Debug.Log("shoot");
         }
         if (Input.GetButtonDown("Fire1"))
         {
-            SecondaryShoot();
-            Debug.Log("shoot");
+            shotGun.Shoot();
         }
     }
 
@@ -281,30 +279,31 @@ public class QuakeCharController : MonoBehaviour
         }
     }
 
-    private void SecondaryShoot()
-    {
-        if (canShootShotgun)
-        {
-            GameObject bullet = PhotonNetwork.Instantiate(ShotgunBullet.name, ShotgunBulletExit.transform.position, rocketBulletExit.transform.rotation);
-            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            bullet.GetComponent<Rocket>().player = this.gameObject;
-                  
-            rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
-            Vector3 pushdirection = -playerView.forward;
-            AddPush(pushdirection, ShotgunForce);
-            canShootShotgun = false;
-            StartCoroutine(ShotgunCooldown(ShotgunCountDown));
-            shotgunAnimator.SetTrigger("shot");
-        }
-    }
+    //private void SecondaryShoot()
+    //{
+    //    if (canShootShotgun)
+    //    {
+    //        //GameObject bullet = PhotonNetwork.Instantiate(ShotgunBullet.name, ShotgunBulletExit.transform.position, rocketBulletExit.transform.rotation);
+    //        //Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+    //        //bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+    //        //bullet.GetComponent<Rocket>().player = this.gameObject;
+
+    //        //rbBullet.velocity = playerView.transform.forward * ShotgunBulletSpeed;
+    //        //Vector3 pushdirection = -playerView.forward;
+    //        //AddPush(pushdirection, ShotgunForce);
+    //        //canShootShotgun = false;
+            
+    //        StartCoroutine(ShotgunCooldown(ShotgunCountDown));
+    //        shotgunAnimator.SetTrigger("shot");
+    //    }
+    //}
     
-    IEnumerator ShotgunCooldown(float cd)
-    {
-        yield return new WaitForSeconds(cd);
-        canShootShotgun = true;
-        shotgunAnimator.ResetTrigger("shot");
-    }
+    //IEnumerator ShotgunCooldown(float cd)
+    //{
+    //    yield return new WaitForSeconds(cd);
+    //    canShootShotgun = true;
+    //    shotgunAnimator.ResetTrigger("shot");
+    //}
     IEnumerator CanonCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
