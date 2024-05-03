@@ -10,11 +10,13 @@ namespace DefaultNamespace
         [SerializeField] private float explosionRadius = 5f;
         [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
-        [SerializeField] private float radiusdestroymult = 1.5f;
-        
-        [SerializeField] private int damage = 3;
-        
-        
+        [SerializeField] private float radiusDestroyMultiplier = 1.5f;
+
+        [SerializeField] private int minDamage = 1; 
+        [SerializeField] private int maxDamage = 10;
+
+        [SerializeField] private float maxExplosionForce = 1000f;
+        [SerializeField] private float minExplosionForce = 100f;
 
         public GameObject player;
         public PhotonView view;
@@ -26,9 +28,12 @@ namespace DefaultNamespace
         bool collHappened = false;
         Vector3 collisionpoint;
 
+        private Vector3 startPosition;
+
         private void Awake()
         {
             // view = GetComponent<PhotonView>();
+            startPosition = transform.position;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -40,7 +45,6 @@ namespace DefaultNamespace
                           collisionpoint = other.transform.position;
                           Explode();  
             }
-            
         }
 
         public void Explode()
@@ -76,7 +80,7 @@ namespace DefaultNamespace
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
             
             
-            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusdestroymult);
+            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
             
             foreach (var hit in Playercolliders)
             {
@@ -86,9 +90,6 @@ namespace DefaultNamespace
                     Debug.Log("Pushing Player with id" + hit.GetComponent<PhotonView>().ViewID);
                     BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
-
-                
-                
             }
             
             Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius );
@@ -96,17 +97,31 @@ namespace DefaultNamespace
             {
                 if (hit.tag == "Block")
                 {
-                    // MapGenerator.instance.DestroyBlock(hit.transform.position);
-                    MapGenerator.instance.DamageBlock(hit.transform.position, damage);
-                    
+                    float distance = Vector3.Distance(transform.position, hit.transform.position);
+                    int calculatedDamage = CalculateDamage(distance);
+
+                    MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
                     MapGenerator.instance.SetRoomDirty();
                 }
-
-                
-                
             }
             BombManager.instance.DestroyBomb(view.ViewID);
         }
+
+        private int CalculateDamage(float distance)
+        {
+            //float t = Mathf.Clamp01(distance / explosionForce);
+            int damage = Mathf.CeilToInt(Mathf.Lerp(maxDamage, minDamage, distance));
+            return damage;
+        }
+
+        // Calculate explosion force based on distance
+        private int CalculateExplosionForce(float distance)
+        {
+            float t = Mathf.Clamp01(distance / explosionRadius);
+            float explosionForce = Mathf.Lerp(minExplosionForce, maxExplosionForce, t);
+            return Mathf.RoundToInt(explosionForce);
+        }
+
 
         [PunRPC]
         void triggerEffectRPC(Vector3 pos)

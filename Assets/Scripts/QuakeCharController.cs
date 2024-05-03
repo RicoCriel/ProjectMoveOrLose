@@ -73,7 +73,6 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject rocketLauncher;
     [SerializeField] private GameObject rocketBullet;
     [SerializeField] private GameObject rocketBulletExit;
-    public float rocketBulletSpeed = 40f;
     private Vector3 impact;
     public bool canShootCanon;
     public bool canShootShotgun = true;
@@ -89,6 +88,7 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject ShotgunBullet;
     [SerializeField] private GameObject ShotgunBulletExit;
     public float ShotgunBulletSpeed = 70f;
+    public float RocketBulletSpeed = 40f;
 
     //[SerializeField] private List<MeshRenderer> robotParts;
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
@@ -223,23 +223,19 @@ public class QuakeCharController : MonoBehaviour
         switch (robotState)
         {
             case RobotState.Idle:
-                robotAnimator.SetTrigger("Stop");
+                //robotAnimator.SetTrigger("Stop");
                 break;
             case RobotState.Running:
                 robotAnimator.SetTrigger("Run");
-                Debug.Log("Running");
                 break;
             case RobotState.Jumping:
                 robotAnimator.SetTrigger("StartJump");
-                Debug.Log("Jumping");
                 break;
             case RobotState.Midair:
                 robotAnimator.SetTrigger("Jump");
-                Debug.Log("InTheAir");
                 break;
             case RobotState.Land:
                 robotAnimator.SetTrigger("EndJump");
-                Debug.Log("Landing");
                 break;
             default:
                 break;
@@ -277,7 +273,7 @@ public class QuakeCharController : MonoBehaviour
             bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
             bullet.GetComponent<Rocket>().player = this.gameObject;
             
-            rbBullet.velocity =  playerView.transform.forward * rocketBulletSpeed;
+            rbBullet.velocity =  playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;

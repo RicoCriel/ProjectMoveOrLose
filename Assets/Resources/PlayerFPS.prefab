@@ -342,7 +342,6 @@ MonoBehaviour:
   rocketLauncher: {fileID: 7725816319743380222}
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 6700377822086425601}
-  rocketBulletSpeed: 80
   canShootCanon: 0
   canShootShotgun: 1
   CanonCountDown: 1
@@ -354,6 +353,7 @@ MonoBehaviour:
   ShotgunBullet: {fileID: 6701560607116327262, guid: 04bd869058a01f84593e886abbd9553d, type: 3}
   ShotgunBulletExit: {fileID: 668906700169332713}
   ShotgunBulletSpeed: 80
+  RocketBulletSpeed: 25
   _robotMesh: {fileID: 4876374231691440632}
 --- !u!114 &6749649928363499948
 MonoBehaviour:
