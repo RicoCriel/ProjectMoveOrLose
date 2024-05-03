@@ -19,6 +19,8 @@ public class SpawnPlayers : MonoBehaviour
     [SerializeField]private GameObject ReloadSceneButton;
     private GameObject player;
 
+    [SerializeField] private string _sceneToReload;
+
     [SerializeField] private GameObject spawnlocation; 
     public float minX;
     public float maxX;
@@ -60,7 +62,7 @@ public class SpawnPlayers : MonoBehaviour
     [PunRPC]
     public void ReloadSceneButRPC()
     {
-        PhotonNetwork.LoadLevel("NewGame");
+        PhotonNetwork.LoadLevel(_sceneToReload);
         
 
     }

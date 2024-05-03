@@ -1715,6 +1715,7 @@ MonoBehaviour:
   playerWinScreen: {fileID: 671895177}
   startbuttonobject: {fileID: 502088219}
   ReloadSceneButton: {fileID: 2138708388}
+  _sceneToReload: NewGameDestructableBlocks
   spawnlocation: {fileID: 1097767426}
   minX: -5
   maxX: 5
