@@ -5,6 +5,8 @@ namespace DefaultNamespace
     public class BlockWithHealth : MonoBehaviour
     {
         private int _health = 0;
+        
+        private int _maxHealth = 0;
 
         [SerializeField]
         private List<BlockData> blockData;
@@ -16,11 +18,13 @@ namespace DefaultNamespace
         private MeshFilter _myMeshFilter;
         
         public BlockType blockType;
+        private static readonly int Lerpamount = Shader.PropertyToID("_lerpamount");
 
         public void InitializeBlockWithHealth(int startingHealth)
         {
             _health = startingHealth;
-            ChangeBlockView(_health);
+            _maxHealth = startingHealth;
+            ChangeBlockViewShader(_health);
         }
 
         public bool TakeDamageAndCheckIfDead(int damage)
@@ -32,7 +36,7 @@ namespace DefaultNamespace
             }
             else
             {
-                ChangeBlockView(_health);
+                ChangeBlockViewShader(_health);
                 return false;
             }
         }
@@ -58,6 +62,12 @@ namespace DefaultNamespace
             }
         
             
+        }
+        
+        private void ChangeBlockViewShader(int CurrentHealth)
+        {
+           float destroyedAmount = 1 - (float)CurrentHealth / _maxHealth;
+           _myMeshRenderer.material.SetFloat(Lerpamount,destroyedAmount);
         }
 
 
