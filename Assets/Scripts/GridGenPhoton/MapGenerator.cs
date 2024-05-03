@@ -17,11 +17,11 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     [Header("BlocksWithHealth")]
     public BlockWithHealth blockWithHealth;
-    private int BlockHealth = 4;
+    public int BlockHealth = 4;
     public bool usingBlockWithHealth = false;
 
     public Transform blockHolder; // Parent object to hold all the blocks
-    public bool AutoDestroyBlocks = true;
+
 
     private PhotonView view; // Reference to the PhotonView component
 
@@ -36,6 +36,11 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     public int WallThickness = 1; // Thickness of the walls
     public int GroundHeight = 1; // Height of the ground
 
+    [Header("AutoDestroyFloor")]
+    public bool AutoDestroyBlocks = true;
+    [SerializeField] private int blocksPerTick = 10;
+    [SerializeField] private int damagePerTick = 1;
+    [SerializeField] private float tickInterval = 1f;
 
 
     [Header("mapClumps")]
@@ -50,13 +55,11 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     public int ClumpsLowerThanWalls = 5;
 
-    private int BlockHealthClump = 8;
+    public int BlockHealthClump = 8;
 
     [HideInInspector] public Vector2Int xBoundary /*= new Vector2Int(1, 30)*/; // X boundaries of the map
     [HideInInspector] public Vector2Int yBoundary /*= new Vector2Int(1, 50)*/; // Y boundaries of the map
     [HideInInspector] public Vector2Int zBoundary /*= new Vector2Int(1, 30)*/; // Z boundaries of the map
-
-
 
     public int[,,] mapState; // 3D array to store the state of each block in the map
 
@@ -66,9 +69,14 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
 
     Dictionary<Vector3Int, BlockWithHealth> blocks = new Dictionary<Vector3Int, BlockWithHealth>();
+    Dictionary<Vector3Int, BlockWithHealth> blocksGroundFloor = new Dictionary<Vector3Int, BlockWithHealth>();
+
+    private int highestHealthBlocks;
 
     private void Awake()
     {
+        highestHealthBlocks = Mathf.Max(BlockHealth, BlockHealthClump);
+
         instance = this; // Set the instance to this object
 
         mapSize = new Vector3(MapSizeXZ - 1, MapSizeY, MapSizeXZ - 1); // Set the map size
@@ -117,7 +125,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 {
                     for (int z = 0; z < maxBoundaries.z; z++)
                     {
-                        if (slice[MapSizeXZ * x + z] > BlockHealthClump)
+                        if (slice[MapSizeXZ * x + z] > highestHealthBlocks)
                             Debug.Log("Data's corrupted");
                         else if (slice[MapSizeXZ * x + z] == 0)
                             continue;
@@ -128,7 +136,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             }
         }
 
-        // StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
+
     }
     private void InstantiateBlockFromBool(int x, int y, int z, bool IsClumpBlock)
     {
@@ -152,6 +160,13 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 blockWHealth.transform.SetParent(transform);
 
                 blocks.Add(new Vector3Int(x, y, z), blockWHealth);
+            }
+            if (!blocksGroundFloor.ContainsKey(pos))
+            {
+                if (y <= GroundHeight)
+                {
+                    blocksGroundFloor.Add(new Vector3Int(x, y, z), blocks[pos]);
+                }
             }
         }
         else
@@ -183,6 +198,13 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 blockWHealth.name = $"Block ({x}, {y}, {z})";
                 blockWHealth.transform.SetParent(transform);
                 blocks.Add(new Vector3Int(x, y, z), blockWHealth);
+                if (!blocksGroundFloor.ContainsKey(pos))
+                {
+                    if (y <= GroundHeight)
+                    {
+                        blocksGroundFloor.Add(new Vector3Int(x, y, z), blocks[pos]);
+                    }
+                }
             }
         }
         else
@@ -294,7 +316,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             {
                 for (int z = 0; z < mapState.GetUpperBound(2); z++)
                 {
-                    if (mapState[x, y, z] > BlockHealthClump)
+                    if (mapState[x, y, z] > highestHealthBlocks)
                     {
                         mapState[x, y, z] = 0;
                     }
@@ -401,6 +423,15 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             if (foundBlock.TakeDamageAndCheckIfDead(damage))
             {
                 blocks.Remove(vector3Int);
+
+                if (blocksGroundFloor.ContainsKey(vector3Int))
+                {
+                    if (vector3Int.y <= GroundHeight)
+                    {
+                        blocksGroundFloor.Remove(vector3Int);
+                    }
+                }
+
                 Destroy(foundBlock.gameObject);
                 MapGenerator.instance.EditMapState(intPos, 0);
             }
@@ -458,23 +489,60 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         mapState[(int)intPos.x, (int)intPos.y, (int)intPos.z] = state;
     }
 
-    // IEnumerator RemoveBlockRoutine(bool destroyblocks)
-    // {
-    //     while (destroyblocks)
-    //     {
-    //         yield return new WaitForSeconds(0.1f);
-    //         Removeblock();
-    //     }
-    // }
-    //
-    // public void Removeblock()
-    // {
-    //     int randomX = Random.Range(0, MapSizeXZ);
-    //     int randomY = 2;
-    //     int randomZ = Random.Range(0, MapSizeXZ);
-    //
-    //     DestroyBlock(new Vector3(randomX, randomY, randomZ));
-    // }
+
+    public void startAutoDestroyBlocks()
+
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
+        }
+    }
+
+    public void stopautoDestroyBlocks()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            StopCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
+        }
+        
+    }
+    IEnumerator RemoveBlockRoutine(bool destroyblocks)
+    {
+        while (destroyblocks && blocksGroundFloor.Count > 0)
+        {
+            yield return new WaitForSeconds(tickInterval);
+            for (int i = 0; i < blocksPerTick; i++)
+            {
+                Removeblock();
+            }
+        }
+    }
+
+    public void Removeblock()
+    {
+        KeyValuePair<Vector3Int, BlockWithHealth> randomKVP = GetRandomKeyValuePair(blocksGroundFloor);
+
+        DamageBlock(randomKVP.Key, damagePerTick);
+    }
+
+    KeyValuePair<Vector3Int, BlockWithHealth> GetRandomKeyValuePair(Dictionary<Vector3Int, BlockWithHealth> dictionary)
+    {
+        // Convert the dictionary to an array of KeyValuePair objects
+        KeyValuePair<Vector3Int, BlockWithHealth>[] kvpArray = new KeyValuePair<Vector3Int, BlockWithHealth>[dictionary.Count];
+        int index = 0;
+        foreach (var kvp in dictionary)
+        {
+            kvpArray[index] = kvp;
+            index++;
+        }
+
+        // Get a random index
+        int randomIndex = Random.Range(0, dictionary.Count);
+
+        // Return the random key-value pair
+        return kvpArray[randomIndex];
+    }
     public void SetRoomDirty()
     {
         view.RPC("SetRoomDirtyRPC", RpcTarget.MasterClient);

@@ -84,7 +84,7 @@ public class SpawnPlayers : MonoBehaviour
         player = PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
         startbuttonobject.SetActive(false);
         Canvas.SetActive(false);
-        
+       MapGenerator.instance.startAutoDestroyBlocks();
     }
 
     private void Update()
