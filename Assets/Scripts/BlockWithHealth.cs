@@ -14,6 +14,8 @@ namespace DefaultNamespace
 
         [SerializeField]
         private MeshFilter _myMeshFilter;
+        
+        public BlockType blockType;
 
         public void InitializeBlockWithHealth(int startingHealth)
         {
@@ -42,9 +44,19 @@ namespace DefaultNamespace
 
         private void ChangeBlockView(int CurrentHealth)
         {
-           
+            if (blockType == BlockType.Chunk)
+            {
+                int tooUse =Mathf.CeilToInt( CurrentHealth / 2f);
+                // _myMeshFilter.mesh = blockData[CurrentHealth - 1].Mesh;
+                 _myMeshRenderer.material = blockData[tooUse - 1].Material;
+            }
+            else
+            {
                 // _myMeshFilter.mesh = blockData[CurrentHealth - 1].Mesh;
                 _myMeshRenderer.material = blockData[CurrentHealth - 1].Material;
+                
+            }
+        
             
         }
 
@@ -58,5 +70,11 @@ namespace DefaultNamespace
     {
         public Mesh Mesh;
         public Material Material;
+    }
+    
+    public enum BlockType
+    {
+        Normal,
+        Chunk
     }
 }

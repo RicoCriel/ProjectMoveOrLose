@@ -1910,19 +1910,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitBlock: {fileID: 5152814648647254860, guid: f44aa09935cbd8143b0f1a6d348647b7, type: 3}
   blockWithHealth: {fileID: 3676004253796462676, guid: dd87e988807ce1c4aba033e3ea24ba2a, type: 3}
-  BlockHealth: 4
   usingBlockWithHealth: 1
   blockHolder: {fileID: 1094528341}
   AutoDestroyBlocks: 0
-  MapSizeXZ: 30
-  MapSizeY: 15
+  MapSizeXZ: 40
+  MapSizeY: 25
   WallThickness: 2
   GroundHeight: 3
-  GenerateClumps: 0
+  blockWithHealthClump: {fileID: 3676004253796462676, guid: 759c523e2dcefcc44a2f7c3449693600, type: 3}
+  GenerateClumps: 1
   minclumpSize: 2
-  maxclumpSize: 6
-  minClumpAmount: 10
-  maxClumpAmount: 16
+  maxclumpSize: 5
+  minClumpAmount: 11
+  maxClumpAmount: 14
+  ClumpsLowerThanWalls: 4
   xBoundary: {x: 1, y: 30}
   yBoundary: {x: 1, y: 50}
   zBoundary: {x: 1, y: 30}
@@ -2099,7 +2100,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 75
   orthographic: 0
   orthographic size: 5
   m_Depth: 0

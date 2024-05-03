@@ -17,7 +17,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     [Header("BlocksWithHealth")]
     public BlockWithHealth blockWithHealth;
-    public int BlockHealth = 5;
+    private int BlockHealth = 4;
     public bool usingBlockWithHealth = false;
 
     public Transform blockHolder; // Parent object to hold all the blocks
@@ -39,14 +39,18 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
 
     [Header("mapClumps")]
+    public BlockWithHealth blockWithHealthClump;
     public bool GenerateClumps = false;
     [Space]
     public int minclumpSize = 2;
     public int maxclumpSize = 4;
     [Space]
     public int minClumpAmount = 3;
-    public int maxClumpAmount = 10;
+    public int maxClumpAmount = 9;
 
+    public int ClumpsLowerThanWalls = 5;
+
+    private int BlockHealthClump = 8;
 
     [HideInInspector] public Vector2Int xBoundary /*= new Vector2Int(1, 30)*/; // X boundaries of the map
     [HideInInspector] public Vector2Int yBoundary /*= new Vector2Int(1, 50)*/; // Y boundaries of the map
@@ -59,6 +63,9 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     private float updateTimer = 5f; // Timer for updating room properties
 
     [HideInInspector] public bool roomDirty = false; // Flag to indicate if room properties need updating
+
+
+    Dictionary<Vector3Int, BlockWithHealth> blocks = new Dictionary<Vector3Int, BlockWithHealth>();
 
     private void Awake()
     {
@@ -110,12 +117,12 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 {
                     for (int z = 0; z < maxBoundaries.z; z++)
                     {
-                        if (slice[MapSizeXZ * x + z] > BlockHealth)
+                        if (slice[MapSizeXZ * x + z] > BlockHealthClump)
                             Debug.Log("Data's corrupted");
                         else if (slice[MapSizeXZ * x + z] == 0)
                             continue;
 
-                        InstantiateBlock(x, y, z, BlockHealth);
+                        InstantiateBlockFromHealth(x, y, z, slice[MapSizeXZ * x + z]);
                     }
                 }
             }
@@ -123,14 +130,60 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
         // StartCoroutine(RemoveBlockRoutine(AutoDestroyBlocks));
     }
-    private void InstantiateBlock(int x, int y, int z, int blockHealth)
+    private void InstantiateBlockFromBool(int x, int y, int z, bool IsClumpBlock)
     {
         if (usingBlockWithHealth)
         {
-            BlockWithHealth blockWHealth = Instantiate(blockWithHealth, new Vector3(x, y, z), quaternion.identity);
-            blockWHealth.InitializeBlockWithHealth(BlockHealth);
-            blockWHealth.name = $"Block ({x}, {y}, {z})";
-            blockWHealth.transform.SetParent(transform);
+            Vector3Int pos = new Vector3Int(x, y, z);
+            if (!blocks.ContainsKey(pos))
+            {
+                BlockWithHealth blockWHealth = null;
+                if (IsClumpBlock)
+                {
+                    blockWHealth = Instantiate(blockWithHealthClump, new Vector3(x, y, z), quaternion.identity);
+                    blockWHealth.InitializeBlockWithHealth(BlockHealthClump);
+                }
+                else
+                {
+                    blockWHealth = Instantiate(blockWithHealth, new Vector3(x, y, z), quaternion.identity);
+                    blockWHealth.InitializeBlockWithHealth(BlockHealth);
+                }
+                blockWHealth.name = $"Block ({x}, {y}, {z})";
+                blockWHealth.transform.SetParent(transform);
+
+                blocks.Add(new Vector3Int(x, y, z), blockWHealth);
+            }
+        }
+        else
+        {
+            GameObject block = Instantiate(unitBlock, new Vector3(x, y, z), quaternion.identity);
+            block.name = $"Block ({x}, {y}, {z})";
+            block.transform.SetParent(transform);
+        }
+    }
+
+    private void InstantiateBlockFromHealth(int x, int y, int z, int health)
+    {
+        if (usingBlockWithHealth)
+        {
+            Vector3Int pos = new Vector3Int(x, y, z);
+            if (!blocks.ContainsKey(pos))
+            {
+                BlockWithHealth blockWHealth = null;
+                if (health == BlockHealthClump)
+                {
+                    blockWHealth = Instantiate(blockWithHealthClump, new Vector3(x, y, z), quaternion.identity);
+                    blockWHealth.InitializeBlockWithHealth(BlockHealthClump);
+                }
+                else
+                {
+                    blockWHealth = Instantiate(blockWithHealth, new Vector3(x, y, z), quaternion.identity);
+                    blockWHealth.InitializeBlockWithHealth(BlockHealth);
+                }
+                blockWHealth.name = $"Block ({x}, {y}, {z})";
+                blockWHealth.transform.SetParent(transform);
+                blocks.Add(new Vector3Int(x, y, z), blockWHealth);
+            }
         }
         else
         {
@@ -184,14 +237,14 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                         {
                             Vector3Int pos = new Vector3Int(x, y, z);
 
-                            InstantiateBlock(x, y, z, BlockHealth);
+                            InstantiateBlockFromBool(x, y, z, false);
                             mapState[pos.x, pos.y, pos.z] = BlockHealth;
                         }
                     }
                     else
                     {
                         Vector3Int pos = new Vector3Int(x, y, z);
-                        InstantiateBlock(x, y, z, BlockHealth);
+                        InstantiateBlockFromBool(x, y, z, false);
                         mapState[pos.x, pos.y, pos.z] = BlockHealth;
                     }
                 }
@@ -214,7 +267,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         int clumpSizeZ = Random.Range(minclumpSize, maxclumpSize);
         int clumpZ = Random.Range(WallThickness, MapSizeXZ - WallThickness - clumpSizeZ);
         int clumpSizeY = Random.Range(minclumpSize, maxclumpSize);
-        int clumpY = Random.Range(GroundHeight, MapSizeY - 1 - clumpSizeY);
+        int clumpY = Random.Range(GroundHeight, MapSizeY - ClumpsLowerThanWalls - 1 - clumpSizeY);
 
         for (int y = clumpY; y < clumpY + clumpSizeY; y++)
         {
@@ -223,8 +276,8 @@ public class MapGenerator : MonoBehaviourPunCallbacks
                 for (int z = clumpZ; z < clumpZ + clumpSizeZ; z++)
                 {
                     Vector3Int pos = new Vector3Int(x, y, z);
-                    InstantiateBlock(x, y, z, BlockHealth);
-                    mapState[pos.x, pos.y, pos.z] = BlockHealth;
+                    InstantiateBlockFromBool(x, y, z, true);
+                    mapState[pos.x, pos.y, pos.z] = BlockHealthClump;
                 }
             }
         }
@@ -241,7 +294,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             {
                 for (int z = 0; z < mapState.GetUpperBound(2); z++)
                 {
-                    if (mapState[x, y, z] > BlockHealth)
+                    if (mapState[x, y, z] > BlockHealthClump)
                     {
                         mapState[x, y, z] = 0;
                     }
@@ -323,31 +376,37 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     [PunRPC]
     void DamageBlockRPC(Vector3 pos, int damage)
     {
-        Transform blockT = null;
+        // Transform blockT = null;
 
-        // Find the block at the given position
-        foreach (Transform child in blockHolder)
+        Vector3Int vector3Int = Vector3Int.RoundToInt(pos);
+        if (blocks.TryGetValue(vector3Int, out BlockWithHealth foundBlock))
         {
-            if (child.position == pos)
-            {
-                blockT = child;
-                break;
-            }
+
         }
+        // // Find the block at the given position
+        // foreach (Transform child in blockHolder)
+        // {
+        //     if (child.position == pos)
+        //     {
+        //         blockT = child;
+        //         break;
+        //     }
+        // }
 
-        if (blockT != null)
+        if (foundBlock != null)
         {
-            BlockWithHealth block = blockT.gameObject.GetComponent<BlockWithHealth>();
+            // BlockWithHealth block = blockT.gameObject.GetComponent<BlockWithHealth>();
             Vector3 intPos = Vector3Int.FloorToInt(pos);
 
-            if (block.TakeDamageAndCheckIfDead(damage))
+            if (foundBlock.TakeDamageAndCheckIfDead(damage))
             {
-                Destroy(block.gameObject);
+                blocks.Remove(vector3Int);
+                Destroy(foundBlock.gameObject);
                 MapGenerator.instance.EditMapState(intPos, 0);
             }
             else
             {
-                MapGenerator.instance.EditMapState(intPos, block.GetCurrentHealth());
+                MapGenerator.instance.EditMapState(intPos, foundBlock.GetCurrentHealth());
             }
         }
     }
