@@ -99,39 +99,6 @@ namespace DefaultNamespace
             BombManager.instance.DestroyBomb(view.ViewID);
         }
 
-        public IEnumerator ExplosionAtPoint(Vector3 explosionPoint)
-        {
-            // Perform an explosion effect at the specified point
-            //TriggerExplosionEffect(explosionPoint);
-
-            // OverlapSphere to find colliders within the explosion radius
-            Collider[] playerColliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
-            foreach (var playerCollider in playerColliders)
-            {
-                if (playerCollider.CompareTag("Player"))
-                {
-                    Debug.Log("Pushing Player with id" + playerCollider.GetComponent<PhotonView>().ViewID);
-                    BombManager.instance.PushTarget(playerCollider.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
-                }
-            }
-
-            Collider[] blockColliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
-            foreach (var blockCollider in blockColliders)
-            {
-                if (blockCollider.CompareTag("Block"))
-                {
-                    float distance = Vector3.Distance(explosionPoint, blockCollider.transform.position);
-                    int calculatedDamage = CalculateDamage(distance);
-
-                    MapGenerator.instance.DamageBlock(blockCollider.transform.position, calculatedDamage);
-                    MapGenerator.instance.SetRoomDirty();
-                }
-            }
-
-            // Return control to the caller
-            yield return null;
-        }
-
         private int CalculateDamage(float distance)
         {
             int damage = Mathf.CeilToInt(Mathf.Lerp(maxDamage, minDamage, distance));

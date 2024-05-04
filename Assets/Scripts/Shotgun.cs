@@ -9,12 +9,16 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private Transform shotgunBulletExit;
     [SerializeField] private float shotgunRange;
 
+
     [SerializeField] private Animator shotgunAnimator;
 
     [SerializeField] private ExplosionManager explosionManager;
 
     private float shotgunCountdown = 1f;
-    private bool canShootShotgun = true;
+
+    public float ShotgunDirectionSpeed = 70f;
+    public float ShotgunForce =  400f;
+    public bool canShootShotgun = true;
 
     private void Awake()
     {
@@ -26,12 +30,18 @@ public class Shotgun : MonoBehaviour
         if (canShootShotgun)
         {
             RaycastHit hit;
-            Debug.DrawRay(shotgunBulletExit.transform.position, shotgunBulletExit.transform.forward * shotgunRange, Color.red, 1);
-            if (Physics.Raycast(shotgunBulletExit.transform.position, shotgunBulletExit.transform.forward, out hit, shotgunRange))
+            Vector3 rayDirection = shotgunBulletExit.transform.forward;
+
+            // Calculate the adjusted origin of the ray (closer to the shotgun exit)
+            Vector3 adjustedOrigin = shotgunBulletExit.transform.position + rayDirection * 0.1f; // Move 0.1 units along the forward direction
+
+            Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.red, 3);
+
+            if (Physics.Raycast(adjustedOrigin, rayDirection, out hit, shotgunRange))
             {
-                Debug.DrawRay(shotgunBulletExit.transform.position, shotgunBulletExit.transform.forward * shotgunRange, Color.green, 1);
-                StartCoroutine(explosionManager.ExplosionAtPoint(hit.transform.position));
-                //Debug.Log("Hit " + hit.collider.gameObject.name);
+                Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.green, 3);
+                explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point);
+                StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
             }
 
             canShootShotgun = false;
@@ -46,4 +56,6 @@ public class Shotgun : MonoBehaviour
         canShootShotgun = true;
         shotgunAnimator.ResetTrigger("shot");
     }
+
+
 }

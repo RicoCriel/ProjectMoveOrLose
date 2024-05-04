@@ -343,19 +343,13 @@ MonoBehaviour:
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 6700377822086425601}
   canShootCanon: 0
-  canShootShotgun: 1
   CanonCountDown: 1
-  ShotgunCountDown: 1
   canonAnimator: {fileID: 1722350878608328595}
-  shotgunAnimator: {fileID: 1862779835884359592}
   robotAnimator: {fileID: 3193989062738779340}
-  ShotgunForce: 800
-  ShotgunBullet: {fileID: 6701560607116327262, guid: 04bd869058a01f84593e886abbd9553d, type: 3}
-  ShotgunBulletExit: {fileID: 668906700169332713}
-  ShotgunBulletSpeed: 80
   RocketBulletSpeed: 25
   _robotMesh: {fileID: 4876374231691440632}
   shotGun: {fileID: 4559968274623016354}
+  explosionManager: {fileID: 8644131685037422978}
 --- !u!114 &6749649928363499948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,6 +565,9 @@ MonoBehaviour:
   shotgunRange: 5
   shotgunAnimator: {fileID: 1862779835884359592}
   explosionManager: {fileID: 0}
+  ShotgunDirectionSpeed: 70
+  ShotgunForce: 600
+  canShootShotgun: 1
 --- !u!114 &8644131685037422978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,6 +585,8 @@ MonoBehaviour:
   explosionForce: 10
   minDamage: 1
   maxDamage: 10
+  explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
+  view: {fileID: 7881110051033235570}
 --- !u!1001 &5083879354296482306
 PrefabInstance:
   m_ObjectHideFlags: 0
