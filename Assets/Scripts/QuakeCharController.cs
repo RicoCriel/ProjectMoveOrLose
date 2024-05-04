@@ -71,17 +71,24 @@ public class QuakeCharController : MonoBehaviour
     //Gun and bullets
     public int playerId;
     [SerializeField] private GameObject rocketLauncher;
-    [SerializeField] private GameObject rocketProjectile;
-    [SerializeField] private GameObject rocketExit;
+    [SerializeField] private GameObject rocketBullet;
+    [SerializeField] private GameObject rocketBulletExit;
     private Vector3 impact;
     public bool canShootCanon;
+    public bool canShootShotgun = true;
 
     public float CanonCountDown = 1f;
+    public float ShotgunCountDown = 1f;
 
     [SerializeField] private Animator canonAnimator;
+    [SerializeField] private Animator shotgunAnimator;
     [SerializeField] private Animator robotAnimator;
 
-    public float RocketProjectileSpeed = 40f;
+    [SerializeField] private float ShotgunForce = 400f;
+    [SerializeField] private GameObject ShotgunBullet;
+    [SerializeField] private GameObject ShotgunBulletExit;
+    public float ShotgunBulletSpeed = 70f;
+    public float RocketBulletSpeed = 40f;
 
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
     private RobotState robotState = RobotState.Idle;
@@ -175,6 +182,8 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.z);
 
             HandleShootingInput();
+            //UpdateRobotState();
+            //UpdateAnimations();
         }
     }
 
@@ -257,12 +266,12 @@ public class QuakeCharController : MonoBehaviour
     {
         if (canShootCanon)
         {
-            GameObject bullet = PhotonNetwork.Instantiate(rocketProjectile.name, rocketExit.transform.position, rocketExit.transform.rotation);
+            GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
             bullet.GetComponent<Rocket>().player = this.gameObject;
             
-            rbBullet.velocity =  playerView.transform.forward * RocketProjectileSpeed;
+            rbBullet.velocity =  playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;

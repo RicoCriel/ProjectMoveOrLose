@@ -340,8 +340,8 @@ MonoBehaviour:
   holdJumpToBhop: 0
   playerId: 0
   rocketLauncher: {fileID: 7725816319743380222}
-  rocketProjectile: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
-  rocketExit: {fileID: 0}
+  rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
+  rocketBulletExit: {fileID: 6700377822086425601}
   canShootCanon: 0
   canShootShotgun: 1
   CanonCountDown: 1
@@ -570,6 +570,7 @@ MonoBehaviour:
   shotgunBulletExit: {fileID: 419822868530360893}
   shotgunRange: 5
   shotgunAnimator: {fileID: 1862779835884359592}
+  explosionManager: {fileID: 0}
 --- !u!114 &8644131685037422978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,8 +588,6 @@ MonoBehaviour:
   explosionForce: 10
   minDamage: 1
   maxDamage: 10
-  view: {fileID: 7881110051033235570}
-  explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
 --- !u!1001 &5083879354296482306
 PrefabInstance:
   m_ObjectHideFlags: 0
