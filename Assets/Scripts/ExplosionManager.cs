@@ -6,12 +6,18 @@ using DefaultNamespace;
 
 public class ExplosionManager : MonoBehaviour
 {
+    //put all logic related to explosionsforces here.
     [SerializeField] private float explosionRadius;
     [SerializeField] private float radiusDestroyMultiplier = 1.5f;
     [SerializeField] private float explosionForce = 10f;
 
     [SerializeField] private int minDamage = 1;
     [SerializeField] private int maxDamage = 10;
+
+    public PhotonView view;
+
+    [Header("refs")]
+    public GameObject explosionEffect;
 
     public IEnumerator ExplosionAtPoint(Vector3 explosionPoint)
     {
@@ -48,4 +54,12 @@ public class ExplosionManager : MonoBehaviour
         int damage = Mathf.CeilToInt(Mathf.Lerp(maxDamage, minDamage, distance));
         return damage;
     }
+
+    [PunRPC]
+    void triggerEffectRPC(Vector3 pos)
+    {
+        GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
+        Destroy(effect, 2f);
+    }
+
 }

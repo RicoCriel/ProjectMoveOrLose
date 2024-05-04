@@ -148,7 +148,7 @@ namespace DefaultNamespace
 
 
         [PunRPC]
-        void triggerEffectRPC(Vector3 pos)
+        public void triggerEffectRPC(Vector3 pos)
         {
             GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
             Destroy(effect, 2f);
