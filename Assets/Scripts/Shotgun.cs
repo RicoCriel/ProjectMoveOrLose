@@ -8,12 +8,9 @@ public class Shotgun : MonoBehaviour
 {
     [SerializeField] private Transform shotgunBulletExit;
     [SerializeField] private float shotgunRange;
-
-
     [SerializeField] private Animator shotgunAnimator;
 
-    [SerializeField] private ExplosionManager explosionManager;
-
+    private ExplosionManager explosionManager;
     private float shotgunCountdown = 1f;
 
     public float ShotgunDirectionSpeed = 70f;

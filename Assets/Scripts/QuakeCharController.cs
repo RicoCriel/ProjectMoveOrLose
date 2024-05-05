@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using DefaultNamespace;
 using UnityEngine;
 using Photon.Pun;
+using UnityEditor.Rendering;
 using Unity.VisualScripting;
 using System;
 
@@ -19,12 +18,9 @@ enum RobotState
     Idle,
     Running,
     Jumping,
-    StartJump,
-    Midair,
-    Land,
 }
 
-public class QuakeCharController : MonoBehaviour
+public class QuakeCharController : MonoBehaviour 
 {
     public Transform playerView; // Camera
     public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
@@ -47,7 +43,7 @@ public class QuakeCharController : MonoBehaviour
     public float jumpSpeed = 8.0f; // The speed at which the character's up axis gains when hitting jump
     public bool holdJumpToBhop = false; // When enabled allows player to just hold jump button to keep on bhopping perfectly. 
 
-    private CharacterController _controller;
+    private CharacterController controller;
 
     // Camera rotations
     private float rotX = 0.0f;
@@ -64,56 +60,48 @@ public class QuakeCharController : MonoBehaviour
     private float playerFriction = 0.0f;
 
     // Player commands, stores wish commands that the player asks for (Forward, back, jump, etc)
-    private Cmd _cmd;
+    private Cmd cmd;
 
     private PhotonView _photonView;
 
-    //Gun and bullets
+    // Bullets
     public int playerId;
     [SerializeField] private GameObject rocketLauncher;
     [SerializeField] private GameObject rocketBullet;
     [SerializeField] private GameObject rocketBulletExit;
     private Vector3 impact;
     
-    public bool canShootCanon;
-    public float CanonCountDown = 1f;
-
-    [SerializeField] private Animator canonAnimator;
     [SerializeField] private Animator robotAnimator;
 
     public float RocketBulletSpeed = 40f;
 
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
     private RobotState robotState = RobotState.Idle;
-    private bool isGroundedPreviously;
+    private string previousStateTrigger = "";
 
     [SerializeField] private Shotgun shotGun;
+    [SerializeField] private Canon canon;
     [SerializeField] private ExplosionManager explosionManager;
+
 
     private void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        canShootCanon = true;
-        
+
         if (playerView == null)
         {
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
                 playerView = mainCamera.gameObject.transform;
         }
+        
+        PlaceCameraInCollider();
 
-        // Put the camera inside the capsule collider
-        playerView.position = new Vector3(
-            transform.position.x,
-            transform.position.y + playerViewYOffset,
-            transform.position.z);
-        rocketLauncher.transform.position = playerView.position;
-
-        _controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
         _photonView = GetComponent<PhotonView>();
-        
-        
+        robotState = RobotState.Idle;
+
         if (_photonView.IsMine)
         {
             _robotMesh.enabled = false;
@@ -124,34 +112,14 @@ public class QuakeCharController : MonoBehaviour
     {
         if (_photonView.IsMine)
         {
-            isGroundedPreviously = _controller.isGrounded;
-
-            /* Ensure that the cursor is locked into the screen */
-            if (Cursor.lockState != CursorLockMode.Locked)
-            {
-                if (Input.GetButtonDown("Fire1"))
-                    Cursor.lockState = CursorLockMode.Locked;
-            }
-
-            /* Camera rotation stuff, mouse controls this shit */
-            rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity * 0.02f;
-            rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * 0.02f;
-
-            // Clamp the X rotation
-            if (rotX < -90)
-                rotX = -90;
-            else if (rotX > 90)
-                rotX = 90;
-
-            this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
-            playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
-            rocketLauncher.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
+            LockCursor();
+            CameraAndWeaponRotation();
 
             //Movement
             QueueJump();
-            if (_controller.isGrounded)
+            if (controller.isGrounded)
                 GroundMove();
-            else if (!_controller.isGrounded)
+            else if (!controller.isGrounded)
                 AirMove();
 
             explosionManager.AddExplosionForce(ref impact, ref playerVelocity);
@@ -160,7 +128,7 @@ public class QuakeCharController : MonoBehaviour
                 playerVelocity = playerVelocity.normalized * 20f;
             }
             // Move the controller
-            _controller.Move(playerVelocity * Time.deltaTime);
+            controller.Move(playerVelocity * Time.deltaTime);
 
             /* Calculate top velocity */
             Vector3 udp = playerVelocity;
@@ -176,6 +144,90 @@ public class QuakeCharController : MonoBehaviour
                 transform.position.z);
 
             HandleShootingInput();
+            UpdateStates();
+            UpdateAnimation();
+            Debug.Log(robotState);
+        }
+    }
+
+    private void PlaceCameraInCollider()
+    {
+        // Put the camera inside the capsule collider
+        playerView.position = new Vector3(
+                    transform.position.x,
+                    transform.position.y + playerViewYOffset,
+                    transform.position.z);
+        rocketLauncher.transform.position = playerView.position;
+    }
+
+    private void CameraAndWeaponRotation()
+    {
+        /* Camera rotation stuff, mouse controls this shit */
+        rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity * 0.02f;
+        rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * 0.02f;
+
+        // Clamp the X rotation
+        if (rotX < -90)
+            rotX = -90;
+        else if (rotX > 90)
+            rotX = 90;
+
+        this.transform.rotation = Quaternion.Euler(0, rotY, 0); // Rotates the collider
+        playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
+        rocketLauncher.transform.rotation = Quaternion.Euler(rotX, rotY, 0);
+    }
+
+    private static void LockCursor()
+    {
+        if (Cursor.lockState != CursorLockMode.Locked)
+        {
+            if (Input.GetButtonDown("Fire1"))
+                Cursor.lockState = CursorLockMode.Locked;
+        }
+    }
+
+    private Dictionary<RobotState, string> stateToAnimationTrigger = new Dictionary<RobotState, string>()
+    {
+        { RobotState.Idle, "Idle" },
+        { RobotState.Running, "Running" },
+        { RobotState.Jumping, "Jumping" },
+    };
+
+    private void UpdateAnimation()
+    {
+        string nextStateTrigger = stateToAnimationTrigger[robotState];
+
+        if (!string.IsNullOrEmpty(previousStateTrigger))
+        {
+            robotAnimator.ResetTrigger(previousStateTrigger);
+        }
+
+        robotAnimator.SetTrigger(nextStateTrigger);
+        previousStateTrigger = nextStateTrigger;
+    }
+
+    private void UpdateStates()
+    {
+        bool isMoving = cmd.rightMove != 0 || cmd.forwardMove != 0;
+        bool isGrounded = controller.isGrounded;
+        bool isJumping = playerVelocity.y > 1f;
+
+        Dictionary<Func<bool>, RobotState> stateMappings = new Dictionary<Func<bool>, RobotState>()
+        {
+            { () => isGrounded && isMoving, RobotState.Running },
+            { () => isGrounded && !isMoving, RobotState.Idle },
+            { () => isMoving && wishJump, RobotState.Jumping },
+            { () => isMoving && !isGrounded, RobotState.Jumping },
+            { () => isJumping, RobotState.Jumping }
+        };
+
+        foreach (var state in stateMappings)
+        {
+            if (state.Key())
+            {
+                robotState = state.Value;
+                return;
+            }
         }
     }
 
@@ -183,7 +235,7 @@ public class QuakeCharController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire2"))
         {
-            PrimaryShoot();
+            canon.Shoot(ref playerView, this.gameObject);
         }
         if (Input.GetButtonDown("Fire1"))
         {
@@ -194,30 +246,6 @@ public class QuakeCharController : MonoBehaviour
             }
             shotGun.Shoot();
         }
-    }
-
-    private void PrimaryShoot()
-    {
-        if (canShootCanon)
-        {
-            GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
-            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            bullet.GetComponent<Rocket>().player = this.gameObject;
-            
-            rbBullet.velocity =  playerView.transform.forward * RocketBulletSpeed;
-            canonAnimator.SetTrigger("Shot");
-
-            canShootCanon = false;
-            StartCoroutine(CanonCooldown(CanonCountDown));
-        }
-    }
-
-    IEnumerator CanonCooldown(float cd)
-    {
-        yield return new WaitForSeconds(cd);
-        canShootCanon = true;
-        canonAnimator.ResetTrigger("Shot");
     }
 
     public void AddImpact(Vector3 explosionOrigin, float force)
@@ -247,8 +275,8 @@ public class QuakeCharController : MonoBehaviour
      */
     private void SetMovementDir()
     {
-        _cmd.forwardMove = Input.GetAxisRaw("Vertical");
-        _cmd.rightMove = Input.GetAxisRaw("Horizontal");
+        cmd.forwardMove = Input.GetAxisRaw("Vertical");
+        cmd.rightMove = Input.GetAxisRaw("Horizontal");
     }
 
     /**
@@ -279,7 +307,7 @@ public class QuakeCharController : MonoBehaviour
 
         SetMovementDir();
 
-        wishdir = new Vector3(_cmd.rightMove, 0, _cmd.forwardMove);
+        wishdir = new Vector3(cmd.rightMove, 0, cmd.forwardMove);
         wishdir = transform.TransformDirection(wishdir);
 
         float wishspeed = wishdir.magnitude;
@@ -295,7 +323,7 @@ public class QuakeCharController : MonoBehaviour
         else
             accel = airAcceleration;
         // If the player is ONLY strafing left or right
-        if (_cmd.forwardMove == 0 && _cmd.rightMove != 0)
+        if (cmd.forwardMove == 0 && cmd.rightMove != 0)
         {
             if (wishspeed > sideStrafeSpeed)
                 wishspeed = sideStrafeSpeed;
@@ -323,7 +351,7 @@ public class QuakeCharController : MonoBehaviour
         float k;
 
         // Can't control movement if not moving forward or backward
-        if (Mathf.Abs(_cmd.forwardMove) < 0.001 || Mathf.Abs(wishspeed) < 0.001)
+        if (Mathf.Abs(cmd.forwardMove) < 0.001 || Mathf.Abs(wishspeed) < 0.001)
             return;
         zspeed = playerVelocity.y;
         playerVelocity.y = 0;
@@ -356,17 +384,15 @@ public class QuakeCharController : MonoBehaviour
      */
     private void GroundMove()
     {
-        Vector3 wishdir;
-
-        // Do not apply friction if the player is queueing up the next jump
+        //// Do not apply friction if the player is queueing up the next jump
         if (!wishJump)
             ApplyFriction(0.5f);
         else
             ApplyFriction(0);
 
         SetMovementDir();
-
-        wishdir = new Vector3(_cmd.rightMove, 0, _cmd.forwardMove);
+        Vector3 wishdir;
+        wishdir = new Vector3(cmd.rightMove, 0, cmd.forwardMove);
         wishdir = transform.TransformDirection(wishdir);
         wishdir.Normalize();
         moveDirectionNorm = wishdir;
@@ -391,7 +417,7 @@ public class QuakeCharController : MonoBehaviour
      */
     private void ApplyFriction(float t)
     {
-        Vector3 vec = playerVelocity; // Equivalent to: VectorCopy();
+        Vector3 vec = playerVelocity; 
         float speed;
         float newspeed;
         float control;
@@ -402,7 +428,7 @@ public class QuakeCharController : MonoBehaviour
         drop = 0.0f;
 
         /* Only if the player is on the ground then apply friction */
-        if (_controller.isGrounded)
+        if (controller.isGrounded)
         {
             control = speed < runDeacceleration ? runDeacceleration : speed;
             drop = control * friction * Time.deltaTime * t;

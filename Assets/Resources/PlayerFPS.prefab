@@ -41,8 +41,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7863420854968597748}
   - component: {fileID: 5051754997709792862}
+  - component: {fileID: 7715378542040418355}
+  - component: {fileID: 8914031574426974868}
+  - component: {fileID: 4809132599440365183}
   m_Layer: 2
-  m_Name: Gun
+  m_Name: Canon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,6 +84,66 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &7715378542040418355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777146242493358252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d56b8f0e603818e439b24b937833c6fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
+  rocketBulletExit: {fileID: 2468296727248080561}
+  RocketBulletSpeed: 40
+  CanonCountDown: 2
+  canonAnimator: {fileID: 1722350878608328595}
+--- !u!114 &8914031574426974868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777146242493358252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 619778cbbc310604d894d9b5512af046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 0
+  radiusDestroyMultiplier: 1.5
+  explosionForce: 10
+  minDamage: 1
+  maxDamage: 10
+  explosionEffect: {fileID: 0}
+  view: {fileID: 0}
+--- !u!114 &4809132599440365183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777146242493358252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 5051754997709792862}
+  - {fileID: 4950641727381608287}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2202209427722469975
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,19 +399,17 @@ MonoBehaviour:
   airControl: 0.6
   sideStrafeAcceleration: 5
   sideStrafeSpeed: 1
-  jumpSpeed: 8
+  jumpSpeed: 10
   holdJumpToBhop: 0
   playerId: 0
   rocketLauncher: {fileID: 7725816319743380222}
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 6700377822086425601}
-  canShootCanon: 0
-  CanonCountDown: 1
-  canonAnimator: {fileID: 1722350878608328595}
   robotAnimator: {fileID: 3193989062738779340}
   RocketBulletSpeed: 25
   _robotMesh: {fileID: 4876374231691440632}
   shotGun: {fileID: 4559968274623016354}
+  canon: {fileID: 7715378542040418355}
   explosionManager: {fileID: 8644131685037422978}
 --- !u!114 &6749649928363499948
 MonoBehaviour:
@@ -371,8 +432,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 5396954892230958291}
   - {fileID: 2213034959450421593}
-  - {fileID: 5051754997709792862}
-  - {fileID: 4950641727381608287}
+  - {fileID: 2272548508438617720}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -502,6 +562,7 @@ GameObject:
   - component: {fileID: 7881110051033235570}
   - component: {fileID: 4559968274623016354}
   - component: {fileID: 8644131685037422978}
+  - component: {fileID: 3227406574621565177}
   m_Layer: 2
   m_Name: Shotgun
   m_TagString: Untagged
@@ -545,6 +606,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 3227406574621565177}
   - {fileID: 6257152008147478107}
   sceneViewId: 0
   InstantiationId: 0
@@ -564,7 +626,6 @@ MonoBehaviour:
   shotgunBulletExit: {fileID: 419822868530360893}
   shotgunRange: 5
   shotgunAnimator: {fileID: 1862779835884359592}
-  explosionManager: {fileID: 0}
   ShotgunDirectionSpeed: 70
   ShotgunForce: 600
   canShootShotgun: 1
@@ -587,6 +648,22 @@ MonoBehaviour:
   maxDamage: 10
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
   view: {fileID: 7881110051033235570}
+--- !u!114 &3227406574621565177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8101660491239938458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &5083879354296482306
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -868,7 +945,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1483315770493226234, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2272548508438617720}
   m_SourcePrefab: {fileID: 100100000, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
 --- !u!95 &3193989062738779340 stripped
 Animator:
@@ -885,3 +965,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 914081518775163847, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
   m_PrefabInstance: {fileID: 7308607226580652278}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8212499022104665100 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1483315770493226234, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+  m_PrefabInstance: {fileID: 7308607226580652278}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2272548508438617720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8212499022104665100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 1
+    Name: Running
+  - Type: 9
+    SynchronizeType: 1
+    Name: Jumping
+  - Type: 9
+    SynchronizeType: 1
+    Name: Idle
+  - Type: 3
+    SynchronizeType: 0
+    Name: New Int
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
