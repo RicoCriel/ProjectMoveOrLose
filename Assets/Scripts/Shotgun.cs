@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using DefaultNamespace;
+using Photon.Realtime;
 
 public class Shotgun : MonoBehaviour
 {
@@ -39,6 +40,11 @@ public class Shotgun : MonoBehaviour
                 Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.green, 3);
                 explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point);
                 StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
+                if(hit.transform.gameObject.GetComponent<PhotonView>() != null)
+                {
+                    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
+                    ShotgunForce, transform.position, explosionManager.explosionRadius);
+                }
             }
 
             canShootShotgun = false;

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 419822868530360893}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 7715378542040418355}
   - component: {fileID: 8914031574426974868}
   - component: {fileID: 4809132599440365183}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Canon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,8 +99,13 @@ MonoBehaviour:
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 2468296727248080561}
   RocketBulletSpeed: 40
-  CanonCountDown: 2
+  CanonCountDown: 1
   canonAnimator: {fileID: 1722350878608328595}
+  CanonDirectionSpeed: 100
+  CanonForce: 800
+  canShootCanon: 1
+  IsCanonShooting: 0
+  rocketJumpForce: 5
 --- !u!114 &8914031574426974868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,7 +328,9 @@ GameObject:
   - component: {fileID: 6646051402071859025}
   - component: {fileID: 6749649928363499948}
   - component: {fileID: 5396954892230958291}
-  m_Layer: 2
+  - component: {fileID: 4901522653708431876}
+  - component: {fileID: 5215291536814866324}
+  m_Layer: 0
   m_Name: PlayerFPS
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -430,6 +437,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 6646051402071859025}
   - {fileID: 5396954892230958291}
   - {fileID: 2213034959450421593}
   - {fileID: 2272548508438617720}
@@ -469,6 +477,56 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
+--- !u!136 &4901522653708431876
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6678742899389751404}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1.92
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &5215291536814866324
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6678742899389751404}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &6700377822086425601
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,7 +536,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2468296727248080561}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -510,7 +568,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7008548823508932867}
   - component: {fileID: 2213034959450421593}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: CameraPos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -563,7 +621,7 @@ GameObject:
   - component: {fileID: 4559968274623016354}
   - component: {fileID: 8644131685037422978}
   - component: {fileID: 3227406574621565177}
-  m_Layer: 2
+  m_Layer: 0
   m_Name: Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -624,10 +682,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shotgunBulletExit: {fileID: 419822868530360893}
-  shotgunRange: 5
+  shotgunRange: 6
   shotgunAnimator: {fileID: 1862779835884359592}
   ShotgunDirectionSpeed: 70
-  ShotgunForce: 600
+  ShotgunForce: 400
   canShootShotgun: 1
 --- !u!114 &8644131685037422978
 MonoBehaviour:
@@ -643,7 +701,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionRadius: 1
   radiusDestroyMultiplier: 1.5
-  explosionForce: 10
+  explosionForce: 10000
   minDamage: 1
   maxDamage: 10
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
@@ -714,7 +772,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -6487994197024019727, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Name
@@ -722,15 +780,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2404758737116867117, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5528860797864257434, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Controller
@@ -738,7 +796,7 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 4eeaa15adc49ff84c92fe552a23f40aa, type: 2}
     - target: {fileID: 7036213049465896255, guid: 9fa83dd05c3663f4d9b40c1c797b447c, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -835,14 +893,46 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7282414065581637647, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -2932737294204214082, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -1706733050187361961, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
       propertyPath: m_Name
       value: ShotgunRigged
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5528860797864257434, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5637722115590020899, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 6eb810de63dd0c645a912154efaf866f, type: 2}
+    - target: {fileID: 7036213049465896255, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8047465163179215362, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -898,6 +988,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4590763266440689313}
     m_Modifications:
+    - target: {fileID: 259154260958541951, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 914081518775163847, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -938,9 +1032,89 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1274656715266932311, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1483315770493226234, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1631435216644857962, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2185956441871729401, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3116552295244169235, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3638230099220597709, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3658437513841635077, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027689316567795171, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4287488525416763137, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5466445595551507337, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5667081485271182450, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5726979228969859035, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5961491037614927860, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6289274854029788023, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7022278175238311848, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7600009209975612161, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8406157271843982624, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8576579923186697798, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
       propertyPath: m_Name
       value: RobotRig
+      objectReference: {fileID: 0}
+    - target: {fileID: 8576579923186697798, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8882457162924054456, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9031488787647276566, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

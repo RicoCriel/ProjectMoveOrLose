@@ -478,7 +478,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     // Edit map state for a given position
     private void EditMapState(Vector3 position, int state)
     {
-        Debug.Log(position);
+        //Debug.Log(position);
         view.RPC("EditMapStateRPC", RpcTarget.MasterClient, position, state);
     }
 

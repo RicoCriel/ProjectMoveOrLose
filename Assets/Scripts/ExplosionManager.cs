@@ -6,8 +6,8 @@ using DefaultNamespace;
 
 public class ExplosionManager : MonoBehaviour
 {
-    [SerializeField] private float explosionRadius;
-    [SerializeField] private float radiusDestroyMultiplier = 1.5f;
+    [SerializeField] public float explosionRadius;
+    [SerializeField] public float radiusDestroyMultiplier = 1.5f;
     [SerializeField] private float explosionForce = 10f;
 
     [SerializeField] private int minDamage = 1;
@@ -16,24 +16,18 @@ public class ExplosionManager : MonoBehaviour
     [SerializeField] GameObject explosionEffect;
     public PhotonView view;
 
+    private Vector3 collisionPoint;
+    private bool collHappened;
+
     public IEnumerator ExplosionAtPoint(Vector3 explosionPoint)
     {
-        // OverlapSphere to find colliders within the explosion radius
-        Collider[] playerColliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
-        foreach (var playerCollider in playerColliders)
-        {
-            if (playerCollider.CompareTag("Player"))
-            {
-                Debug.Log("Pushing Player with id" + playerCollider.GetComponent<PhotonView>().ViewID);
-                BombManager.instance.PushTarget(playerCollider.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
-            }
-        }
-
-        Collider[] blockColliders = Physics.OverlapSphere(explosionPoint, explosionRadius /** radiusDestroyMultiplier*/);
+        Collider[] blockColliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
         foreach (var blockCollider in blockColliders)
         {
             if (blockCollider.CompareTag("Block"))
             {
+                Debug.Log("Hit block");
+
                 float distance = Vector3.Distance(explosionPoint, blockCollider.transform.position);
                 int calculatedDamage = CalculateDamage(distance);
 
@@ -42,7 +36,6 @@ public class ExplosionManager : MonoBehaviour
             }
         }
 
-        // Return control to the caller
         yield return null;
     }
 
@@ -91,4 +84,5 @@ public class ExplosionManager : MonoBehaviour
         GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
         Destroy(effect, 2f);
     }
+
 }

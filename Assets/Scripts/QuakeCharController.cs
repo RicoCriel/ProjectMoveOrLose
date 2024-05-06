@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
 using Photon.Pun;
-using UnityEditor.Rendering;
-using Unity.VisualScripting;
 using System;
 
 struct Cmd
@@ -20,7 +18,7 @@ enum RobotState
     Jumping,
 }
 
-public class QuakeCharController : MonoBehaviour 
+public class QuakeCharController : MonoBehaviour, IPunObservable
 {
     public Transform playerView; // Camera
     public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
@@ -78,6 +76,7 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
     private RobotState robotState = RobotState.Idle;
     private string previousStateTrigger = "";
+    private string nextStateTrigger;
 
     [SerializeField] private Shotgun shotGun;
     [SerializeField] private Canon canon;
@@ -115,7 +114,6 @@ public class QuakeCharController : MonoBehaviour
             LockCursor();
             CameraAndWeaponRotation();
 
-            //Movement
             QueueJump();
             if (controller.isGrounded)
                 GroundMove();
@@ -127,7 +125,7 @@ public class QuakeCharController : MonoBehaviour
             {
                 playerVelocity = playerVelocity.normalized * 20f;
             }
-            // Move the controller
+            
             controller.Move(playerVelocity * Time.deltaTime);
 
             /* Calculate top velocity */
@@ -146,7 +144,7 @@ public class QuakeCharController : MonoBehaviour
             HandleShootingInput();
             UpdateStates();
             UpdateAnimation();
-            Debug.Log(robotState);
+            //Debug.Log(robotState);
         }
     }
 
@@ -195,7 +193,7 @@ public class QuakeCharController : MonoBehaviour
 
     private void UpdateAnimation()
     {
-        string nextStateTrigger = stateToAnimationTrigger[robotState];
+        nextStateTrigger = stateToAnimationTrigger[robotState];
 
         if (!string.IsNullOrEmpty(previousStateTrigger))
         {
@@ -235,7 +233,13 @@ public class QuakeCharController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire2"))
         {
+            if(canon.canShootCanon)
+            {
+                explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
+                    canon.CanonForce, playerVelocity, ref impact);
+            }
             canon.Shoot(ref playerView, this.gameObject);
+
         }
         if (Input.GetButtonDown("Fire1"))
         {
@@ -270,9 +274,6 @@ public class QuakeCharController : MonoBehaviour
         impact += adjustedImpact;
     }
 
-    /**
-     * Sets the movement direction based on player input
-     */
     private void SetMovementDir()
     {
         cmd.forwardMove = Input.GetAxisRaw("Vertical");
@@ -334,8 +335,15 @@ public class QuakeCharController : MonoBehaviour
         if (airControl > 0)
             AirControl(wishdir, wishspeed2);
 
-        // Apply gravity
-        playerVelocity.y -= gravity * Time.deltaTime;
+        if (!canon.IsCanonShooting && controller.isGrounded)
+        {
+            playerVelocity.y = 0;
+            playerVelocity.y -= gravity * Time.deltaTime;
+        }
+        else
+        {
+            playerVelocity.y -= gravity * Time.deltaTime;
+        }
     }
 
     /**
@@ -379,9 +387,6 @@ public class QuakeCharController : MonoBehaviour
         playerVelocity.z *= speed;
     }
 
-    /**
-     * Called every frame when the engine detects that the player is on the ground
-     */
     private void GroundMove()
     {
         //// Do not apply friction if the player is queueing up the next jump
@@ -411,10 +416,7 @@ public class QuakeCharController : MonoBehaviour
             wishJump = false;
         }
     }
-
-    /**
-     * Applies friction to the player, called in both the air and on the ground
-     */
+    
     private void ApplyFriction(float t)
     {
         Vector3 vec = playerVelocity; 
@@ -461,5 +463,33 @@ public class QuakeCharController : MonoBehaviour
 
         playerVelocity.x += accelspeed * wishdir.x;
         playerVelocity.z += accelspeed * wishdir.z;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if(stream.IsWriting)
+        {
+            stream.SendNext(robotState);
+            stream.SendNext(previousStateTrigger);
+            stream.SendNext(nextStateTrigger);
+
+            string previousTrigger = previousStateTrigger;
+            string nextTrigger = nextStateTrigger;
+
+            stream.Serialize(ref previousTrigger);
+            stream.Serialize(ref nextTrigger);
+        }
+        else
+        {
+            robotState = (RobotState)stream.ReceiveNext();
+            previousStateTrigger = (string)stream.ReceiveNext();
+            nextStateTrigger = (string)stream.ReceiveNext();
+
+            string previousTrigger = previousStateTrigger;
+            string nextTrigger = nextStateTrigger;
+
+            stream.Serialize(ref previousTrigger);
+            stream.Serialize(ref nextTrigger);
+        }
     }
 }
