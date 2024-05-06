@@ -7,7 +7,7 @@ using DefaultNamespace;
 public class ExplosionManager : MonoBehaviour
 {
     [SerializeField] public float explosionRadius;
-    [SerializeField] public float radiusDestroyMultiplier = 1.5f;
+    public float radiusDestroyMultiplier = 1.5f;
     [SerializeField] private float explosionForce = 10f;
 
     [SerializeField] private int minDamage = 1;
@@ -16,9 +16,6 @@ public class ExplosionManager : MonoBehaviour
     [SerializeField] GameObject explosionEffect;
     public PhotonView view;
 
-    private Vector3 collisionPoint;
-    private bool collHappened;
-
     public IEnumerator ExplosionAtPoint(Vector3 explosionPoint)
     {
         Collider[] blockColliders = Physics.OverlapSphere(explosionPoint, explosionRadius);
@@ -26,8 +23,6 @@ public class ExplosionManager : MonoBehaviour
         {
             if (blockCollider.CompareTag("Block"))
             {
-                Debug.Log("Hit block");
-
                 float distance = Vector3.Distance(explosionPoint, blockCollider.transform.position);
                 int calculatedDamage = CalculateDamage(distance);
 

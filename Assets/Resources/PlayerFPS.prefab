@@ -1160,17 +1160,26 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 0
     Name: Running
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 0
     Name: Jumping
   - Type: 9
-    SynchronizeType: 1
+    SynchronizeType: 0
     Name: Idle
   - Type: 3
     SynchronizeType: 0
     Name: New Int
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsRunning
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsJumping
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsIdling
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0

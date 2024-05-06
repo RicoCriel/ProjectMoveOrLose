@@ -18,7 +18,7 @@ enum RobotState
     Jumping,
 }
 
-public class QuakeCharController : MonoBehaviour, IPunObservable
+public class QuakeCharController : MonoBehaviour
 {
     public Transform playerView; // Camera
     public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
@@ -75,8 +75,8 @@ public class QuakeCharController : MonoBehaviour, IPunObservable
 
     [SerializeField] private SkinnedMeshRenderer _robotMesh;
     private RobotState robotState = RobotState.Idle;
-    private string previousStateTrigger = "";
-    private string nextStateTrigger;
+    private string previousState = "";
+    private bool previousStateFlag;
 
     [SerializeField] private Shotgun shotGun;
     [SerializeField] private Canon canon;
@@ -184,24 +184,30 @@ public class QuakeCharController : MonoBehaviour, IPunObservable
         }
     }
 
-    private Dictionary<RobotState, string> stateToAnimationTrigger = new Dictionary<RobotState, string>()
+    private Dictionary<RobotState, string> stateToAnimation = new Dictionary<RobotState, string>()
     {
-        { RobotState.Idle, "Idle" },
-        { RobotState.Running, "Running" },
-        { RobotState.Jumping, "Jumping" },
+        { RobotState.Idle, "IsIdling" },
+        { RobotState.Running, "IsRunning" },
+        { RobotState.Jumping, "IsJumping" },
     };
 
     private void UpdateAnimation()
     {
-        nextStateTrigger = stateToAnimationTrigger[robotState];
+        string nextState = stateToAnimation[robotState];
+        bool nextStateFlag = !string.IsNullOrEmpty(nextState);
 
-        if (!string.IsNullOrEmpty(previousStateTrigger))
+        if (previousStateFlag)
         {
-            robotAnimator.ResetTrigger(previousStateTrigger);
+            robotAnimator.SetBool(previousState, false);
         }
 
-        robotAnimator.SetTrigger(nextStateTrigger);
-        previousStateTrigger = nextStateTrigger;
+        if (nextStateFlag)
+        {
+            robotAnimator.SetBool(nextState, true);
+        }
+
+        previousStateFlag = nextStateFlag;
+        previousState = nextState;
     }
 
     private void UpdateStates()
@@ -465,31 +471,4 @@ public class QuakeCharController : MonoBehaviour, IPunObservable
         playerVelocity.z += accelspeed * wishdir.z;
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if(stream.IsWriting)
-        {
-            stream.SendNext(robotState);
-            stream.SendNext(previousStateTrigger);
-            stream.SendNext(nextStateTrigger);
-
-            string previousTrigger = previousStateTrigger;
-            string nextTrigger = nextStateTrigger;
-
-            stream.Serialize(ref previousTrigger);
-            stream.Serialize(ref nextTrigger);
-        }
-        else
-        {
-            robotState = (RobotState)stream.ReceiveNext();
-            previousStateTrigger = (string)stream.ReceiveNext();
-            nextStateTrigger = (string)stream.ReceiveNext();
-
-            string previousTrigger = previousStateTrigger;
-            string nextTrigger = nextStateTrigger;
-
-            stream.Serialize(ref previousTrigger);
-            stream.Serialize(ref nextTrigger);
-        }
-    }
 }
