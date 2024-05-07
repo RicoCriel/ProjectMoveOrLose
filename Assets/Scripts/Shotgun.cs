@@ -54,7 +54,7 @@ public class Shotgun : MonoBehaviour
                 if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
                 {
                     BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
-                        ShotgunForce, transform.position, explosionManager.explosionRadius);
+                        ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
                 }
 
                 photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
@@ -83,6 +83,7 @@ public class Shotgun : MonoBehaviour
         }
 
         trail.transform.position = endPos;
+        Destroy(trail, trail.time);
     }
 
     IEnumerator ShotgunCooldown(float cd)
