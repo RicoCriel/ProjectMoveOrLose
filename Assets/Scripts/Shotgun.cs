@@ -15,18 +15,18 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private float shotgunSpreadAngle = 10f;
 
     private ExplosionManager explosionManager;
+    private PhotonView photonView;
+
     private float shotgunCountdown = 1f;
 
     public float ShotgunDirectionSpeed = 70f;
     public float ShotgunForce =  400f;
     public bool canShootShotgun = true;
 
-    private PhotonView view;
-
     private void Awake()
     {
         explosionManager = GetComponent<ExplosionManager>();
-        view = GetComponent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
     }
 
     public void Shoot()
@@ -57,13 +57,12 @@ public class Shotgun : MonoBehaviour
                         ShotgunForce, transform.position, explosionManager.explosionRadius);
                 }
 
-                TrailRenderer trail = Instantiate(bulletTrail, adjustedOrigin, Quaternion.identity);
-                StartCoroutine(SpawnTrail(trail, adjustedOrigin, spreadDirection, shotgunRange, hit));
+                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
             }
             else
             {
-                TrailRenderer trail = Instantiate(bulletTrail, adjustedOrigin, Quaternion.identity);
-                StartCoroutine(SpawnTrail(trail, adjustedOrigin, spreadDirection, shotgunRange));
+                Vector3 endPos = adjustedOrigin + spreadDirection * shotgunRange;
+                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, endPos);
             }
         }
 
@@ -72,26 +71,14 @@ public class Shotgun : MonoBehaviour
         shotgunAnimator.SetTrigger("shot");
     }
 
-    private IEnumerator SpawnTrail(TrailRenderer trail, Vector3 startPos, Vector3 direction, float range, RaycastHit? hitInfo = null)
+    private IEnumerator SpawnTrailCoroutine(TrailRenderer trail, Vector3 startPos, Vector3 endPos)
     {
         float time = 0;
 
-        Vector3 endPos;
-
-        if (hitInfo.HasValue)
-        {
-            endPos = hitInfo.Value.point;
-        }
-        else
-        {
-            endPos = startPos + direction * range;
-        }
-
         while (time < trail.time)
         {
-            trail.transform.position = Vector3.Lerp(startPos, endPos, time);
-            time += Time.deltaTime / trail.time;
-
+            trail.transform.position = Vector3.Lerp(startPos, endPos, time / trail.time);
+            time += Time.deltaTime;
             yield return null;
         }
 
@@ -106,11 +93,9 @@ public class Shotgun : MonoBehaviour
     }
 
     [PunRPC]
-    void SpawnTrailRPC(Vector3 pos, Quaternion rot)
+    private void SpawnTrail(Vector3 startPos, Vector3 endPos)
     {
-        TrailRenderer trail = Instantiate(bulletTrail, pos, rot);
-        Destroy(trail, trail.time);
+        TrailRenderer trail = Instantiate(bulletTrail, startPos, Quaternion.identity);
+        StartCoroutine(SpawnTrailCoroutine(trail, startPos, endPos));
     }
-
-
 }
