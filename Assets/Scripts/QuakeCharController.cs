@@ -24,7 +24,7 @@ public class QuakeCharController : MonoBehaviour
     public float playerViewYOffset = 0.8f; // The height at which the camera is bound to
     public float xMouseSensitivity = 30.0f;
     public float yMouseSensitivity = 30.0f;
-    
+
     /*Frame occuring factors*/
     public float gravity = 20.0f;
     public float friction = 6; //Ground friction
@@ -68,7 +68,7 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private GameObject rocketBullet;
     [SerializeField] private GameObject rocketBulletExit;
     private Vector3 impact;
-    
+
     [SerializeField] private Animator robotAnimator;
 
     public float RocketBulletSpeed = 40f;
@@ -94,7 +94,7 @@ public class QuakeCharController : MonoBehaviour
             if (mainCamera != null)
                 playerView = mainCamera.gameObject.transform;
         }
-        
+
         PlaceCameraInCollider();
 
         controller = GetComponent<CharacterController>();
@@ -125,7 +125,7 @@ public class QuakeCharController : MonoBehaviour
             {
                 playerVelocity = playerVelocity.normalized * 20f;
             }
-            
+
             controller.Move(playerVelocity * Time.deltaTime);
 
             /* Calculate top velocity */
@@ -151,9 +151,9 @@ public class QuakeCharController : MonoBehaviour
     {
         // Put the camera inside the capsule collider
         playerView.position = new Vector3(
-                    transform.position.x,
-                    transform.position.y + playerViewYOffset,
-                    transform.position.z);
+            transform.position.x,
+            transform.position.y + playerViewYOffset,
+            transform.position.z);
         rocketLauncher.transform.position = playerView.position;
     }
 
@@ -238,7 +238,7 @@ public class QuakeCharController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire2"))
         {
-            if(canon.canShootCanon)
+            if (canon.canShootCanon)
             {
                 explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
                     canon.CanonForce, playerVelocity, ref impact);
@@ -248,7 +248,7 @@ public class QuakeCharController : MonoBehaviour
         }
         if (Input.GetButtonDown("Fire1"))
         {
-            if(shotGun.canShootShotgun)
+            if (shotGun.canShootShotgun)
             {
                 explosionManager.AddPush(-playerView.transform.forward * shotGun.ShotgunDirectionSpeed,
                     shotGun.ShotgunForce, playerVelocity, ref impact);
@@ -391,6 +391,46 @@ public class QuakeCharController : MonoBehaviour
         playerVelocity.y = zspeed; // Note this line
         playerVelocity.z *= speed;
     }
+    
+    // private void AirControl(Vector3 wishdir, float wishspeed)
+    // {
+    //     float zspeed;
+    //     float speed;
+    //     float dot;
+    //     float k;
+    //
+    //     // Can't control movement if not moving forward or backward
+    //     if (Mathf.Abs(cmd.forwardMove) < 0.001 || Mathf.Abs(wishspeed) < 0.001)
+    //         return;
+    //
+    //     zspeed = playerVelocity.y;
+    //     playerVelocity.y = 0;
+    //
+    //     // Calculate speed and normalize player velocity
+    //     speed = playerVelocity.magnitude;
+    //     playerVelocity.Normalize();
+    //
+    //     // Calculate dot product of player velocity and desired direction
+    //     dot = Vector3.Dot(playerVelocity, wishdir);
+    //
+    //     // Adjust air control based on dot product
+    //     k = 32;
+    //     k *= airControl * dot * Time.deltaTime;
+    //
+    //     // Change direction while maintaining speed
+    //     playerVelocity.x += wishdir.x * k;
+    //     playerVelocity.z += wishdir.z * k;
+    //
+    //     // Normalize player velocity
+    //     playerVelocity.Normalize();
+    //
+    //     // Restore original speed
+    //     playerVelocity.x *= speed;
+    //     playerVelocity.z *= speed;
+    //
+    //     // Restore original vertical speed
+    //     playerVelocity.y = zspeed;
+    // }
 
     private void GroundMove()
     {
@@ -421,10 +461,10 @@ public class QuakeCharController : MonoBehaviour
             wishJump = false;
         }
     }
-    
+
     private void ApplyFriction(float t)
     {
-        Vector3 vec = playerVelocity; 
+        Vector3 vec = playerVelocity;
         float speed;
         float newspeed;
         float control;
@@ -468,6 +508,22 @@ public class QuakeCharController : MonoBehaviour
 
         playerVelocity.x += accelspeed * wishdir.x;
         playerVelocity.z += accelspeed * wishdir.z;
+        
+     
     }
 
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.normal == Vector3.down)
+        {
+            // Call your method when the character hits an object from below
+            OnHeadHit();
+        }
+    }
+
+    private void OnHeadHit()
+    {
+        Debug.Log("Head hit");
+        playerVelocity.y = 0;
+    }
 }

@@ -1913,9 +1913,9 @@ MonoBehaviour:
   BlockHealth: 3
   usingBlockWithHealth: 1
   blockHolder: {fileID: 1094528341}
-  MapSizeXZ: 40
+  MapSizeXZ: 38
   MapSizeY: 25
-  WallThickness: 2
+  WallThickness: 4
   GroundHeight: 3
   AutoDestroyBlocks: 1
   blocksPerTick: 15
@@ -1923,12 +1923,12 @@ MonoBehaviour:
   tickInterval: 1
   blockWithHealthClump: {fileID: 3676004253796462676, guid: 759c523e2dcefcc44a2f7c3449693600, type: 3}
   GenerateClumps: 1
-  minclumpSize: 2
-  maxclumpSize: 5
-  minClumpAmount: 11
-  maxClumpAmount: 14
+  minclumpSize: 4
+  maxclumpSize: 6
+  minClumpAmount: 7
+  maxClumpAmount: 12
   ClumpsLowerThanWalls: 4
-  BlockHealthClump: 5
+  BlockHealthClump: 6
   xBoundary: {x: 1, y: 30}
   yBoundary: {x: 1, y: 50}
   zBoundary: {x: 1, y: 30}

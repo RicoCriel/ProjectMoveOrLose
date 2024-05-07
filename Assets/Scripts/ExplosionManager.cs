@@ -74,9 +74,18 @@ public class ExplosionManager : MonoBehaviour
     }
 
     [PunRPC]
+    void triggerEffectRPC(Vector3 pos, Vector3 scale)
+    {
+        GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
+        effect.transform.localScale = scale;
+        Destroy(effect, 2f);
+    }
+    
+    [PunRPC]
     void triggerEffectRPC(Vector3 pos)
     {
         GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
+
         Destroy(effect, 2f);
     }
 

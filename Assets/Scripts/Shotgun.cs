@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using DefaultNamespace;
 using Photon.Realtime;
+using UnityEngine.UIElements;
 
 public class Shotgun : MonoBehaviour
 {
@@ -20,7 +21,7 @@ public class Shotgun : MonoBehaviour
     private float shotgunCountdown = 1f;
 
     public float ShotgunDirectionSpeed = 70f;
-    public float ShotgunForce =  400f;
+    public float ShotgunForce = 400f;
     public bool canShootShotgun = true;
 
     private void Awake()
@@ -40,15 +41,17 @@ public class Shotgun : MonoBehaviour
 
         for (int i = 0; i < shotgunPellets; i++)
         {
-            Vector3 spreadDirection = Quaternion.Euler(Random.Range(-shotgunSpreadAngle, shotgunSpreadAngle),
-                Random.Range(-shotgunSpreadAngle, shotgunSpreadAngle), 0) * rayDirection;
+            Vector3 spreadDirection = Quaternion.Euler(RandomSystem.GetGaussianRandomFloat(-shotgunSpreadAngle, shotgunSpreadAngle),
+                RandomSystem.GetGaussianRandomFloat(-shotgunSpreadAngle, shotgunSpreadAngle), RandomSystem.GetGaussianRandomFloat(-shotgunSpreadAngle, shotgunSpreadAngle)) * rayDirection;
 
             Debug.DrawRay(adjustedOrigin, spreadDirection * shotgunRange, Color.red, 3);
 
             if (Physics.Raycast(adjustedOrigin, spreadDirection, out hit, shotgunRange))
             {
                 Debug.DrawRay(adjustedOrigin, spreadDirection * shotgunRange, Color.green, 3);
-                explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point);
+                
+                
+                explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f,0.2f, 0.2f) );
                 StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
 
                 if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
@@ -71,6 +74,8 @@ public class Shotgun : MonoBehaviour
         shotgunAnimator.SetTrigger("shot");
     }
 
+  
+
     private IEnumerator SpawnTrailCoroutine(TrailRenderer trail, Vector3 startPos, Vector3 endPos)
     {
         float time = 0;
@@ -83,7 +88,7 @@ public class Shotgun : MonoBehaviour
         }
 
         trail.transform.position = endPos;
-        Destroy(trail, trail.time);
+        Destroy(trail.gameObject, trail.time);
     }
 
     IEnumerator ShotgunCooldown(float cd)
