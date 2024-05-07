@@ -60,7 +60,7 @@ Transform:
   m_GameObject: {fileID: 777146242493358252}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5, y: -0.39999998, z: 0.5}
+  m_LocalPosition: {x: 0.484, y: -0.48, z: 0.5}
   m_LocalScale: {x: 0.78, y: 0.78, z: 0.78}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -437,7 +437,6 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 6646051402071859025}
   - {fileID: 5396954892230958291}
   - {fileID: 2213034959450421593}
   - {fileID: 2272548508438617720}
@@ -584,7 +583,7 @@ Transform:
   m_GameObject: {fileID: 7725816319743380222}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -637,7 +636,7 @@ Transform:
   m_GameObject: {fileID: 8101660491239938458}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.5, y: -0.4, z: 0.5}
+  m_LocalPosition: {x: -0.445, y: -0.48000002, z: 0.5}
   m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -684,6 +683,7 @@ MonoBehaviour:
   shotgunBulletExit: {fileID: 419822868530360893}
   shotgunRange: 6
   shotgunAnimator: {fileID: 1862779835884359592}
+  bulletTrail: {fileID: 4438397624373600073, guid: c0d028a85e3a7024fbde8f07a396f6c6, type: 3}
   ShotgunDirectionSpeed: 70
   ShotgunForce: 400
   canShootShotgun: 1

@@ -144,7 +144,6 @@ public class QuakeCharController : MonoBehaviour
             HandleShootingInput();
             UpdateStates();
             UpdateAnimation();
-            //Debug.Log(robotState);
         }
     }
 

@@ -4,12 +4,14 @@ using UnityEngine;
 using Photon.Pun;
 using DefaultNamespace;
 using Photon.Realtime;
+using System;
 
 public class Shotgun : MonoBehaviour
 {
     [SerializeField] private Transform shotgunBulletExit;
     [SerializeField] private float shotgunRange;
     [SerializeField] private Animator shotgunAnimator;
+    [SerializeField] private TrailRenderer bulletTrail;
 
     private ExplosionManager explosionManager;
     private float shotgunCountdown = 1f;
@@ -25,32 +27,64 @@ public class Shotgun : MonoBehaviour
 
     public void Shoot()
     {
-        if (canShootShotgun)
+        if (!canShootShotgun)
+            return;
+
+        RaycastHit hit;
+        Vector3 rayDirection = shotgunBulletExit.transform.forward;
+        Vector3 adjustedOrigin = shotgunBulletExit.transform.position + rayDirection * 0.1f;
+
+        Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.red, 3);
+
+        TrailRenderer trail = Instantiate(bulletTrail, adjustedOrigin, Quaternion.identity);
+        StartCoroutine(SpawnTrail(trail, adjustedOrigin, rayDirection, shotgunRange));
+
+        bool hitSomething = Physics.Raycast(adjustedOrigin, rayDirection, out hit, shotgunRange);
+        if (hitSomething)
         {
-            RaycastHit hit;
-            Vector3 rayDirection = shotgunBulletExit.transform.forward;
+            Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.green, 3);
+            explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point);
+            StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
 
-            // Calculate the adjusted origin of the ray (closer to the shotgun exit)
-            Vector3 adjustedOrigin = shotgunBulletExit.transform.position + rayDirection * 0.1f; // Move 0.1 units along the forward direction
-
-            Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.red, 3);
-
-            if (Physics.Raycast(adjustedOrigin, rayDirection, out hit, shotgunRange))
+            if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
             {
-                Debug.DrawRay(adjustedOrigin, rayDirection * shotgunRange, Color.green, 3);
-                explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point);
-                StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
-                if(hit.transform.gameObject.GetComponent<PhotonView>() != null)
-                {
-                    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
+                BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
                     ShotgunForce, transform.position, explosionManager.explosionRadius);
-                }
             }
-
-            canShootShotgun = false;
-            StartCoroutine(ShotgunCooldown(shotgunCountdown));
-            shotgunAnimator.SetTrigger("shot");
         }
+
+        StartCoroutine(SpawnTrail(trail, adjustedOrigin, rayDirection, shotgunRange, hitSomething ? hit : null));
+
+        canShootShotgun = false;
+        StartCoroutine(ShotgunCooldown(shotgunCountdown));
+        shotgunAnimator.SetTrigger("shot");
+    }
+
+    private IEnumerator SpawnTrail(TrailRenderer trail, Vector3 startPos, Vector3 direction, float range, RaycastHit? hitInfo = null)
+    {
+        float time = 0;
+        Vector3 endPos;
+
+        if (hitInfo.HasValue)
+        {
+            endPos = hitInfo.Value.point;
+        }
+        else
+        {
+            endPos = startPos + direction * range;
+        }
+
+
+        while (time < trail.time)
+        {
+            trail.transform.position = Vector3.Lerp(startPos, endPos, time);
+            time += Time.deltaTime / trail.time;
+
+            yield return null;
+        }
+
+        trail.transform.position = endPos;
+        Destroy(trail.gameObject, trail.time);
     }
 
     IEnumerator ShotgunCooldown(float cd)
