@@ -397,7 +397,7 @@ MonoBehaviour:
   xMouseSensitivity: 30
   yMouseSensitivity: 30
   gravity: 20
-  friction: 6
+  friction: 12
   moveSpeed: 7
   runAcceleration: 14
   runDeacceleration: 10

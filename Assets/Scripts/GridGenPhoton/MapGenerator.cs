@@ -96,8 +96,8 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     private void Start()
     {
         mapState = new int[xBoundary.y, yBoundary.y, zBoundary.y]; // Initialize the map state array
-
-        if (PhotonNetwork.IsMasterClient)
+        ExitGames.Client.Photon.Hashtable properties = PhotonNetwork.CurrentRoom.CustomProperties;
+        if (PhotonNetwork.IsMasterClient && !properties.ContainsKey("xMax"))
         {
             GenerateGrid(); // Generate a fresh map
             ZeroMap(); // Set the rest of the map to zero
@@ -108,7 +108,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             Debug.Log("Not master client, getting room data...");
 
             // Retrieve room data from Photon custom properties
-            ExitGames.Client.Photon.Hashtable properties = PhotonNetwork.CurrentRoom.CustomProperties;
+         
 
             // Extract max boundaries from room properties
             Vector3Int maxBoundaries = new Vector3Int(
@@ -275,7 +275,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
         if (GenerateClumps)
         {
-            for (int i = 0; i < Random.Range(minClumpAmount, maxClumpAmount); i++)
+            for (int i = 0; i < RandomSystem.GetRandomInt(minClumpAmount, maxClumpAmount); i++)
             {
                 GenerateClump();
             }
@@ -284,12 +284,12 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     private void GenerateClump()
     {
         //generateClumps
-        int clumpSizeX = Random.Range(minclumpSize, maxclumpSize);
-        int clumpX = Random.Range(WallThickness, MapSizeXZ - WallThickness - clumpSizeX);
-        int clumpSizeZ = Random.Range(minclumpSize, maxclumpSize);
-        int clumpZ = Random.Range(WallThickness, MapSizeXZ - WallThickness - clumpSizeZ);
-        int clumpSizeY = Random.Range(minclumpSize, maxclumpSize);
-        int clumpY = Random.Range(GroundHeight, MapSizeY - ClumpsLowerThanWalls - 1 - clumpSizeY);
+        int clumpSizeX = RandomSystem.GetRandomInt(minclumpSize, maxclumpSize);
+        int clumpX = RandomSystem.GetRandomInt(WallThickness, MapSizeXZ - WallThickness - clumpSizeX);
+        int clumpSizeZ = RandomSystem.GetRandomInt(minclumpSize, maxclumpSize);
+        int clumpZ = RandomSystem.GetRandomInt(WallThickness, MapSizeXZ - WallThickness - clumpSizeZ);
+        int clumpSizeY = RandomSystem.GetRandomInt(minclumpSize, maxclumpSize);
+        int clumpY = RandomSystem.GetRandomInt(GroundHeight, MapSizeY - ClumpsLowerThanWalls - 1 - clumpSizeY);
 
         for (int y = clumpY; y < clumpY + clumpSizeY; y++)
         {
@@ -329,7 +329,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     {
         // Set Photon room properties based on map state
         ExitGames.Client.Photon.Hashtable properties = PhotonNetwork.CurrentRoom.CustomProperties;
-
+        
         properties.Add("xMax", mapState.GetUpperBound(0));
         properties.Add("yMax", mapState.GetUpperBound(1));
         properties.Add("zMax", mapState.GetUpperBound(2));
@@ -538,7 +538,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         }
 
         // Get a random index
-        int randomIndex = Random.Range(0, dictionary.Count);
+        int randomIndex = RandomSystem.GetRandomInt(0, dictionary.Count);
 
         // Return the random key-value pair
         return kvpArray[randomIndex];
@@ -546,7 +546,10 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     public void SetRoomDirty()
     {
         view.RPC("SetRoomDirtyRPC", RpcTarget.MasterClient);
+        // Debug.Log(roomDirty);
     }
+    
+    
 
     [PunRPC]
     void SetRoomDirtyRPC()

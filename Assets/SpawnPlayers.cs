@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
@@ -10,7 +11,7 @@ using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
 
-public class SpawnPlayers : MonoBehaviour
+public class SpawnPlayers : MonoBehaviourPunCallbacks
 {
     public GameObject playerPrefab;
     [SerializeField]private GameObject Canvas;
@@ -53,15 +54,21 @@ public class SpawnPlayers : MonoBehaviour
         ReloadSceneButton.SetActive(true);
 
     }
+    
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        view.RPC("ReloadSceneButRPC",RpcTarget.All);
+    }
     public void ReloadSceneBut()
     {
         view.RPC("ReloadSceneButRPC",RpcTarget.All);
-        
+        // PhotonNetwork.LoadLevel(_sceneToReload);
 
     }
     [PunRPC]
     public void ReloadSceneButRPC()
     {
+        ExitGames.Client.Photon.Hashtable properties = new ExitGames.Client.Photon.Hashtable();
         PhotonNetwork.LoadLevel(_sceneToReload);
         
 
@@ -101,8 +108,8 @@ public class SpawnPlayers : MonoBehaviour
         
     }
 
-    
-    
+  
+
     [PunRPC]
     void Endgame(string id)
     {

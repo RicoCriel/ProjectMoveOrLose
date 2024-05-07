@@ -26,6 +26,7 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
 
     public void CreateRoom()
     {
+        RandomSystem.SetSeed(CreateInput.text);
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 2;
         PhotonNetwork.CreateRoom(CreateInput.text,roomOptions);
@@ -33,6 +34,7 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
     
     public void JoinRoom()
     {
+        RandomSystem.SetSeed(JoinInput.text);
         PhotonNetwork.JoinRoom(JoinInput.text);
     }
     
