@@ -98,6 +98,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 2468296727248080561}
+  muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
   RocketBulletSpeed: 40
   CanonCountDown: 1
   canonAnimator: {fileID: 1722350878608328595}
@@ -146,6 +147,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 5051754997709792862}
   - {fileID: 4950641727381608287}
+  - {fileID: 791252094700054733}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -665,6 +667,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 3227406574621565177}
   - {fileID: 6257152008147478107}
+  - {fileID: 1234865726912795744}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -684,6 +687,7 @@ MonoBehaviour:
   shotgunRange: 13
   shotgunAnimator: {fileID: 1862779835884359592}
   bulletTrail: {fileID: 4438397624373600073, guid: c0d028a85e3a7024fbde8f07a396f6c6, type: 3}
+  muzzleFlashVFX: {fileID: 5474502038078615458, guid: 83361978cea202545b74894ca0468dcb, type: 3}
   shotgunPellets: 10
   shotgunSpreadAngle: 12
   ShotgunDirectionSpeed: 70
