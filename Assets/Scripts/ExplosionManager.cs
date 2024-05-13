@@ -14,7 +14,14 @@ public class ExplosionManager : MonoBehaviour
     [SerializeField] private int maxDamage = 10;
 
     [SerializeField] GameObject explosionEffect;
+    [SerializeField] GameObject sparkEffect;
+
     public PhotonView view;
+
+    private void Start()
+    {
+        view = GetComponent<PhotonView>();
+    }
 
     public IEnumerator ExplosionAtPoint(Vector3 explosionPoint)
     {
@@ -87,6 +94,13 @@ public class ExplosionManager : MonoBehaviour
         GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
 
         Destroy(effect, 2f);
+    }
+
+    [PunRPC]
+    private void SpawnSparks(Vector3 pos, Vector3 scale)
+    {
+        GameObject spark = Instantiate(sparkEffect, pos, Quaternion.identity);
+        spark.transform.localScale = scale;
     }
 
 }

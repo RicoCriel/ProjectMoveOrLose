@@ -14,6 +14,7 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private Animator shotgunAnimator;
     [SerializeField] private TrailRenderer bulletTrail;
     [SerializeField] private VisualEffect muzzleFlashVFX;
+
     [SerializeField] private int shotgunPellets = 5;
     [SerializeField] private float shotgunSpreadAngle = 10f;
 
@@ -53,14 +54,19 @@ public class Shotgun : MonoBehaviour
             if (Physics.Raycast(adjustedOrigin, spreadDirection, out hit, shotgunRange))
             {
                 Debug.DrawRay(adjustedOrigin, spreadDirection * shotgunRange, Color.green, 3);
-                
-                explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f,0.2f, 0.2f) );
-                StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
+                Vector3 sparkScale = new Vector3(0.04f, 0.04f, 0.04f);
 
                 if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
                 {
                     BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
                         ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
+
+                    explosionManager.view.RPC("SpawnSparks", RpcTarget.All, hit.point, sparkScale);
+                }
+                else
+                {
+                    explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
+                    StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
                 }
 
                 photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
@@ -111,11 +117,13 @@ public class Shotgun : MonoBehaviour
     [PunRPC]
     private void SpawnMuzzleFlash()
     {
-        Vector3 vfxPosition = shotgunBulletExit.position; //shotgunBulletExit.forward*/; 
+        Vector3 vfxPosition = shotgunBulletExit.position;  
         Quaternion vfxRotation = Quaternion.LookRotation(-shotgunBulletExit.forward); 
 
         VisualEffect muzzleFlashInstance = Instantiate(muzzleFlashVFX, vfxPosition, vfxRotation);
         muzzleFlashInstance.Play(); 
     }
+
+   
 
 }

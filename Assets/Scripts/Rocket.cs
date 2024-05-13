@@ -23,6 +23,7 @@ namespace DefaultNamespace
 
         [Header("refs")]
         [SerializeField] GameObject explosionEffect;
+        [SerializeField] GameObject sparkEffect;
 
         bool exploded = false;
         bool collHappened = false;
@@ -35,7 +36,7 @@ namespace DefaultNamespace
               if (exploded) return;
                           collHappened = true;
                           collisionpoint = other.transform.position;
-                          Explode();  
+                          Explode();
             }
         }
 
@@ -68,20 +69,23 @@ namespace DefaultNamespace
                 yield return null;
             }
 
-            
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
-            
             
             Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
             
             foreach (var hit in Playercolliders)
             {
-                
                 if (hit.tag == "Player")
                 {
                     Debug.Log("Pushing Player with id" + hit.GetComponent<PhotonView>().ViewID);
+                    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.075f, 0.075f, 0.075f));
                     BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
+                //else if(hit.tag == "Player" && hit.GetComponent<PhotonView>().Owner != this.photonView.Owner)
+                //{
+                //    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.125f, 0.125f, 0.125f));
+                //    BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
+                //}
             }
             
             Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius );
@@ -105,7 +109,6 @@ namespace DefaultNamespace
             return damage;
         }
 
-        // Calculate explosion force based on distance
         private int CalculateExplosionForce(float distance)
         {
             float t = Mathf.Clamp01(distance / explosionRadius);
@@ -119,6 +122,13 @@ namespace DefaultNamespace
         {
             GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
             Destroy(effect, 2f);
+        }
+
+        [PunRPC]
+        private void SpawnSparks(Vector3 pos, Vector3 scale)
+        {
+            GameObject spark = Instantiate(sparkEffect, pos, Quaternion.identity);
+            spark.transform.localScale = scale;
         }
 
     }

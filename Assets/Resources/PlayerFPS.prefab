@@ -124,7 +124,8 @@ MonoBehaviour:
   explosionForce: 10
   minDamage: 1
   maxDamage: 10
-  explosionEffect: {fileID: 0}
+  explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
+  sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
   view: {fileID: 0}
 --- !u!114 &4809132599440365183
 MonoBehaviour:
@@ -711,6 +712,7 @@ MonoBehaviour:
   minDamage: 1
   maxDamage: 10
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
+  sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
   view: {fileID: 7881110051033235570}
 --- !u!114 &3227406574621565177
 MonoBehaviour:
