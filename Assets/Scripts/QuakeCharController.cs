@@ -94,12 +94,9 @@ public class QuakeCharController : MonoBehaviour
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
                 playerView = mainCamera.gameObject.transform;
-            //playerCamSetup = mainCamera.GetComponent<PlayerCamSetup>();
         }
 
         PlaceCameraInCollider();
-        //playerCamSetup.AddGun(shotGun.gameObject);
-        //playerCamSetup.AddGun(canon.gameObject);
 
         controller = GetComponent<CharacterController>();
         _photonView = GetComponent<PhotonView>();
@@ -108,7 +105,6 @@ public class QuakeCharController : MonoBehaviour
         if (_photonView.IsMine)
         {
             _robotMesh.enabled = false;
-            //playerCamSetup.playerID = _photonView.OwnerActorNr;
         }
     }
 
@@ -243,14 +239,10 @@ public class QuakeCharController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire2"))
         {
-            if (canon.canShootCanon)
-            {
-                explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
-                    canon.CanonForce, playerVelocity, ref impact);
-            }
+            HandleCanonFire();
             canon.Shoot(ref playerView, this.gameObject);
-
         }
+
         if (Input.GetButtonDown("Fire1"))
         {
             if (shotGun.canShootShotgun)
@@ -530,5 +522,28 @@ public class QuakeCharController : MonoBehaviour
     {
         Debug.Log("Head hit");
         playerVelocity.y = 0;
+    }
+
+    private void HandleCanonFire()
+    {
+        float playerYPosition = transform.position.y;
+        float maxYPosition = 25.0f; 
+
+        if (playerYPosition > maxYPosition)
+        {
+            if(canon.canShootCanon)
+            {
+                explosionManager.AddPush(-playerView.transform.forward * 1,
+                    1, playerVelocity, ref impact);
+            }
+        }
+        else
+        {
+            if (canon.canShootCanon)
+            {
+                explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
+                    canon.CanonForce, playerVelocity, ref impact);
+            }
+        }
     }
 }

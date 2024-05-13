@@ -36,7 +36,7 @@ namespace DefaultNamespace
               if (exploded) return;
                           collHappened = true;
                           collisionpoint = other.transform.position;
-                          Explode();
+                            Explode();
             }
         }
 
@@ -81,11 +81,6 @@ namespace DefaultNamespace
                     view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.075f, 0.075f, 0.075f));
                     BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
-                //else if(hit.tag == "Player" && hit.GetComponent<PhotonView>().Owner != this.photonView.Owner)
-                //{
-                //    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.125f, 0.125f, 0.125f));
-                //    BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
-                //}
             }
             
             Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius );
