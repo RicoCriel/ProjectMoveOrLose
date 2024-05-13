@@ -29,6 +29,15 @@ namespace DefaultNamespace
         bool collHappened = false;
         Vector3 collisionpoint;
 
+        private void Awake()
+        {
+            if (view == null)
+            {
+                view = GetComponent<PhotonView>();
+            }
+         
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject != player)

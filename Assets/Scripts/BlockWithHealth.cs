@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 namespace DefaultNamespace
 {
     public class BlockWithHealth : MonoBehaviour
@@ -19,6 +21,12 @@ namespace DefaultNamespace
         
         public BlockType blockType;
         private static readonly int Lerpamount = Shader.PropertyToID("_lerpamount");
+        private static readonly int Offset = Shader.PropertyToID("_Offset");
+
+        private void Awake()
+        {
+            _myMeshRenderer.material.SetVector(Offset, new Vector2(Random.Range(0f, 10f) , Random.Range(0f, 10f)));
+        }
 
         public void InitializeBlockWithHealth(int startingHealth)
         {

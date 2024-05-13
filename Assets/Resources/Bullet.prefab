@@ -300,7 +300,7 @@ MonoBehaviour:
   maxExplosionForce: 1800
   minExplosionForce: 500
   player: {fileID: 0}
-  view: {fileID: 0}
+  view: {fileID: 7621161380306642954}
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
 --- !u!1001 &308571202086423862
