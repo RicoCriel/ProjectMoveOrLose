@@ -12,7 +12,7 @@ namespace DefaultNamespace
         [SerializeField] private float explosionForce = 1000f;
         [SerializeField] private float radiusDestroyMultiplier = 1.5f;
 
-        [SerializeField] private int minDamage = 1; 
+        [SerializeField] private int minDamage = 1;
         [SerializeField] private int maxDamage = 10;
 
         [SerializeField] private float maxExplosionForce = 1000f;
@@ -35,17 +35,17 @@ namespace DefaultNamespace
             {
                 view = GetComponent<PhotonView>();
             }
-         
+
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject != player)
             {
-              if (exploded) return;
-                          collHappened = true;
-                          collisionpoint = other.transform.position;
-                            Explode();
+                if (exploded) return;
+                collHappened = true;
+                collisionpoint = other.transform.position;
+                Explode();
             }
         }
 
@@ -54,10 +54,14 @@ namespace DefaultNamespace
             if (exploded) return;
             exploded = true;
 
-            StartCoroutine(Explosion());
+            if (PhotonNetwork.IsMasterClient)
+            {
+                // StartCoroutine(Explosion());
+                Explosion();
+            }
         }
 
-        public IEnumerator Explosion()
+        public void Explosion()
         {
             bool posSet = false;
             Vector3 explosionPoint = new Vector3();
@@ -75,24 +79,25 @@ namespace DefaultNamespace
                     posSet = true;
                 }
 
-                yield return null;
+                // yield return null;
             }
 
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
-            
+
             Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
-            
+
             foreach (var hit in Playercolliders)
             {
                 if (hit.tag == "Player")
                 {
-                    Debug.Log("Pushing Player with id" + hit.GetComponent<PhotonView>().ViewID);
+                    PhotonView component = hit.GetComponent<PhotonView>();
+                    Debug.Log("Pushing Player with id" + component.ViewID);
                     view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.075f, 0.075f, 0.075f));
-                    BombManager.instance.PushTarget(hit.GetComponent<PhotonView>().ViewID, explosionForce, explosionPoint, explosionRadius);
+                    BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
             }
-            
-            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius );
+
+            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius);
             foreach (var hit in BlockCollider)
             {
                 if (hit.tag == "Block")
@@ -101,9 +106,9 @@ namespace DefaultNamespace
                     int calculatedDamage = CalculateDamage(distance);
 
                     MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
-                    MapGenerator.instance.SetRoomDirty();
                 }
             }
+            MapGenerator.instance.SetRoomDirty();
             BombManager.instance.DestroyBomb(view.ViewID);
         }
 
