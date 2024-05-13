@@ -81,6 +81,7 @@ public class QuakeCharController : MonoBehaviour
     [SerializeField] private Shotgun shotGun;
     [SerializeField] private Canon canon;
     [SerializeField] private ExplosionManager explosionManager;
+    private PlayerCamSetup playerCamSetup;
 
 
     private void Start()
@@ -93,9 +94,12 @@ public class QuakeCharController : MonoBehaviour
             Camera mainCamera = Camera.main;
             if (mainCamera != null)
                 playerView = mainCamera.gameObject.transform;
+            //playerCamSetup = mainCamera.GetComponent<PlayerCamSetup>();
         }
 
         PlaceCameraInCollider();
+        //playerCamSetup.AddGun(shotGun.gameObject);
+        //playerCamSetup.AddGun(canon.gameObject);
 
         controller = GetComponent<CharacterController>();
         _photonView = GetComponent<PhotonView>();
@@ -104,6 +108,7 @@ public class QuakeCharController : MonoBehaviour
         if (_photonView.IsMine)
         {
             _robotMesh.enabled = false;
+            //playerCamSetup.playerID = _photonView.OwnerActorNr;
         }
     }
 
