@@ -258,6 +258,8 @@ public class QuakeCharController : MonoBehaviour
 
     public void AddImpact(Vector3 explosionOrigin, float force)
     {
+        if (isInvincible) return;
+
         Vector3 dir = this.transform.position - explosionOrigin;
         dir.Normalize();
         if (dir.y < 0) dir.y = -dir.y; // reflect down force on the ground
@@ -271,6 +273,8 @@ public class QuakeCharController : MonoBehaviour
 
     public void AddPush(Vector3 direction, float force)
     {
+        if (isInvincible) return;
+
         Vector3 dir = direction;
         // Subtract player's current velocity from the impact force
         Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;

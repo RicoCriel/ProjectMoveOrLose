@@ -4,7 +4,7 @@ using Photon.Pun;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
-    protected float duration = 5f;  // Duration of the power-up effect
+    protected float duration = 5f;  
 
     protected abstract void ApplyEffect(QuakeCharController player);
     protected abstract void RemoveEffect(QuakeCharController player);
