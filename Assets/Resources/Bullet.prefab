@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 563155472704337565}
   - component: {fileID: 2686837044122138700}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,7 +160,7 @@ GameObject:
   - component: {fileID: 1819000157804749366}
   - component: {fileID: 8456682766080117065}
   - component: {fileID: 5463733314715850194}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6531687703530851092, guid: cd4695d43ffea7148976509681045463, type: 3}
       propertyPath: m_Layer
-      value: 2
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

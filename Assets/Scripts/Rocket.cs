@@ -36,6 +36,7 @@ namespace DefaultNamespace
                 view = GetComponent<PhotonView>();
             }
 
+            StartCoroutine(KillMe(1.5f));
         }
 
         private void OnTriggerEnter(Collider other)
@@ -46,6 +47,7 @@ namespace DefaultNamespace
                 collHappened = true;
                 collisionpoint = other.transform.position;
                 Explode();
+                Debug.Log(other.name);
             }
         }
 
@@ -56,7 +58,6 @@ namespace DefaultNamespace
 
             if (PhotonNetwork.IsMasterClient)
             {
-                // StartCoroutine(Explosion());
                 Explosion();
             }
         }
@@ -123,6 +124,13 @@ namespace DefaultNamespace
             float t = Mathf.Clamp01(distance / explosionRadius);
             float explosionForce = Mathf.Lerp(minExplosionForce, maxExplosionForce, t);
             return Mathf.RoundToInt(explosionForce);
+        }
+
+        private IEnumerator KillMe(float cd)
+        {
+            yield return new WaitForSeconds(cd);
+            PhotonNetwork.Destroy(gameObject);
+            Debug.Log("Rocket Destroyed");
         }
 
 

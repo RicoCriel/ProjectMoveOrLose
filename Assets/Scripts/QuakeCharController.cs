@@ -60,7 +60,7 @@ public class QuakeCharController : MonoBehaviour
     // Player commands, stores wish commands that the player asks for (Forward, back, jump, etc)
     private Cmd cmd;
 
-    private PhotonView _photonView;
+    private PhotonView view;
 
     // Bullets
     public int playerId;
@@ -78,16 +78,17 @@ public class QuakeCharController : MonoBehaviour
     private string previousState = "";
     private bool previousStateFlag;
 
-    [SerializeField] private Shotgun shotGun;
-    [SerializeField] private Canon canon;
-    [SerializeField] private ExplosionManager explosionManager;
-    private PlayerCamSetup playerCamSetup;
+    public Shotgun shotGun;
+    public Canon canon;
+    public ExplosionManager explosionManager;
 
+    public bool isInvincible = false;
 
     private void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        view = GetComponent<PhotonView>();
 
         if (playerView == null)
         {
@@ -99,18 +100,19 @@ public class QuakeCharController : MonoBehaviour
         PlaceCameraInCollider();
 
         controller = GetComponent<CharacterController>();
-        _photonView = GetComponent<PhotonView>();
+        view = GetComponent<PhotonView>();
         robotState = RobotState.Idle;
 
-        if (_photonView.IsMine)
+        if (view.IsMine)
         {
             _robotMesh.enabled = false;
+
         }
     }
 
     private void Update()
     {
-        if (_photonView.IsMine)
+        if (view.IsMine)
         {
             LockCursor();
             CameraAndWeaponRotation();
@@ -389,46 +391,6 @@ public class QuakeCharController : MonoBehaviour
         playerVelocity.z *= speed;
     }
     
-    // private void AirControl(Vector3 wishdir, float wishspeed)
-    // {
-    //     float zspeed;
-    //     float speed;
-    //     float dot;
-    //     float k;
-    //
-    //     // Can't control movement if not moving forward or backward
-    //     if (Mathf.Abs(cmd.forwardMove) < 0.001 || Mathf.Abs(wishspeed) < 0.001)
-    //         return;
-    //
-    //     zspeed = playerVelocity.y;
-    //     playerVelocity.y = 0;
-    //
-    //     // Calculate speed and normalize player velocity
-    //     speed = playerVelocity.magnitude;
-    //     playerVelocity.Normalize();
-    //
-    //     // Calculate dot product of player velocity and desired direction
-    //     dot = Vector3.Dot(playerVelocity, wishdir);
-    //
-    //     // Adjust air control based on dot product
-    //     k = 32;
-    //     k *= airControl * dot * Time.deltaTime;
-    //
-    //     // Change direction while maintaining speed
-    //     playerVelocity.x += wishdir.x * k;
-    //     playerVelocity.z += wishdir.z * k;
-    //
-    //     // Normalize player velocity
-    //     playerVelocity.Normalize();
-    //
-    //     // Restore original speed
-    //     playerVelocity.x *= speed;
-    //     playerVelocity.z *= speed;
-    //
-    //     // Restore original vertical speed
-    //     playerVelocity.y = zspeed;
-    // }
-
     private void GroundMove()
     {
         //// Do not apply friction if the player is queueing up the next jump

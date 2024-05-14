@@ -21,7 +21,7 @@ public class Shotgun : MonoBehaviour
     private ExplosionManager explosionManager;
     private PhotonView photonView;
 
-    private float shotgunCountdown = 1f;
+    public float reloadSpeed = 1f;
 
     public float ShotgunDirectionSpeed = 70f;
     public float ShotgunForce = 400f;
@@ -79,7 +79,7 @@ public class Shotgun : MonoBehaviour
         }
 
         canShootShotgun = false;
-        StartCoroutine(ShotgunCooldown(shotgunCountdown));
+        StartCoroutine(ShotgunCooldown(reloadSpeed));
         shotgunAnimator.SetTrigger("shot");
     }
 
