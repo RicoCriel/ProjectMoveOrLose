@@ -1,83 +1,137 @@
 using UnityEngine;
+using Photon.Pun;
+using System;
+
+
+enum PlayerState
+{
+    Idle,
+    Running,
+    Jumping,
+}
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float _acceleration = 10f; 
-    [SerializeField] private float _deceleration = 10f; 
-    [SerializeField] private float _maxSpeed = 10f; 
-    [SerializeField] private float _rotationSpeed = 180f;
-    [SerializeField] private float _verticalLookSpeed = 80f;
-    [SerializeField] private float _jumpHeight = 2f;
-    [SerializeField] private Transform _groundCheck;
-    [SerializeField] private float _groundDistance = 0.4f;
-    [SerializeField] private LayerMask _groundMask;
-    [SerializeField] private Transform _cameraTransform;
+    [SerializeField, Range(0f, 100f)]
+    private float maxSpeed = 10f;
 
-    private CharacterController _controller;
-    private Vector3 _velocity;
-    private bool _isGrounded;
-    private float _currentSpeed = 0f;
-    private float _xRotation = 0f;
-    private float _gravity = -9.81f;
-    private bool _isJumping = false;
+    [SerializeField, Range(0f, 100f)]
+    private float maxAcceleration = 10f;
 
-    void Start()
+    [SerializeField, Range(0f, 100f)]
+    private float maxAirAcceleration = 1f;
+
+    [SerializeField, Range(0f, 10f)]
+    private float jumpHeight = 2f;
+
+    [SerializeField, Range(0, 5)]
+    private int maxAirJumps = 0;
+
+    [SerializeField, Range(0f, 90f)]
+    private float maxGroundAngle = 25f;
+
+    private int jumpPhase;
+
+    private Rigidbody body;
+    private Vector2 playerInput;
+    private Vector3 velocity;
+    private Vector3 desiredVelocity;
+    private Vector3 contactNormal;
+
+    private bool desiredJump;
+    private bool onGround;
+    private float minGroundDotProduct;
+
+    void OnValidate()
     {
-        _controller = GetComponent<CharacterController>();
+        minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
+    }
+
+    void Awake()
+    {
         Cursor.lockState = CursorLockMode.Locked;
+        body = GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        _isGrounded = Physics.CheckSphere(_groundCheck.position, _groundDistance, _groundMask);
+        playerInput.x = 0f;
+        playerInput.y = 0f;
+        playerInput.x = Input.GetAxis("Horizontal");
+        playerInput.y = Input.GetAxis("Vertical");
+        playerInput = Vector2.ClampMagnitude(playerInput, 1f);
 
-        if (_isGrounded && _velocity.y < 0)
+        desiredJump |= Input.GetButtonDown("Jump");
+
+        Vector3 acceleration = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
+        desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
+    }
+
+    private void FixedUpdate()
+    {
+        UpdateState();
+        float acceleration = onGround ? maxAcceleration : maxAirAcceleration;
+        float maxSpeedChange = acceleration * Time.deltaTime;
+        velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, maxSpeedChange);
+        velocity.z = Mathf.MoveTowards(velocity.z, desiredVelocity.z, maxSpeedChange);
+        if (desiredJump)
         {
-            _velocity.y = -2f;
-            _isJumping = false;
+            desiredJump = false;
+            Jump();
         }
 
-        // Horizontal movement
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
+        body.velocity = velocity;
+        onGround = false;
+    }
 
-        // Calculate acceleration
-        float targetSpeed = Mathf.Clamp01(Mathf.Sqrt(moveX * moveX + moveZ * moveZ));
-        _currentSpeed = Mathf.MoveTowards(_currentSpeed, targetSpeed * _maxSpeed, Time.deltaTime * (_acceleration * (targetSpeed > 0 ? 1 : _deceleration)));
-
-        Vector3 moveDirection = transform.right * moveX + transform.forward * moveZ;
-        _controller.Move(moveDirection * _currentSpeed * Time.deltaTime);
-
-        // Rotation based on mouse input
-        float mouseX = Input.GetAxis("Mouse X") * _rotationSpeed * Time.deltaTime;
-        transform.Rotate(Vector3.up * mouseX);
-
-        // Vertical look
-        float mouseY = Input.GetAxis("Mouse Y") * _verticalLookSpeed * Time.deltaTime;
-        _xRotation -= mouseY;
-        _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
-        _cameraTransform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
-
-        // Jumping
-        if (Input.GetButtonDown("Jump") && _isGrounded && !_isJumping)
+    private void UpdateState()
+    {
+        velocity = body.velocity;
+        if (onGround)
         {
-            _velocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-            _isJumping = true;
+            jumpPhase = 0;
         }
-
-        // Apply gravity only if not grounded
-        if (!_isGrounded)
+        else
         {
-            _velocity.y += _gravity * Time.deltaTime;
+            contactNormal = Vector3.up;
         }
+    }
 
-        // Bunnyhopping
-        if (_isGrounded && _isJumping && Input.GetButtonDown("Jump"))
+    private void Jump()
+    {
+        if (onGround || jumpPhase < maxAirJumps)
         {
-            _velocity.y = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-            _isJumping = true;
+            jumpPhase += 1;
+            float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
+            float alignedSpeed = Vector3.Dot(velocity, contactNormal);
+            if (alignedSpeed > 0f)
+            {
+                jumpSpeed = Mathf.Max(jumpSpeed - alignedSpeed, 0f);
+            }
+            velocity += contactNormal * jumpSpeed;
         }
+    }
 
-        _controller.Move(_velocity * Time.deltaTime);
+    void OnCollisionEnter(Collision collision)
+    {
+        EvaluateCollision(collision);
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        EvaluateCollision(collision);
+    }
+
+    private void EvaluateCollision(Collision collision)
+    {
+        for (int i = 0; i < collision.contactCount; i++)
+        {
+            Vector3 normal = collision.GetContact(i).normal;
+            if (normal.y >= minGroundDotProduct)
+            {
+                onGround = true;
+                contactNormal = normal;
+            }
+        }
     }
 }

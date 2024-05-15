@@ -16,6 +16,8 @@ public abstract class PowerUpBase : MonoBehaviourPun
             PhotonView playerView = other.GetComponent<PhotonView>();
             if (playerView != null && playerView.IsMine)
             {
+                MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
+                meshRenderer.enabled = false;
                 StartCoroutine(ActivatePowerUp(other.GetComponent<QuakeCharController>()));
             }
         }
@@ -26,6 +28,6 @@ public abstract class PowerUpBase : MonoBehaviourPun
         ApplyEffect(player);
         yield return new WaitForSeconds(duration);
         RemoveEffect(player);
-        PhotonNetwork.Destroy(gameObject);  // Destroy the power-up object after use
+        PhotonNetwork.Destroy(gameObject);  
     }
 }

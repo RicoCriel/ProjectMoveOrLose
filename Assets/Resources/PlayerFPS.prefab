@@ -417,7 +417,7 @@ MonoBehaviour:
   rocketBulletExit: {fileID: 6700377822086425601}
   robotAnimator: {fileID: 3193989062738779340}
   RocketBulletSpeed: 25
-  _robotMesh: {fileID: 4876374231691440632}
+  robotMesh: {fileID: 4876374231691440632}
   shotGun: {fileID: 4559968274623016354}
   canon: {fileID: 7715378542040418355}
   explosionManager: {fileID: 8644131685037422978}
