@@ -1,8 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
 using System;
-using static UnityEngine.LightAnchor;
-
 
 enum PlayerState
 {
@@ -56,31 +54,32 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float yMouseSensitivity;
 
+    [SerializeField]
+    private SkinnedMeshRenderer robotRenderer;
+
     private int jumpPhase;
-    private int stepsSinceLastGrounded;
-    private int stepsSinceLastJump;
+    private int stepsSinceLastGrounded, stepsSinceLastJump;
 
     private Rigidbody body;
     private Vector2 playerInput;
-    private Vector3 velocity;
-    private Vector3 desiredVelocity;
-    private Vector3 contactNormal;
-    private Vector3 steepNormal;
+    private Transform playerInputSpace;
+    private Vector3 velocity, desiredVelocity;
+    private Vector3 contactNormal, steepNormal;
     private Vector3 jumpDirection;
 
+    private Vector3 upAxis, rightAxis, forwardAxis;
 
     private bool desiredJump;
-    private int groundContactCount;
-    private int steepContactCount;
-    private float minGroundDotProduct;
-    private float minStairsDotProduct;
+    private int groundContactCount, steepContactCount;
+    private float minGroundDotProduct, minStairsDotProduct;
 
-    private float rotX;
-    private float rotY;
+    private float rotX, rotY;
     private float playerViewYOffset = 0.8f;
 
     bool OnGround => groundContactCount > 0;
     bool OnSteep => steepContactCount > 0;
+
+    private PhotonView view;
 
     void OnValidate()
     {
@@ -92,7 +91,15 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         body = GetComponent<Rigidbody>();
-        InitializeCamera();
+        body.useGravity = false;
+        view = GetComponent<PhotonView>();
+
+        //InitializeCamera();
+
+        //if(view.IsMine)
+        //{
+        //    robotRenderer.enabled = false;
+        //}
     }
 
     void Update()
@@ -103,11 +110,23 @@ public class PlayerController : MonoBehaviour
         playerInput.y = Input.GetAxis("Vertical");
         playerInput = Vector2.ClampMagnitude(playerInput, 1f);
 
-        desiredJump |= Input.GetButtonDown("Jump");
+        if (playerInputSpace)
+        {
+            rightAxis = ProjectDirectionOnPlane(playerInputSpace.right, upAxis);
+            forwardAxis =
+                ProjectDirectionOnPlane(playerInputSpace.forward, upAxis);
+        }
+        else
+        {
+            rightAxis = ProjectDirectionOnPlane(Vector3.right, upAxis);
+            forwardAxis = ProjectDirectionOnPlane(Vector3.forward, upAxis);
+        }
 
         desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
-        RotateCamera();
-        UpdateCameraPosition();
+        desiredJump |= Input.GetButtonDown("Jump");
+
+        //RotateCamera();
+        //UpdateCameraPosition();
     }
 
     private void UpdateCameraPosition()
@@ -120,13 +139,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Vector3 gravity = CustomGravity.GetGravity(body.position, out upAxis);
         UpdateState();
         AdjustVelocity();
         if (desiredJump)
         {
             desiredJump = false;
-            Jump();
+            Jump(gravity);
         }
+
+        velocity += gravity * Time.deltaTime;
 
         body.velocity = velocity;
         ClearState();
@@ -168,11 +190,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            contactNormal = Vector3.up;
+            contactNormal = upAxis;
         }
     }
 
-    private void Jump()
+    private void Jump(Vector3 gravity)
     {
         if (OnGround)
         {
@@ -193,8 +215,8 @@ public class PlayerController : MonoBehaviour
 
         stepsSinceLastJump = 0;
         jumpPhase += 1;
-        float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
-        jumpDirection = (jumpDirection + Vector3.up).normalized;
+        float jumpSpeed = Mathf.Sqrt(2f * gravity.magnitude * jumpHeight);
+        jumpDirection = (jumpDirection + upAxis).normalized;
         float alignedSpeed = Vector3.Dot(velocity, jumpDirection);
         if (alignedSpeed > 0f)
         {
@@ -219,12 +241,13 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < collision.contactCount; i++)
         {
             Vector3 normal = collision.GetContact(i).normal;
-            if (normal.y >= minDot)
+            float upDot = Vector3.Dot(upAxis, normal);
+            if (upDot >= minDot)
             {
                 groundContactCount += 1;
                 contactNormal += normal;
             }
-            else if (normal.y > -0.01f)
+            else if (upDot > -0.01f)
             {
                 steepContactCount += 1;
                 steepNormal += normal;
@@ -232,9 +255,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private Vector3 ProjectOnContactPlane(Vector3 vector)
+    private Vector3 ProjectDirectionOnPlane(Vector3 direction, Vector3 normal)
     {
-        return vector - contactNormal * Vector3.Dot(vector, contactNormal);
+        return (direction - normal * Vector3.Dot(direction, normal)).normalized;
     }
 
     private void AdjustVelocity()
@@ -243,8 +266,8 @@ public class PlayerController : MonoBehaviour
         Vector3 cameraRight = cameraTransform.right;
 
         // Project the camera vectors onto the contact plane to get the movement directions
-        Vector3 xAxis = ProjectOnContactPlane(cameraRight).normalized;
-        Vector3 zAxis = ProjectOnContactPlane(cameraForward).normalized;
+        Vector3 xAxis = ProjectDirectionOnPlane(rightAxis, contactNormal);
+        Vector3 zAxis = ProjectDirectionOnPlane(forwardAxis, contactNormal);
 
         // Calculate the current velocity along the camera axes
         float currentX = Vector3.Dot(velocity, xAxis);
@@ -277,11 +300,14 @@ public class PlayerController : MonoBehaviour
         {
             return false;
         }
-        if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit, probeDistance, probeMask))
+
+        if (!Physics.Raycast(body.position, -upAxis, out RaycastHit hit, probeDistance, probeMask))
         {
             return false;
         }
-        if (hit.normal.y < GetMinDot(hit.collider.gameObject.layer))
+
+        float upDot = Vector3.Dot(upAxis, steepNormal);
+        if (upDot < GetMinDot(hit.collider.gameObject.layer))
         {
             return false;
         }
@@ -294,6 +320,7 @@ public class PlayerController : MonoBehaviour
             velocity = (velocity - hit.normal * dot).normalized * speed;
         }
         return true;
+
     }
 
     private float GetMinDot(int layer)
@@ -307,7 +334,8 @@ public class PlayerController : MonoBehaviour
         if (steepContactCount > 1)
         {
             steepNormal.Normalize();
-            if (steepNormal.y >= minGroundDotProduct)
+            float upDot = Vector3.Dot(upAxis, steepNormal);
+            if (upDot >= minGroundDotProduct)
             {
                 groundContactCount = 1;
                 contactNormal = steepNormal;
