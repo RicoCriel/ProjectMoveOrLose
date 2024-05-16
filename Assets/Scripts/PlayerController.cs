@@ -12,13 +12,16 @@ enum PlayerState
 public class PlayerController : MonoBehaviour
 {
     [SerializeField, Range(0f, 100f)]
-    private float maxSpeed = 10f;
+    private float maxSpeed = 10f, maxClimbSpeed = 2f;
 
     [SerializeField, Range(0f, 100f)]
     private float maxAcceleration = 10f;
 
     [SerializeField, Range(0f, 100f)]
     private float maxAirAcceleration = 1f;
+
+    [SerializeField, Range(0f, 100f)]
+    private float maxClimbAcceleration = 20f;
 
     [SerializeField, Range(0f, 10f)]
     private float jumpHeight = 2f;
@@ -32,6 +35,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Range(0, 90)]
     private float maxStairsAngle = 50f;
 
+    [SerializeField, Range(90, 180)]
+    float maxClimbAngle = 140f;
+
     [SerializeField, Min(0f)]
     float probeDistance = 1f;
 
@@ -41,13 +47,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     LayerMask stairsMask = -1;
 
+    [SerializeField]
+    LayerMask climbMask = -1;
+
     [SerializeField, Range(0f, 100f)]
     private float maxSnapSpeed = 100f;
 
     [SerializeField]
     private Transform cameraTransform;
     [SerializeField]
-    private Transform weaponTransfrom;
+    private Transform weaponTransform;
 
     [SerializeField]
     private float xMouseSensitivity;
@@ -60,18 +69,19 @@ public class PlayerController : MonoBehaviour
     private int jumpPhase;
     private int stepsSinceLastGrounded, stepsSinceLastJump;
 
-    private Rigidbody body;
+    private Rigidbody body, connectedBody, previousConnectedBody;
     private Vector2 playerInput;
     private Transform playerInputSpace;
-    private Vector3 velocity, desiredVelocity;
-    private Vector3 contactNormal, steepNormal;
+    private Vector3 velocity, connectionVelocity;
+    private Vector3 contactNormal, steepNormal, climbNormal, lastClimbNormal;
     private Vector3 jumpDirection;
+    private Vector3 connectionWorldPosition, connectionLocalPosition;
 
     private Vector3 upAxis, rightAxis, forwardAxis;
 
     private bool desiredJump;
-    private int groundContactCount, steepContactCount;
-    private float minGroundDotProduct, minStairsDotProduct;
+    private int groundContactCount, steepContactCount, climbContactCount;
+    private float minGroundDotProduct, minStairsDotProduct, minClimbDotProduct; 
 
     private float rotX, rotY;
     private float playerViewYOffset = 0.8f;
@@ -79,12 +89,15 @@ public class PlayerController : MonoBehaviour
     bool OnGround => groundContactCount > 0;
     bool OnSteep => steepContactCount > 0;
 
+    bool Climbing => climbContactCount > 0 && stepsSinceLastJump > 2;
+
     private PhotonView view;
 
     void OnValidate()
     {
         minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
         minStairsDotProduct = Mathf.Cos(maxStairsAngle * Mathf.Deg2Rad);
+        minClimbDotProduct = Mathf.Cos(maxClimbAngle * Mathf.Deg2Rad);
     }
 
     void Awake()
@@ -94,12 +107,12 @@ public class PlayerController : MonoBehaviour
         body.useGravity = false;
         view = GetComponent<PhotonView>();
 
-        //InitializeCamera();
+        InitializeCamera();
 
-        //if(view.IsMine)
-        //{
-        //    robotRenderer.enabled = false;
-        //}
+        if (view.IsMine)
+        {
+            robotRenderer.enabled = false;
+        }
     }
 
     void Update()
@@ -113,8 +126,7 @@ public class PlayerController : MonoBehaviour
         if (playerInputSpace)
         {
             rightAxis = ProjectDirectionOnPlane(playerInputSpace.right, upAxis);
-            forwardAxis =
-                ProjectDirectionOnPlane(playerInputSpace.forward, upAxis);
+            forwardAxis = ProjectDirectionOnPlane(playerInputSpace.forward, upAxis);
         }
         else
         {
@@ -122,11 +134,10 @@ public class PlayerController : MonoBehaviour
             forwardAxis = ProjectDirectionOnPlane(Vector3.forward, upAxis);
         }
 
-        desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
         desiredJump |= Input.GetButtonDown("Jump");
 
-        //RotateCamera();
-        //UpdateCameraPosition();
+        RotateCamera();
+        UpdateCameraPosition();
     }
 
     private void UpdateCameraPosition()
@@ -148,7 +159,21 @@ public class PlayerController : MonoBehaviour
             Jump(gravity);
         }
 
-        velocity += gravity * Time.deltaTime;
+        if (Climbing)
+        {
+            velocity -=
+                contactNormal * (maxClimbAcceleration * 0.9f * Time.deltaTime);
+        }
+        else if (OnGround && velocity.sqrMagnitude < 0.01f)
+        {
+            velocity +=
+                contactNormal *
+                (Vector3.Dot(gravity, contactNormal) * Time.deltaTime);
+        }
+        else
+        {
+            velocity += gravity * Time.deltaTime;
+        }
 
         body.velocity = velocity;
         ClearState();
@@ -157,9 +182,9 @@ public class PlayerController : MonoBehaviour
     private void UpdateState()
     {
         stepsSinceLastGrounded += 1;
-        stepsSinceLastGrounded += 1;
+        stepsSinceLastJump += 1;
         velocity = body.velocity;
-        if (OnGround || SnapToGround() || CheckSteepContacts())
+        if (CheckClimbing() || OnGround || SnapToGround() || CheckSteepContacts())
         {
             stepsSinceLastGrounded = 0;
             if (stepsSinceLastJump > 1)
@@ -192,6 +217,25 @@ public class PlayerController : MonoBehaviour
         {
             contactNormal = upAxis;
         }
+
+        if (connectedBody)
+        {
+            if (connectedBody.isKinematic || connectedBody.mass >= body.mass)
+            {
+                UpdateConnectionState();
+            }
+        }
+    }
+
+    private void UpdateConnectionState()
+    {
+        if (connectedBody == previousConnectedBody)
+        {
+            Vector3 connectionMovement = connectedBody.transform.TransformPoint(connectionLocalPosition) - connectionWorldPosition;
+            connectionVelocity = connectionMovement / Time.deltaTime;
+        }
+        connectionWorldPosition = connectedBody.position;
+        connectionLocalPosition = connectedBody.transform.InverseTransformPoint(connectionWorldPosition);
     }
 
     private void Jump(Vector3 gravity)
@@ -237,23 +281,45 @@ public class PlayerController : MonoBehaviour
 
     private void EvaluateCollision(Collision collision)
     {
-        float minDot = GetMinDot(collision.gameObject.layer);
+        int layer = collision.gameObject.layer;
+        float minDot = GetMinDot(layer);
+        Debug.Log($"Evaluating collision with: {collision.gameObject.name}, Layer: {layer}, MinDot: {minDot}, MinClimbDot: {minClimbDotProduct}");
+
         for (int i = 0; i < collision.contactCount; i++)
         {
             Vector3 normal = collision.GetContact(i).normal;
             float upDot = Vector3.Dot(upAxis, normal);
+            Debug.Log($"Contact {i}: Normal: {normal}, UpDot: {upDot}");
+
             if (upDot >= minDot)
             {
                 groundContactCount += 1;
                 contactNormal += normal;
+                connectedBody = collision.rigidbody;
             }
-            else if (upDot > -0.01f)
+            else
             {
-                steepContactCount += 1;
-                steepNormal += normal;
+                if (upDot > -0.01f)
+                {
+                    steepContactCount += 1;
+                    steepNormal += normal;
+                    if (groundContactCount == 0)
+                    {
+                        connectedBody = collision.rigidbody;
+                    }
+                }
+
+                if (upDot >= minClimbDotProduct && (climbMask & (1 << layer)) != 0)
+                {
+                    climbContactCount += 1;
+                    climbNormal += normal;
+                    connectedBody = collision.rigidbody;
+                }
             }
         }
     }
+
+
 
     private Vector3 ProjectDirectionOnPlane(Vector3 direction, Vector3 normal)
     {
@@ -262,31 +328,49 @@ public class PlayerController : MonoBehaviour
 
     private void AdjustVelocity()
     {
-        Vector3 cameraForward = cameraTransform.forward;
-        Vector3 cameraRight = cameraTransform.right;
+        float acceleration, speed;
+        forwardAxis = cameraTransform.forward;
+        rightAxis = cameraTransform.right;
 
-        // Project the camera vectors onto the contact plane to get the movement directions
-        Vector3 xAxis = ProjectDirectionOnPlane(rightAxis, contactNormal);
-        Vector3 zAxis = ProjectDirectionOnPlane(forwardAxis, contactNormal);
+        Vector3 xAxis, zAxis;
+        if (Climbing)
+        {
+            acceleration = maxClimbAcceleration;
+            speed = maxClimbSpeed;
+            xAxis = Vector3.Cross(contactNormal, upAxis);
+            zAxis = upAxis;
+        }
+        else
+        {
+            acceleration = OnGround ? maxAcceleration : maxAirAcceleration;
+            speed = maxSpeed;
+            xAxis = rightAxis;
+            zAxis = forwardAxis;
+        }
+        xAxis = ProjectDirectionOnPlane(xAxis, contactNormal);
+        zAxis = ProjectDirectionOnPlane(zAxis, contactNormal);
 
         // Calculate the current velocity along the camera axes
-        float currentX = Vector3.Dot(velocity, xAxis);
-        float currentZ = Vector3.Dot(velocity, zAxis);
+        Vector3 relativeVelocity = velocity - connectionVelocity;
+        float currentX = Vector3.Dot(relativeVelocity, xAxis);
+        float currentZ = Vector3.Dot(relativeVelocity, zAxis);
 
         // Calculate the desired velocity based on player input
-        float acceleration = OnGround ? maxAcceleration : maxAirAcceleration;
         float maxSpeedChange = acceleration * Time.deltaTime;
-        float newX = Mathf.MoveTowards(currentX, desiredVelocity.x, maxSpeedChange);
-        float newZ = Mathf.MoveTowards(currentZ, desiredVelocity.z, maxSpeedChange);
+        float newX = Mathf.MoveTowards(currentX, playerInput.x * speed, maxSpeedChange);
+        float newZ = Mathf.MoveTowards(currentZ, playerInput.y * speed, maxSpeedChange);
 
         // Update the velocity along the camera axes
-        velocity += xAxis * (newX -currentX) + zAxis * (newZ - currentZ);
+        velocity += xAxis * (newX - currentX) + zAxis * (newZ - currentZ);
     }
 
     private void ClearState()
     {
-        groundContactCount = steepContactCount = 0;
-        contactNormal = steepNormal = Vector3.zero;
+        groundContactCount = steepContactCount = climbContactCount = 0;
+        contactNormal = steepNormal = climbNormal = Vector3.zero;
+        connectionVelocity = Vector3.zero;
+        previousConnectedBody = connectedBody;
+        connectedBody = null;
     }
 
     private bool SnapToGround()
@@ -306,7 +390,7 @@ public class PlayerController : MonoBehaviour
             return false;
         }
 
-        float upDot = Vector3.Dot(upAxis, steepNormal);
+        float upDot = Vector3.Dot(upAxis, hit.normal);
         if (upDot < GetMinDot(hit.collider.gameObject.layer))
         {
             return false;
@@ -319,8 +403,8 @@ public class PlayerController : MonoBehaviour
         {
             velocity = (velocity - hit.normal * dot).normalized * speed;
         }
+        connectedBody = hit.rigidbody;
         return true;
-
     }
 
     private float GetMinDot(int layer)
@@ -347,22 +431,42 @@ public class PlayerController : MonoBehaviour
 
     private void RotateCamera()
     {
-        rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity* 0.02f;
+        rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity * 0.02f;
         rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * 0.02f;
 
         rotX = Mathf.Clamp(rotX, -90f, 90f);
 
-        this.transform.rotation = Quaternion.Euler(0, rotY, 0); 
+        this.transform.rotation = Quaternion.Euler(0, rotY, 0);
         cameraTransform.rotation = Quaternion.Euler(rotX, rotY, 0);
-        weaponTransfrom.rotation = Quaternion.Euler(rotX, rotY, 0);
+        weaponTransform.rotation = Quaternion.Euler(rotX, rotY, 0);
     }
 
     private void InitializeCamera()
     {
         Camera mainCamera = Camera.main;
-        if(mainCamera != null)
+        if (mainCamera != null)
         {
             cameraTransform = mainCamera.gameObject.transform;
         }
+    }
+
+    bool CheckClimbing()
+    {
+        if (Climbing)
+        {
+            if (climbContactCount > 1)
+            {
+                climbNormal.Normalize();
+                float upDot = Vector3.Dot(upAxis, climbNormal);
+                if (upDot >= minGroundDotProduct)
+                {
+                    climbNormal = lastClimbNormal;
+                }
+            }
+            groundContactCount = 1;
+            contactNormal = climbNormal;
+            return true;
+        }
+        return false;
     }
 }
