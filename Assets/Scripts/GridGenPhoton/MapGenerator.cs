@@ -58,10 +58,10 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     public bool GenerateWallsButton;
     public bool DestroyWallsButton;
 
-   public Vector3 MapCenter = new Vector3(15, 0, 15);
-   
-   public Vector3[] CubeDirections = new Vector3[6] { Vector3.up, Vector3.down, Vector3.left, Vector3.right, Vector3.forward, Vector3.back };
-    
+    public Vector3 MapCenter = new Vector3(15, 0, 15);
+
+    public Vector3[] CubeDirections = new Vector3[6] { Vector3.up, Vector3.down, Vector3.left, Vector3.right, Vector3.forward, Vector3.back };
+
     private void Awake()
     {
         highestHealthBlocks = Mathf.Max(BlockHealth, BlockHealthClump);
@@ -72,9 +72,9 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         xBoundary = new Vector2Int(1, MapSizeXZ); // Set the x boundaries
         yBoundary = new Vector2Int(1, MapSizeY); // Set the y boundaries
         zBoundary = new Vector2Int(1, MapSizeXZ); // Set the z boundaries
-        
+
         MapCenter = new Vector3(MapSizeXZ / 2f, MapSizeY / 2f, MapSizeXZ / 2f);
-        
+
         //
         // xBoundary = new Vector2Int((-MapSizeXZ /2) - 1, (MapSizeXZ/2) + 1); // Set the x boundaries
         // yBoundary = new Vector2Int((-MapSizeY /2 -1), (MapSizeY/2) + 1); // Set the y boundaries
@@ -191,7 +191,7 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         xBoundary = new Vector2Int(1, MapSizeXZ); // Set the x boundaries
         yBoundary = new Vector2Int(1, MapSizeY); // Set the y boundaries
         zBoundary = new Vector2Int(1, MapSizeXZ); // Set the z boundaries
-        
+
         DestroyWalls();
 
         for (int y = 0; y < mapSize.y; y++)
@@ -293,6 +293,9 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
             roomDirty = false;
         }
+        
+        
+        
     }
 
     // Callback when master client is switched
@@ -353,7 +356,6 @@ public class MapGenerator : MonoBehaviourPunCallbacks
             }
         }
     }
-
 
     private void SetPunRoomProperties()
     {
@@ -502,12 +504,17 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         // Debug.Log(roomDirty);
     }
 
-
-
     [PunRPC]
     void SetRoomDirtyRPC()
     {
         roomDirty = true;
     }
 
+
+
+
+    public Vector3 GetFreePosition()
+    {
+        throw new NotImplementedException();
+    }
 }

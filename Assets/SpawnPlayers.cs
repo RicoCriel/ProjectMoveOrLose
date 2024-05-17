@@ -81,14 +81,10 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
     void PlayerSpawnRPC()
     {
         Vector3 mapCenter = MapGenerator.instance.MapCenter;
-
-        Vector3[] directions = new Vector3[6];
-        directions.AddRange(MapGenerator.instance.CubeDirections);
-
-        int randomDirection = UnityEngine.Random.Range(0, directions.Length);
+        int randomDirection = UnityEngine.Random.Range(0, MapGenerator.instance.CubeDirections.Length);
 
         RaycastHit hit;
-        if (Physics.Raycast(mapCenter, directions[randomDirection], out hit, 100))
+        if (Physics.Raycast(mapCenter, MapGenerator.instance.CubeDirections[randomDirection], out hit, 100))
         {
             player = PhotonNetwork.Instantiate(playerPrefab.name, hit.point, Quaternion.identity);
         }
@@ -102,7 +98,7 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
 
         startbuttonobject.SetActive(false);
         Canvas.SetActive(false);
-        // MapGenerator.instance.startAutoDestroyBlocks();
+
     }
 
     private void Update()

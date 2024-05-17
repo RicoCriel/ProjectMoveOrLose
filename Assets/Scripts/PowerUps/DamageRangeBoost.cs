@@ -1,3 +1,5 @@
+using DefaultNamespace.PowerUps.spawner;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,5 +38,17 @@ public class DamageRangeBoost : PowerUpBase
         {
             Debug.Log("No original explosion radius found for this player. Cannot remove effect.");
         }
+    }
+
+    public event EventHandler<SpawnerDoneEventArgs> SpawnerDone;
+}
+
+public class SpawnerDoneEventArgs : EventArgs
+{
+    public PowerUpSpawner Spawner{ get; }
+
+    public SpawnerDoneEventArgs(PowerUpSpawner spawner)
+    {
+        Spawner = spawner;
     }
 }

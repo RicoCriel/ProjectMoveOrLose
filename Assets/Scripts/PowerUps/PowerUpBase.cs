@@ -30,4 +30,14 @@ public abstract class PowerUpBase : MonoBehaviourPun
         RemoveEffect(player);
         PhotonNetwork.Destroy(gameObject);  
     }
+    
+}
+
+public enum PowerUpType
+{
+    SpeedBoost,
+    Invincibility,
+    reloadspeedBoost,
+    DamageRangeBoost,
+    GravityChange,
 }
