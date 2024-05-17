@@ -73,7 +73,7 @@ Material:
     - _Emission: 1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _lerpamount: 1
+    - _lerpamount: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 2, g: 0.5813123, b: 0, a: 0}

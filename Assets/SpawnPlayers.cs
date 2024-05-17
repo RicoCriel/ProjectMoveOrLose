@@ -6,6 +6,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
@@ -14,54 +15,49 @@ using Cursor = UnityEngine.Cursor;
 public class SpawnPlayers : MonoBehaviourPunCallbacks
 {
     public GameObject playerPrefab;
-    [SerializeField]private GameObject Canvas;
-    [SerializeField]private TMP_Text playerWinScreen;
-    [SerializeField]private GameObject startbuttonobject;
-    [SerializeField]private GameObject ReloadSceneButton;
+    [SerializeField] private GameObject Canvas;
+    [SerializeField] private TMP_Text playerWinScreen;
+    [SerializeField] private GameObject startbuttonobject;
+    [SerializeField] private GameObject ReloadSceneButton;
     private GameObject player;
 
     [SerializeField] private string _sceneToReload;
 
-    [SerializeField] private GameObject spawnlocation; 
-    public float minX;
-    public float maxX;
-    public float minY;
-    public float maxY;
+
+
     private PhotonView view;
 
     private void Awake()
     {
-        
+
         view = GetComponent<PhotonView>();
         startbuttonobject.SetActive(false);
         ReloadSceneButton.SetActive(false);
         Canvas.SetActive(true);
-        view.RPC("StartButton",RpcTarget.MasterClient);
+        view.RPC("StartButton", RpcTarget.MasterClient);
     }
     [PunRPC]
-
     void StartButton()
     {
-        
+
         startbuttonobject.SetActive(true);
 
     }
     [PunRPC]
-
     void ReloadScene()
     {
-        
+
         ReloadSceneButton.SetActive(true);
 
     }
-    
+
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        view.RPC("ReloadSceneButRPC",RpcTarget.All);
+        view.RPC("ReloadSceneButRPC", RpcTarget.All);
     }
     public void ReloadSceneBut()
     {
-        view.RPC("ReloadSceneButRPC",RpcTarget.All);
+        view.RPC("ReloadSceneButRPC", RpcTarget.All);
         // PhotonNetwork.LoadLevel(_sceneToReload);
 
     }
@@ -70,28 +66,43 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
     {
         ExitGames.Client.Photon.Hashtable properties = new ExitGames.Client.Photon.Hashtable();
         PhotonNetwork.LoadLevel(_sceneToReload);
-        
+
 
     }
-    
+
 
     public void PlayerSpawn()
     {
-        view.RPC("PlayerSpawnRPC",RpcTarget.All);
-        
+        view.RPC("PlayerSpawnRPC", RpcTarget.All);
+
     }
 
     [PunRPC]
-
     void PlayerSpawnRPC()
     {
-        Vector3 randomPosition = new Vector3(spawnlocation.transform.position.x +UnityEngine.Random.Range(minX, maxX),
-            spawnlocation.transform.position.y,
-            spawnlocation.transform.position.z +UnityEngine.Random.Range(minY, maxY));
-        player = PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+        Vector3 mapCenter = MapGenerator.instance.MapCenter;
+
+        Vector3[] directions = new Vector3[6];
+        directions.AddRange(MapGenerator.instance.CubeDirections);
+
+        int randomDirection = UnityEngine.Random.Range(0, directions.Length);
+
+        RaycastHit hit;
+        if (Physics.Raycast(mapCenter, directions[randomDirection], out hit, 100))
+        {
+            player = PhotonNetwork.Instantiate(playerPrefab.name, hit.point, Quaternion.identity);
+        }
+        else
+        {
+            player = PhotonNetwork.Instantiate(playerPrefab.name, mapCenter, Quaternion.identity);
+        }
+
+        QuakeCharController charcontroller = player.gameObject.GetComponent<QuakeCharController>();
+        // charcontroller.SetGravity(-directions[randomDirection] * 10);
+
         startbuttonobject.SetActive(false);
         Canvas.SetActive(false);
-       MapGenerator.instance.startAutoDestroyBlocks();
+        // MapGenerator.instance.startAutoDestroyBlocks();
     }
 
     private void Update()
@@ -99,16 +110,16 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
         if (player != null)
         {
             if (player.transform.position.y < -7.5f)
-                        {
-                            view.RPC("ReloadScene",RpcTarget.MasterClient);
-                            view.RPC("Endgame",RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
-                        }
+            {
+                view.RPC("ReloadScene", RpcTarget.MasterClient);
+                view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
+            }
         }
-            
-        
+
+
     }
 
-  
+
 
     [PunRPC]
     void Endgame(string id)

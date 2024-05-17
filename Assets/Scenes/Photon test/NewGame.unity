@@ -1295,6 +1295,7 @@ MonoBehaviour:
   playerWinScreen: {fileID: 671895177}
   startbuttonobject: {fileID: 502088219}
   ReloadSceneButton: {fileID: 2138708388}
+  _sceneToReload: 
   spawnlocation: {fileID: 1097767426}
   minX: -5
   maxX: 5
@@ -1457,92 +1458,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1094528339
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1094528341}
-  - component: {fileID: 1094528340}
-  - component: {fileID: 1094528342}
-  m_Layer: 0
-  m_Name: mapgen
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1094528340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094528339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 00ba3e97913b46a40958d5d5371f52aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unitBlock: {fileID: 5152814648647254860, guid: f44aa09935cbd8143b0f1a6d348647b7, type: 3}
-  blockWithHealth: {fileID: 0}
-  BlockHealth: 3
-  usingBlockWithHealth: 0
-  blockHolder: {fileID: 1094528341}
-  AutoDestroyBlocks: 0
-  MapSizeXZ: 40
-  MapSizeY: 3
-  WallThickness: 1
-  GroundHeight: 1
-  GenerateClumps: 0
-  minclumpSize: 2
-  maxclumpSize: 4
-  minClumpAmount: 3
-  maxClumpAmount: 10
-  xBoundary: {x: 1, y: 30}
-  yBoundary: {x: 1, y: 50}
-  zBoundary: {x: 1, y: 30}
-  roomDirty: 0
---- !u!4 &1094528341
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094528339}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1094528342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1094528339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 1
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &1097767426
 GameObject:
   m_ObjectHideFlags: 0
@@ -2286,7 +2201,6 @@ SceneRoots:
   - {fileID: 1475093616}
   - {fileID: 831298806}
   - {fileID: 1041084716}
-  - {fileID: 1094528341}
   - {fileID: 304508379}
   - {fileID: 514725552}
   - {fileID: 409847747}

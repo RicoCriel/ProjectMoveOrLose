@@ -26,6 +26,22 @@ namespace DefaultNamespace
         private void Awake()
         {
             _myMeshRenderer.material.SetVector(Offset, new Vector2(Random.Range(0f, 10f) , Random.Range(0f, 10f)));
+
+            RoundTransformPosition();
+        }
+        private void RoundTransformPosition()
+        {
+
+            // Get the current position
+            Vector3 currentPosition = transform.position;
+
+            // Round each component to the nearest integer
+            int roundedX = Mathf.RoundToInt(currentPosition.x);
+            int roundedY = Mathf.RoundToInt(currentPosition.y);
+            int roundedZ = Mathf.RoundToInt(currentPosition.z);
+
+            // Set the position to the rounded values
+            transform.position = new Vector3(roundedX, roundedY, roundedZ);
         }
 
         public void InitializeBlockWithHealth(int startingHealth)

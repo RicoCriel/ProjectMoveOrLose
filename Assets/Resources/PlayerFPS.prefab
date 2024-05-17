@@ -417,7 +417,7 @@ MonoBehaviour:
   rocketBulletExit: {fileID: 6700377822086425601}
   robotAnimator: {fileID: 3193989062738779340}
   RocketBulletSpeed: 25
-  robotMesh: {fileID: 4876374231691440632}
+  _robotMesh: {fileID: 0}
   shotGun: {fileID: 4559968274623016354}
   canon: {fileID: 7715378542040418355}
   explosionManager: {fileID: 8644131685037422978}
@@ -1383,11 +1383,6 @@ PrefabInstance:
 --- !u!95 &3193989062738779340 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 5277717031812484154, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
-  m_PrefabInstance: {fileID: 7308607226580652278}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &4876374231691440632 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 2792582563794215182, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
   m_PrefabInstance: {fileID: 7308607226580652278}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &7620684033485605681 stripped
