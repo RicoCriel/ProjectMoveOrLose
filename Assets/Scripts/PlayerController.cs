@@ -2,13 +2,6 @@ using UnityEngine;
 using Photon.Pun;
 using System;
 
-enum PlayerState
-{
-    Idle,
-    Running,
-    Jumping,
-}
-
 public class PlayerController : MonoBehaviour
 {
     [SerializeField, Range(0f, 100f)]
