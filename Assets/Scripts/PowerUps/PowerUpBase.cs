@@ -1,13 +1,22 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
+using System;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
     protected float duration = 5f;  
+    protected PhotonView _myView;
+    
+    public PowerUpType _myPowerUpType;
 
     protected abstract void ApplyEffect(QuakeCharController player);
     protected abstract void RemoveEffect(QuakeCharController player);
+
+    private void Awake()
+    {
+        throw new NotImplementedException();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -22,7 +31,6 @@ public abstract class PowerUpBase : MonoBehaviourPun
             }
         }
     }
-
     private IEnumerator ActivatePowerUp(QuakeCharController player)
     {
         ApplyEffect(player);
@@ -30,7 +38,6 @@ public abstract class PowerUpBase : MonoBehaviourPun
         RemoveEffect(player);
         PhotonNetwork.Destroy(gameObject);  
     }
-    
 }
 
 public enum PowerUpType
