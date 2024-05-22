@@ -101,18 +101,48 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
 
     }
 
+    // private void Update()
+    // {
+    //     if (player != null)
+    //     {
+    //         if (player.transform.position.y < -7.5f)
+    //         {
+    //             view.RPC("ReloadScene", RpcTarget.MasterClient);
+    //             view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
+    //         }
+    //     }
+    //
+    //
+    // }
+    
     private void Update()
     {
         if (player != null)
         {
-            if (player.transform.position.y < -7.5f)
+            Vector3 playerPosition = player.transform.position;
+
+            // Check if the player is outside the x bounds
+            if (playerPosition.x < MapGenerator.instance.XBoundaryDeath.X || playerPosition.x > MapGenerator.instance.XBoundaryDeath.Y)
             {
-                view.RPC("ReloadScene", RpcTarget.MasterClient);
-                view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
+                HandlePlayerDeath();
+            }
+            // Check if the player is outside the y bounds
+            else if (playerPosition.y < MapGenerator.instance.YBoundaryDeath.X || playerPosition.y > MapGenerator.instance.YBoundaryDeath.Y)
+            {
+                HandlePlayerDeath();
+            }
+            // Check if the player is outside the z bounds
+            else if (playerPosition.z < MapGenerator.instance.ZBoundaryDeath.X || playerPosition.z > MapGenerator.instance.ZBoundaryDeath.Y)
+            {
+                HandlePlayerDeath();
             }
         }
+    }
 
-
+    private void HandlePlayerDeath()
+    {
+        view.RPC("ReloadScene", RpcTarget.MasterClient);
+        view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
     }
 
 

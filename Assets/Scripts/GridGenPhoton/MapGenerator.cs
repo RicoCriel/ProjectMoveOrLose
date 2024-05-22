@@ -42,6 +42,10 @@ public class MapGenerator : MonoBehaviourPunCallbacks
     [HideInInspector] public Vector2Int yBoundary /*= new Vector2Int(1, 50)*/; // Y boundaries of the map
     [HideInInspector] public Vector2Int zBoundary /*= new Vector2Int(1, 30)*/; // Z boundaries of the map
 
+    [HideInInspector] public Vector2 XBoundaryDeath;
+    [HideInInspector] public Vector2 YBoundaryDeath;
+    [HideInInspector] public Vector2 ZBoundaryDeath;
+
     public int[,,] mapState; // 3D array to store the state of each block in the map
 
     private float updateTimer = 5f; // Timer for updating room properties
@@ -62,6 +66,8 @@ public class MapGenerator : MonoBehaviourPunCallbacks
 
     public Vector3[] CubeDirections = new Vector3[6] { Vector3.up, Vector3.down, Vector3.left, Vector3.right, Vector3.forward, Vector3.back };
 
+
+
     private void Awake()
     {
         highestHealthBlocks = Mathf.Max(BlockHealth, BlockHealthClump);
@@ -72,6 +78,10 @@ public class MapGenerator : MonoBehaviourPunCallbacks
         xBoundary = new Vector2Int(1, MapSizeXZ); // Set the x boundaries
         yBoundary = new Vector2Int(1, MapSizeY); // Set the y boundaries
         zBoundary = new Vector2Int(1, MapSizeXZ); // Set the z boundaries
+        
+        XBoundaryDeath = new Vector2(-1, MapSizeXZ );
+        YBoundaryDeath = new Vector2(-1, MapSizeY );
+        ZBoundaryDeath = new Vector2(-1, MapSizeXZ );
 
         MapCenter = new Vector3(MapSizeXZ / 2f, MapSizeY / 2f, MapSizeXZ / 2f);
 
