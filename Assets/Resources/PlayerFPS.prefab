@@ -519,8 +519,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4590763266440689313}
-  - component: {fileID: 1251996314708354244}
-  - component: {fileID: 6646051402071859025}
   - component: {fileID: 6749649928363499948}
   - component: {fileID: 5396954892230958291}
   m_Layer: 0
@@ -547,76 +545,6 @@ Transform:
   - {fileID: 7008548823508932867}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!143 &1251996314708354244
-CharacterController:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6678742899389751404}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2.2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0.21, z: 0}
---- !u!114 &6646051402071859025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6678742899389751404}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2741dc2f753519743b5d97f07db299ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerView: {fileID: 0}
-  playerViewYOffset: 0.8
-  xMouseSensitivity: 30
-  yMouseSensitivity: 30
-  currentGravityState: 1
-  gravity: 20
-  mesh: {fileID: 0}
-  gravityDirection: {x: 0, y: -1, z: 0}
-  friction: 12
-  moveSpeed: 7
-  runAcceleration: 14
-  runDeacceleration: 10
-  airAcceleration: 1.3
-  airDecceleration: 3.5
-  airControl: 0.6
-  sideStrafeAcceleration: 5
-  sideStrafeSpeed: 1
-  jumpSpeed: 12
-  holdJumpToBhop: 0
-  playerTransform: {fileID: 0}
-  weaponParent: {fileID: 0}
-  rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
-  rocketBulletExit: {fileID: 6700377822086425601}
-  RocketBulletSpeed: 25
-  shotGun: {fileID: 4559968274623016354}
-  canon: {fileID: 7715378542040418355}
-  explosionManager: {fileID: 8644131685037422978}
-  robotAnimator: {fileID: 3193989062738779340}
-  robotMesh: {fileID: 0}
-  hideMesh: 0
-  playerId: 0
-  isInvincible: 0
 --- !u!114 &6749649928363499948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1559,11 +1487,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2272548508438617720}
   m_SourcePrefab: {fileID: 100100000, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
---- !u!95 &3193989062738779340 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5277717031812484154, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
-  m_PrefabInstance: {fileID: 7308607226580652278}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7620684033485605681 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 914081518775163847, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}

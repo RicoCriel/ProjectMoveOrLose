@@ -26,14 +26,6 @@ public class AnimationController : MonoBehaviour
         { AnimationState.Jumping, "IsJumping" },
     };
 
-    private void Start()
-    {
-        if (hideMesh)
-        {
-            robotMesh.enabled = false;
-        }
-    }
-
     private void Update()
     {
         UpdateAnimation();

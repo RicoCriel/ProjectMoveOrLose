@@ -1,79 +1,74 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour
 {
-    [Header("Camera Settings")]
-    public Transform playerView;
-    private float rotX, rotY;
-    public float playerViewYOffset = 0.8f; 
-    public float xMouseSensitivity, yMouseSensitivity;
+    public float mouseSensitivity;
+    public Transform robotArms;
+    public PlayerMovement playerMovement;
+    public float rotationSpeed = 10f;
+    public Vector3 robotArmsOffset;
 
-    private void Start()
+    private float xRotation = 0f;
+    private float currentZRotation;
+
+    private Dictionary<PlayerMovement.GravityState, Quaternion> targetRotations = new Dictionary<PlayerMovement.GravityState, Quaternion>();
+
+    void Start()
     {
-        Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        InitializeCamera();
-        PlaceCameraInCollider();
+
+        targetRotations.Add(PlayerMovement.GravityState.Up, Quaternion.Euler(180, 0, 0));
+        targetRotations.Add(PlayerMovement.GravityState.Down, Quaternion.Euler(0, 0, 0));
+        targetRotations.Add(PlayerMovement.GravityState.Forward, Quaternion.Euler(-90, 0, 0));
+        targetRotations.Add(PlayerMovement.GravityState.Backward, Quaternion.Euler(90, 0, 0));
+        targetRotations.Add(PlayerMovement.GravityState.Left, Quaternion.Euler(0, 0, -90));
+        targetRotations.Add(PlayerMovement.GravityState.Right, Quaternion.Euler(0, 0, 90));
     }
 
-    private void Update()
+    void Update()
     {
-        LockCursor();
-        CameraAndWeaponRotation();
-        UpdateCameraPosition();
+        RotateCamera();
+        //AlignCameraWithGravity();
+        UpdateRobotArmsPosition();
     }
 
-    private void InitializeCamera()
+    void RotateCamera()
     {
-        if (playerView == null)
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        this.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+    }
+
+    void AlignCameraWithGravity()
+    {
+        Quaternion targetRotation;
+
+        if (targetRotations.TryGetValue(playerMovement.currentGravityState, out targetRotation))
         {
-            Camera mainCamera = Camera.main;
-            if (mainCamera != null)
-                playerView = mainCamera.gameObject.transform;
+            currentZRotation = Mathf.LerpAngle(currentZRotation, targetRotation.eulerAngles.z, rotationSpeed * Time.deltaTime);
+
+            // Set the new rotation only updating the Z component
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x,
+                transform.localRotation.eulerAngles.y, currentZRotation);
         }
     }
 
-    private void UpdateCameraPosition()
+    void UpdateRobotArmsPosition()
     {
-        // Set the camera's position to the transform
-        if (playerView != null)
+        // Maintain the robot arms' offset relative to the camera
+        robotArms.localPosition = robotArmsOffset;
+        Quaternion targetRotation;
+
+        if (targetRotations.TryGetValue(playerMovement.currentGravityState, out targetRotation))
         {
-            playerView.position = new Vector3(
-            transform.position.x,
-            transform.position.y + playerViewYOffset,
-            transform.position.z);
-        }
-    }
+            //currentZRotation = Mathf.LerpAngle(currentZRotation, targetRotation.eulerAngles.z, rotationSpeed * Time.deltaTime);
 
-    private void PlaceCameraInCollider()
-    {
-        // Put the camera inside the capsule collider
-        if (playerView != null)
-        {
-            playerView.position = new Vector3(
-            transform.position.x,
-            transform.position.y + playerViewYOffset,
-            transform.position.z);
-        }
-    }
-
-    private void CameraAndWeaponRotation()
-    {
-        rotX -= Input.GetAxisRaw("Mouse Y") * xMouseSensitivity * 0.02f;
-        rotY += Input.GetAxisRaw("Mouse X") * yMouseSensitivity * 0.02f;
-
-        rotX = Mathf.Clamp(rotX, -90, 90);
-
-        this.transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, rotY, transform.rotation.eulerAngles.z); // Rotates the collider
-        playerView.rotation = Quaternion.Euler(rotX, rotY, 0); // Rotates the camera
-    }
-
-    private static void LockCursor()
-    {
-        if (Cursor.lockState != CursorLockMode.Locked)
-        {
-            if (Input.GetButtonDown("Fire1"))
-                Cursor.lockState = CursorLockMode.Locked;
+            //robotArms.localRotation = Quaternion.Euler(robotArms.eulerAngles.x,
+            //    robotArms.localRotation.eulerAngles.y, targetRotation.eulerAngles.z);
         }
     }
 }
