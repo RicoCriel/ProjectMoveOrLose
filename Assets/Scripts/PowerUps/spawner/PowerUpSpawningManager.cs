@@ -20,7 +20,7 @@ namespace DefaultNamespace.PowerUps.spawner
         [SerializeField] private List<Transform> SpawnerPositions = new List<Transform>();
 
         private List<Transform> availableSpawners = new List<Transform>();
-       ;
+       
 
         private PhotonView _photonView;
 
