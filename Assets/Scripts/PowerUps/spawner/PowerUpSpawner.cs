@@ -20,9 +20,9 @@ namespace DefaultNamespace.PowerUps.spawner
         [Header("PowerUps")]
         [SerializeField] private List<PowerUpBase> _powerUpsToSpawn;
 
-        Dictionary<PowerUpType, PowerUpBase> AllPowerUps = new Dictionary<PowerUpType, PowerUpBase>();
+        private Dictionary<PowerUpType, PowerUpBase> AllPowerUps = new Dictionary<PowerUpType, PowerUpBase>();
 
-        PowerUpBase _currentPowerUp;
+        private PowerUpBase _currentPowerUp;
         private PhotonView _PhotonView;
 
         private void Awake()
@@ -70,7 +70,7 @@ namespace DefaultNamespace.PowerUps.spawner
             if (_amountSpawned >= AmountToSpawn)
             {
                 TryDestroyActivespawnedPowerUp();
-                OnSpawningDone(new SpawnerDoneEventArgs());
+                OnSpawningDone(new SpawnerDoneEventArgs(this.transform));
                 PhotonNetwork.Destroy(gameObject);
             }
         }
@@ -130,9 +130,10 @@ namespace DefaultNamespace.PowerUps.spawner
 
     public class SpawnerDoneEventArgs : EventArgs
     {
-        public SpawnerDoneEventArgs()
+        public Transform FreedSpawner{ get; }
+        public SpawnerDoneEventArgs(Transform freedSpawner)
         {
-
+            FreedSpawner = freedSpawner;
         }
     }
 }

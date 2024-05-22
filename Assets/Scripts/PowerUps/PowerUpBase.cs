@@ -15,7 +15,7 @@ public abstract class PowerUpBase : MonoBehaviourPun
 
     private void Awake()
     {
-        throw new NotImplementedException();
+        _myView = GetComponent<PhotonView>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -37,6 +37,16 @@ public abstract class PowerUpBase : MonoBehaviourPun
         yield return new WaitForSeconds(duration);
         RemoveEffect(player);
         PhotonNetwork.Destroy(gameObject);  
+    }
+
+    private void Update()
+    {
+        if (photonView.IsMine)
+        {
+            // Rotate 1 degree per second around the up axis
+            float rotationSpeed = 45f;
+            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+        }
     }
 }
 

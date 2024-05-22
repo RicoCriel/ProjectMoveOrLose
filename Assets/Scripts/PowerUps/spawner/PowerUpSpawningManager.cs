@@ -20,7 +20,7 @@ namespace DefaultNamespace.PowerUps.spawner
         [SerializeField] private List<Transform> SpawnerPositions = new List<Transform>();
 
         private List<Transform> availableSpawners = new List<Transform>();
-        private Dictionary<Transform, PowerUpSpawner> currentActiveSpawners = new Dictionary<Transform, PowerUpSpawner>();
+       ;
 
         private PhotonView _photonView;
 
@@ -63,47 +63,34 @@ namespace DefaultNamespace.PowerUps.spawner
         {
             for (int i = 0; i <= AmountOfNormalSpawners; i++)
             {
-                int randomIndex = UnityEngine.Random.Range(0, availableSpawners.Count);
-                // if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
-                // {
-                    Vector3 spawnPos = availableSpawners[randomIndex].position;
-                    
-                    availableSpawners.RemoveAt(randomIndex);
-                    GameObject spawnerGo = PhotonNetwork.Instantiate(RandomSpawnerPrefab.name, spawnPos, quaternion.identity);
-                    spawnerGo.transform.parent = transform;
-                    PowerUpSpawner spawner = spawnerGo.GetComponent<PowerUpSpawner>();
-                    currentActiveSpawners.Add(availableSpawners[randomIndex], spawner);
+                SpawnSpawner();
 
-                    spawner.SpawningDone += (s, e) => {
-                        ReplaceEmptySpawner(availableSpawners[randomIndex]);
-                    };
-                // }
             }
         }
 
         private void ReplaceEmptySpawner(Transform freedSpawner)
         {
-            if (currentActiveSpawners.ContainsKey(freedSpawner))
-            {
-                currentActiveSpawners.Remove(freedSpawner);
-                availableSpawners.Add(freedSpawner);
-            }
+            availableSpawners.Add(freedSpawner);
 
+            SpawnSpawner();
+        }
+        private void SpawnSpawner()
+        {
             int randomIndex = UnityEngine.Random.Range(0, availableSpawners.Count);
             // if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
             // {
-                Vector3 spawnPos = availableSpawners[randomIndex].position;
-                
-                availableSpawners.RemoveAt(randomIndex);
-                GameObject spawnerGo = PhotonNetwork.Instantiate(RandomSpawnerPrefab.name, spawnPos, quaternion.identity);
-                spawnerGo.transform.parent = transform;
-                PowerUpSpawner spawner = spawnerGo.GetComponent<PowerUpSpawner>();
-                currentActiveSpawners.Add(availableSpawners[randomIndex], spawner);
+            Transform availableSpawner = availableSpawners[randomIndex];
+            Vector3 spawnPos = availableSpawner.position;
 
-                spawner.SpawningDone += (s, e) => {
-                    ReplaceEmptySpawner(availableSpawners[randomIndex]);
-                };
-            // }
+            availableSpawners.RemoveAt(randomIndex);
+            GameObject spawnerGo = PhotonNetwork.Instantiate(RandomSpawnerPrefab.name, spawnPos, quaternion.identity);
+            spawnerGo.transform.parent = transform;
+            PowerUpSpawner spawner = spawnerGo.GetComponent<PowerUpSpawner>();
+
+
+            spawner.SpawningDone += (s, e) => {
+                ReplaceEmptySpawner(availableSpawner);
+            };
         }
     }
 }
