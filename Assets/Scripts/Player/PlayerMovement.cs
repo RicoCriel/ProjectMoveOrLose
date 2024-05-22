@@ -34,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
     [SerializeField] private float rotationTransitionSpeed;
-    private Quaternion currentRotation;
     private Quaternion targetRotation;
     
     void Start()
@@ -101,11 +100,8 @@ public class PlayerMovement : MonoBehaviour
     {
         float moveHorizontal = Input.GetAxis("Horizontal");
         float moveVertical = Input.GetAxis("Vertical");
-        float mouseX = Input.GetAxis("Mouse X");
 
-        //yRotation += mouseX * rotateSpeed * Time.deltaTime;
         IsPlayerGrounded();
-
 
         Vector3 velocity = transform.right * moveHorizontal * moveSpeed + transform.forward * moveVertical * moveSpeed;
         if (velocityAxes[currentGravityState] == Vector3.up)
@@ -136,7 +132,23 @@ public class PlayerMovement : MonoBehaviour
     {
         float mouseX = Input.GetAxis("Mouse X");
 
-        // Define a dictionary to map each gravity state to its corresponding rotation control
+        // Define a dictionary to map each gravity state to a boolean value indicating whether mouseX should be inverted
+        Dictionary<GravityState, bool> invertMouseX = new Dictionary<GravityState, bool>
+        {
+            { GravityState.Down, false },
+            { GravityState.Up, true },
+            { GravityState.Forward, true },
+            { GravityState.Backward, false },
+            { GravityState.Left, false },
+            { GravityState.Right, true}
+        };
+
+        if (invertMouseX.ContainsKey(currentGravityState) && invertMouseX[currentGravityState])
+        {
+            mouseX *= -1f;
+        }
+
+        // Define a dictionary to map each gravity state to its corresponding rotation control method
         Dictionary<GravityState, Action<float>> rotationControls = new Dictionary<GravityState, Action<float>>
         {
             { GravityState.Down, RotateY },
@@ -153,28 +165,21 @@ public class PlayerMovement : MonoBehaviour
 
     void RotateY(float mouseX)
     {
-        // Rotate around the y-axis
         transform.Rotate(0f, mouseX * rotateSpeed * Time.deltaTime, 0f, Space.World);
     }
 
     void RotateX(float mouseX)
     {
-        //// Get the current local rotation
-        //Vector3 eulerAngles = transform.eulerAngles;
-
-        //// Adjust the x rotation based on mouse input
-        //eulerAngles.x += mouseX * rotateSpeed * Time.deltaTime;
-
-        //// Apply the updated rotation
-        //transform.localRotation = Quaternion.Euler(eulerAngles);
-        // Get the current rotation
-        Quaternion currentRotation = transform.rotation;
-
-        // Calculate the rotation around the x-axis in world space
-        Quaternion rotationX = Quaternion.AngleAxis(mouseX * rotateSpeed * Time.deltaTime, Vector3.right);
-
-        // Apply the rotation
-        transform.rotation = rotationX * currentRotation;
+        if (currentGravityState == GravityState.Forward || currentGravityState == GravityState.Backward)
+        {
+            // Rotate around the z-axis in world space
+            transform.Rotate(0f, 0f, mouseX * rotateSpeed * Time.deltaTime, Space.World);
+        }
+        else
+        {
+            // Rotate around the x-axis in world space
+            transform.Rotate(mouseX * rotateSpeed * Time.deltaTime, 0f, 0f, Space.World);
+        }
     }
 
     void ApplyGravity()
@@ -194,7 +199,6 @@ public class PlayerMovement : MonoBehaviour
         {
             yield return new WaitForSeconds(10f);
             SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
-            Debug.Log("ChangedState");
         }
     }
 
