@@ -33,7 +33,8 @@ namespace DefaultNamespace.PowerUps.spawner
                 GameObject CenterSpawner = PhotonNetwork.Instantiate(CenterMapSpawnerPrefab.name, MapGenerator.instance.MapCenter, quaternion.identity);
                 CenterSpawner.transform.parent = transform;
                 PowerUpSpawner centerSpawnerPUS = CenterSpawner.GetComponent<PowerUpSpawner>();
-                centerSpawnerPUS.AmountToSpawn = int.MaxValue;
+                centerSpawnerPUS.MinAmountToSpawn = int.MaxValue;
+                centerSpawnerPUS.MaxAmountToSpawn = int.MaxValue;
 
                 // centerSpawnerPUS.SpawningDone += (s, e) =>
                 // {
@@ -63,8 +64,8 @@ namespace DefaultNamespace.PowerUps.spawner
             for (int i = 0; i <= AmountOfNormalSpawners; i++)
             {
                 int randomIndex = UnityEngine.Random.Range(0, availableSpawners.Count);
-                if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
-                {
+                // if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
+                // {
                     Vector3 spawnPos = availableSpawners[randomIndex].position;
                     
                     availableSpawners.RemoveAt(randomIndex);
@@ -76,7 +77,7 @@ namespace DefaultNamespace.PowerUps.spawner
                     spawner.SpawningDone += (s, e) => {
                         ReplaceEmptySpawner(availableSpawners[randomIndex]);
                     };
-                }
+                // }
             }
         }
 
@@ -89,8 +90,8 @@ namespace DefaultNamespace.PowerUps.spawner
             }
 
             int randomIndex = UnityEngine.Random.Range(0, availableSpawners.Count);
-            if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
-            {
+            // if (!currentActiveSpawners.ContainsKey(availableSpawners[randomIndex]))
+            // {
                 Vector3 spawnPos = availableSpawners[randomIndex].position;
                 
                 availableSpawners.RemoveAt(randomIndex);
@@ -102,7 +103,7 @@ namespace DefaultNamespace.PowerUps.spawner
                 spawner.SpawningDone += (s, e) => {
                     ReplaceEmptySpawner(availableSpawners[randomIndex]);
                 };
-            }
+            // }
         }
     }
 }

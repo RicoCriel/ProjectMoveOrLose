@@ -7,10 +7,14 @@ namespace DefaultNamespace.PowerUps.spawner
     public class PowerUpSpawner : MonoBehaviourPunCallbacks
     {
         [Header("SpawnTimer")]
-        [SerializeField] private float _timeBetweenSpawns = 10f;
+        [SerializeField] private float _minTimeBetweenSpawns = 5f;
+        [SerializeField] private float _maxTimeBetweenSpawns = 10f;
+        private float currentTimeBetweenSpawns = int .MaxValue;
         private float _currentTimer = 0f;
 
-        [SerializeField] public int AmountToSpawn = 5;
+        [SerializeField] public int MinAmountToSpawn = 5;
+        [SerializeField] public int MaxAmountToSpawn = 5;
+        private int AmountToSpawn = 0;
         private int _amountSpawned = 0;
 
         [Header("PowerUps")]
@@ -32,6 +36,14 @@ namespace DefaultNamespace.PowerUps.spawner
             {
                 AllPowerUps.TryAdd(powerUp._myPowerUpType, powerUp);
             }
+            
+            AmountToSpawn = RandomSystem.GetRandomInt(MinAmountToSpawn, MaxAmountToSpawn);
+            currentTimeBetweenSpawns = RandomSystem.GetRandomFloat(_minTimeBetweenSpawns, _maxTimeBetweenSpawns);
+            //spawn initial
+            _amountSpawned++;
+            SpawnPowerUp();
+            
+            
         }
 
         private void Update()
@@ -40,12 +52,15 @@ namespace DefaultNamespace.PowerUps.spawner
                 return;
 
             _currentTimer += Time.deltaTime;
+          
             VisualizeNextSpawnTimer();
-            if (_currentTimer >= _timeBetweenSpawns)
+            
+            if (_currentTimer >= currentTimeBetweenSpawns)
             {
+                currentTimeBetweenSpawns = RandomSystem.GetRandomFloat(_minTimeBetweenSpawns, _maxTimeBetweenSpawns);
                 _amountSpawned++;
-                _currentTimer = 0;
                 SpawnPowerUp();
+                _currentTimer = 0;
                 VisualiseNextSpawn();
             }
         }
@@ -80,7 +95,7 @@ namespace DefaultNamespace.PowerUps.spawner
 
         private void VisualizeNextSpawnTimer()
         {
-            float TimerPercentage = _currentTimer / _timeBetweenSpawns;
+            float TimerPercentage = _currentTimer / currentTimeBetweenSpawns;
 
             //todo implement some shader/ visualizsation that counts down/ up
         }
