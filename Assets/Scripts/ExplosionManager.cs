@@ -71,13 +71,23 @@ public class ExplosionManager : MonoBehaviour
         impact += adjustedImpact;
     }
 
-    public void AddPush(Vector3 direction, float force, Vector3 playerVelocity, ref Vector3 impact)
+    //public void AddPush(Vector3 direction, float force, Vector3 playerVelocity, ref Vector3 impact)
+    //{
+    //    Vector3 dir = direction;
+    //    // Subtract player's current velocity from the impact force
+    //    Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;
+    //    // Add the adjusted impact to the current impact
+    //    impact += adjustedImpact;
+    //    Debug.Log("Add push executed");
+    //}
+
+    public void AddPush(Vector3 direction, /*float directionSpeed,*/ float force, Rigidbody playerRb)
     {
-        Vector3 dir = direction;
-        // Subtract player's current velocity from the impact force
-        Vector3 adjustedImpact = dir.normalized * force / 3 - playerVelocity;
-        // Add the adjusted impact to the current impact
-        impact += adjustedImpact;
+        // Apply the directional push force to the player's Rigidbody
+        Vector3 forceVector = direction.normalized * force;
+        playerRb.AddForce(forceVector, ForceMode.Impulse);
+
+        Debug.DrawLine(playerRb.position, playerRb.position + forceVector, Color.red, 5f);
     }
 
     [PunRPC]

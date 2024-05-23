@@ -12,12 +12,10 @@ public class AnimationController : MonoBehaviour
 {
     [Header("Player Animation Properties")]
     [SerializeField] private Animator robotAnimator;
-    [SerializeField] private SkinnedMeshRenderer robotMesh;
 
     private AnimationState robotState = AnimationState.Idle;
     private string previousState = "";
     private bool previousStateFlag;
-    public bool hideMesh;
 
     private Dictionary<AnimationState, string> stateToAnimation = new Dictionary<AnimationState, string>()
     {
@@ -54,5 +52,7 @@ public class AnimationController : MonoBehaviour
     {
         robotState = state;
     }
+
+
 }
 

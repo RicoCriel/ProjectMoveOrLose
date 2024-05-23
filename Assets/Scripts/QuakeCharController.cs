@@ -305,8 +305,8 @@ public class QuakeCharController : MonoBehaviour
         {
             if (shotGun.canShootShotgun)
             {
-                explosionManager.AddPush(-playerView.transform.forward * shotGun.ShotgunDirectionSpeed,
-                    shotGun.ShotgunForce, playerVelocity, ref impact);
+                //explosionManager.AddPush(-playerView.transform.forward * shotGun.ShotgunDirectionSpeed,
+                //    shotGun.ShotgunForce, playerVelocity, ref impact);
             }
             shotGun.Shoot();
         }
@@ -626,16 +626,16 @@ public class QuakeCharController : MonoBehaviour
         {
             if(canon.canShootCanon)
             {
-                explosionManager.AddPush(-playerView.transform.forward * 1,
-                    1, playerVelocity, ref impact);
+                //explosionManager.AddPush(-playerView.transform.forward * 1,
+                //    1, playerVelocity, ref impact);
             }
         }
         else
         {
             if (canon.canShootCanon)
             {
-                explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
-                    canon.CanonForce, playerVelocity, ref impact);
+                //explosionManager.AddPush(-playerView.transform.forward * canon.CanonDirectionSpeed,
+                //    canon.CanonForce, playerVelocity, ref impact);
             }
         }
     }

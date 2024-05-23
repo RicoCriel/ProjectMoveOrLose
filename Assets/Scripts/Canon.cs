@@ -15,7 +15,6 @@ public class Canon : MonoBehaviour
 
     [SerializeField] private Animator canonAnimator;
 
-    public float CanonDirectionSpeed = 100f;
     public float CanonForce = 600f;
     public bool canShootCanon = true;
     public bool IsCanonShooting = false;
@@ -33,13 +32,13 @@ public class Canon : MonoBehaviour
         if (canShootCanon)
         {
             IsCanonShooting = true;
-            photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
-            GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
-            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            bullet.GetComponent<Rocket>().player = playerObject;
+            //photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
+            //GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
+            //Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            //bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+            //bullet.GetComponent<Rocket>().player = playerObject;
 
-            rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
+            //rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;

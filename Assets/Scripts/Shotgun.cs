@@ -1,10 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using DefaultNamespace;
-using Photon.Realtime;
-using UnityEngine.UIElements;
 using UnityEngine.VFX;
 
 public class Shotgun : MonoBehaviour
@@ -22,8 +18,6 @@ public class Shotgun : MonoBehaviour
     private PhotonView photonView;
 
     public float reloadSpeed = 1f;
-
-    public float ShotgunDirectionSpeed = 70f;
     public float ShotgunForce = 400f;
     public bool canShootShotgun = true;
 
@@ -42,7 +36,7 @@ public class Shotgun : MonoBehaviour
         Vector3 rayDirection = shotgunBulletExit.transform.forward;
         Vector3 adjustedOrigin = shotgunBulletExit.transform.position + rayDirection * 0.1f;
 
-        photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
+        //photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
 
         for (int i = 0; i < shotgunPellets; i++)
         {
@@ -56,25 +50,25 @@ public class Shotgun : MonoBehaviour
                 Debug.DrawRay(adjustedOrigin, spreadDirection * shotgunRange, Color.green, 3);
                 Vector3 sparkScale = new Vector3(0.04f, 0.04f, 0.04f);
 
-                if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
-                {
-                    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
-                        ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
+                //if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
+                //{
+                //    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
+                //        ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
 
-                    explosionManager.view.RPC("SpawnSparks", RpcTarget.All, hit.point, sparkScale);
-                }
-                else
-                {
-                    explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
-                    StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
-                }
+                //    explosionManager.view.RPC("SpawnSparks", RpcTarget.All, hit.point, sparkScale);
+                //}
+                //else
+                //{
+                //    explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
+                //    StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
+                //}
 
-                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
+                //photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
             }
             else
             {
                 Vector3 endPos = adjustedOrigin + spreadDirection * shotgunRange;
-                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, endPos);
+                //photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, endPos);
             }
         }
 

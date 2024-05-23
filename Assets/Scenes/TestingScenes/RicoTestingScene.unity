@@ -1174,8 +1174,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   robotAnimator: {fileID: 562478086}
-  robotMesh: {fileID: 0}
-  hideMesh: 0
 --- !u!1 &582566086
 GameObject:
   m_ObjectHideFlags: 0
@@ -1497,10 +1495,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mouseSensitivity: 30
+  rotationSpeed: 5
   robotArms: {fileID: 7008548823199107013}
   playerMovement: {fileID: 1039703762}
-  rotationSpeed: 5
-  robotArmsOffset: {x: 0, y: 0, z: 0}
+  robotArmsOffset: {x: 0, y: -0.5, z: -0.3}
+  camOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &701528224
 GameObject:
   m_ObjectHideFlags: 0
@@ -1948,6 +1947,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79f5374ac3f16a5419e6d817e579d0cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canon: {fileID: 7715378541134943989}
+  shotGun: {fileID: 4559968274255459172}
+  explosionManager: {fileID: 8644131685662861124}
+  playerMovement: {fileID: 1039703762}
+  cameraView: {fileID: 698901022}
 --- !u!136 &1039703760
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1997,7 +2001,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 1
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &1039703762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2014,14 +2018,20 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: 10
+  moveSpeed: 20
   rotateSpeed: 100
-  jumpForce: 30
-  gravityForce: 50
+  acceleration: 10
+  deceleration: 5
+  jumpForce: 40
+  gravityForce: 30
+  maxGravityForce: 500
+  rotationTransitionSpeed: 3
+  gravityIncreaseRate: 1.5
+  rb: {fileID: 0}
   robotMesh: {fileID: 1039703751}
-  disableMesh: 1
+  disableMesh: 0
   enableRandomGravity: 0
-  rotationTransitionSpeed: 2.5
+  cameraController: {fileID: 698901023}
 --- !u!1 &1106427641
 GameObject:
   m_ObjectHideFlags: 0
@@ -3276,6 +3286,7 @@ GameObject:
   - component: {fileID: 7715378541134943989}
   - component: {fileID: 8914031575321896018}
   - component: {fileID: 4809132600165419193}
+  - component: {fileID: 8914031575321896019}
   m_Layer: 11
   m_Name: Canon
   m_TagString: Untagged
@@ -3701,8 +3712,7 @@ MonoBehaviour:
   shotgunPellets: 10
   shotgunSpreadAngle: 12
   reloadSpeed: 1
-  ShotgunDirectionSpeed: 70
-  ShotgunForce: 300
+  ShotgunForce: 30
   canShootShotgun: 1
 --- !u!4 &4590763265866557543
 Transform:
@@ -4000,6 +4010,10 @@ PrefabInstance:
       value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 6987cb0f763d91f4087c417ddb14d582, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
@@ -4264,7 +4278,7 @@ Transform:
   m_GameObject: {fileID: 7725816318896690232}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.124, z: -0.223}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4560,11 +4574,10 @@ MonoBehaviour:
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 2468296726345748599}
   muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
-  RocketBulletSpeed: 40
+  RocketBulletSpeed: 80
   CanonCountDown: 1
   canonAnimator: {fileID: 1191414937}
-  CanonDirectionSpeed: 100
-  CanonForce: 800
+  CanonForce: 80
   canShootCanon: 1
   IsCanonShooting: 0
   rocketJumpForce: 5
@@ -4656,6 +4669,7 @@ GameObject:
   - component: {fileID: 4559968274255459172}
   - component: {fileID: 8644131685662861124}
   - component: {fileID: 3227406574853865023}
+  - component: {fileID: 8644131685662861125}
   m_Layer: 11
   m_Name: Shotgun
   m_TagString: Untagged
@@ -4683,6 +4697,27 @@ MonoBehaviour:
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
   view: {fileID: 7881110050945654452}
+--- !u!65 &8644131685662861125
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8101660491569743708}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.29, y: 0.36, z: 1}
+  m_Center: {x: 0, y: 0.08, z: 0.96}
 --- !u!114 &8914031575321896018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4703,6 +4738,27 @@ MonoBehaviour:
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
   view: {fileID: 0}
+--- !u!65 &8914031575321896019
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 777146242716155498}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.36066252, y: 0.33510756, z: 0.856413}
+  m_Center: {x: 0.008358902, y: 0.049681008, z: 0.19820654}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

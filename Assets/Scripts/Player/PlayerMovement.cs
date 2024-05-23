@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using System.Threading;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -20,11 +22,19 @@ public class PlayerMovement : MonoBehaviour
 
     public float moveSpeed = 5f;
     public float rotateSpeed = 100f;
-    public float jumpForce;
-    public float gravityForce = 9.81f;
+    [SerializeField] private float acceleration;
+    [SerializeField] private float deceleration;
+
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float gravityForce;
+    [SerializeField] private float maxGravityForce;
+    [SerializeField] private float rotationTransitionSpeed;
+    public float gravityIncreaseRate;
+
     private float yRotation = 0f;
 
-    private Rigidbody rb;
+    public Rigidbody rb;
+    private PhotonView view;
 
     public Dictionary<GravityState, Vector3> gravityDirections;
     private Dictionary<GravityState, Vector3> velocityAxes;
@@ -33,23 +43,48 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer robotMesh;
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
-    [SerializeField] private float rotationTransitionSpeed;
-    private Quaternion targetRotation;
     
+
+    private Quaternion targetRotation;
+    private Coroutine rotating;
+    private Coroutine randomGravity;
+    private bool isFalling;
+    private bool changingGravityState = false;
+    private float fallStartTime;
+    private float fallDuration;
+    private float originalGravityForce;
+    private float adjustedGravityForce;
+
+    private float moveHorizontal, moveVertical;
+    private float mouseX, mouseY;
+    private bool jump;
+
+
+    [SerializeField] private CameraController cameraController;
+
     void Start()
     {
         if(disableMesh)
         {
             robotMesh.enabled = false;
         }
+
         rb = GetComponent<Rigidbody>();
+        view = GetComponent<PhotonView>();
+        
         InitializeDictionaries();
         UpdateGravity();
         targetRotation = rotations[currentGravityState];
         if (enableRandomGravity)
         {
-            StartCoroutine(RandomGravitySwitch());
+            if (randomGravity != null)
+                StopCoroutine(randomGravity);
+
+            randomGravity = StartCoroutine(RandomGravitySwitch());
         }
+
+        originalGravityForce = gravityForce;
+        adjustedGravityForce = gravityForce;
     }
 
     void InitializeDictionaries()
@@ -87,51 +122,65 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        HandleInput();
+        Debug.Log(gravityIncreaseRate);
+    }
+    void FixedUpdate()
+    {
+        UpdateGravity();
         HandleMovement();
         HandleRotation();
     }
 
-    void FixedUpdate()
+    private void HandleInput()
     {
-        ApplyGravity();
+        moveHorizontal = Input.GetAxis("Horizontal");
+        moveVertical = Input.GetAxis("Vertical");
+        jump = Input.GetKey(KeyCode.Space);
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
+        }
+        mouseX = Input.GetAxis("Mouse X");
     }
 
     void HandleMovement()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
         IsPlayerGrounded();
 
-        Vector3 velocity = transform.right * moveHorizontal * moveSpeed + transform.forward * moveVertical * moveSpeed;
+        Vector3 targetVelocity = (transform.right * moveHorizontal + transform.forward * moveVertical).normalized * moveSpeed;
+
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 newVelocity = Vector3.Lerp(currentVelocity, targetVelocity, Time.deltaTime * acceleration);
+
         if (velocityAxes[currentGravityState] == Vector3.up)
         {
-            rb.velocity = velocity + rb.velocity.y * Vector3.up;
+            newVelocity = new Vector3(newVelocity.x, rb.velocity.y, newVelocity.z);
         }
         else if (velocityAxes[currentGravityState] == Vector3.forward)
         {
-            rb.velocity = velocity + rb.velocity.z * Vector3.forward;
+            newVelocity = new Vector3(newVelocity.x, newVelocity.y, rb.velocity.z);
         }
         else if (velocityAxes[currentGravityState] == Vector3.right)
         {
-            rb.velocity = velocity + rb.velocity.x * Vector3.right;
+            newVelocity = new Vector3(rb.velocity.x, newVelocity.y, newVelocity.z);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && IsPlayerGrounded())
+        if (moveHorizontal == 0 && moveVertical == 0)
+        {
+            newVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, Time.deltaTime * deceleration);
+        }
+
+        rb.velocity = newVelocity;
+
+        if (jump && IsPlayerGrounded())
         {
             Jump();
         }
-
-        if(Input.GetKeyDown(KeyCode.E))
-        {
-            SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
-        }
     }
 
-    void HandleRotation()
+    public void HandleRotation()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-
         // Define a dictionary to map each gravity state to a boolean value indicating whether mouseX should be inverted
         Dictionary<GravityState, bool> invertMouseX = new Dictionary<GravityState, bool>
         {
@@ -182,15 +231,47 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void ApplyGravity()
+    void UpdateGravity()
     {
-        Vector3 gravity = gravityDirections[currentGravityState].normalized * gravityForce;
+        //Vector3 gravity = gravityDirections[currentGravityState].normalized * gravityForce;
+        //rb.AddForce(gravity, ForceMode.Acceleration);
+
+        if (!IsPlayerGrounded())
+        {
+            if (!isFalling)
+            {
+                isFalling = true;
+                fallStartTime = Time.time;
+            }
+
+            float elapsedTime = Time.time - fallStartTime;
+            float t = elapsedTime / gravityIncreaseRate;
+
+            if (t > 1f)
+            {
+                t = 1f;
+            }
+
+            //Debug.Log($"Elapsed Time: {elapsedTime}, t: {t}, adjustedGravityForce: {adjustedGravityForce}");
+
+            adjustedGravityForce = Mathf.Lerp(originalGravityForce, maxGravityForce, t);
+        }
+        else
+        {
+            if (isFalling)
+            {
+                isFalling = false;
+                adjustedGravityForce = originalGravityForce;
+            }
+        }
+
+        Vector3 gravity = gravityDirections[currentGravityState].normalized * adjustedGravityForce;
         rb.AddForce(gravity, ForceMode.Acceleration);
     }
 
-    void UpdateGravity()
+    void ApplyGravity()
     {
-        Physics.gravity = gravityDirections[currentGravityState] * gravityForce;
+        Physics.gravity = gravityDirections[currentGravityState] * originalGravityForce;
     }
 
     private IEnumerator RandomGravitySwitch()
@@ -244,8 +325,14 @@ public class PlayerMovement : MonoBehaviour
         if (newGravityState != currentGravityState)
         {
             currentGravityState = newGravityState;
-            StartCoroutine(SmoothRotate());
-            UpdateGravity();
+
+            if(rotating != null)
+                StopCoroutine(rotating);
+
+            rotating = StartCoroutine(SmoothRotate());
+            ApplyGravity();
         }
     }
+
+    
 }
