@@ -4206,7 +4206,7 @@ GameObject:
   - component: {fileID: 1039703760}
   - component: {fileID: 1039703762}
   m_Layer: 0
-  m_Name: PlayerFPS
+  m_Name: RobotFPS
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -31,14 +31,14 @@ public class WeaponController : MonoBehaviour
         {
             FireWeapon(shotGun.ShotgunForce);
             isFiringShotgun = false;
-            //playerMovement.gravityIncreaseRate = 1.5f;
+            playerMovement.gravityIncreaseRate = 1.5f;
         }
 
         if(isFiringCanon == true)
         {
             FireWeapon(canon.CanonForce);
             isFiringCanon = false;
-            //playerMovement.gravityIncreaseRate = 1.5f;
+            playerMovement.gravityIncreaseRate = 1.5f;
         }
     }
 
@@ -76,7 +76,7 @@ public class WeaponController : MonoBehaviour
     private void FireWeapon(float force)
     {
         explosionManager.AddPush(-cameraView.transform.forward, force, playerRb);
-        playerMovement.gravityIncreaseRate = 5f;
-        Debug.Log("Gravity increase rate set back to 5f after firing weapon.");
+        playerMovement.gravityIncreaseRate = 10f;
+        Debug.Log(playerMovement.gravityIncreaseRate);
     }
 }
