@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class DamageRangeBoost : PowerUpBase
 {
-    private Dictionary<QuakeCharController, float> originalExplosionRadiusVal = new Dictionary<QuakeCharController, float>();
-    private HashSet<QuakeCharController> appliedPlayers = new HashSet<QuakeCharController>();
+    private Dictionary<PlayerMovement, float> originalExplosionRadiusVal = new Dictionary<PlayerMovement, float>();
+    private HashSet<PlayerMovement> appliedPlayers = new HashSet<PlayerMovement>();
 
-    protected override void ApplyEffect(QuakeCharController player)
+    protected override void ApplyEffect(PlayerMovement player)
     {
         if (appliedPlayers.Contains(player))
         {
@@ -18,21 +18,21 @@ public class DamageRangeBoost : PowerUpBase
 
         if (!originalExplosionRadiusVal.ContainsKey(player))
         {
-            originalExplosionRadiusVal[player] = player.explosionManager.explosionRadius;
-            player.explosionManager.explosionRadius *= 1.5f;
-            appliedPlayers.Add(player);
-            Debug.Log($"Damage Range active. New explosion radius: {player.explosionManager.explosionRadius}");
+            //originalExplosionRadiusVal[player] = player.explosionManager.explosionRadius;
+            //player.explosionManager.explosionRadius *= 1.5f;
+            //appliedPlayers.Add(player);
+            //Debug.Log($"Damage Range active. New explosion radius: {player.explosionManager.explosionRadius}");
         }
     }
 
-    protected override void RemoveEffect(QuakeCharController player)
+    protected override void RemoveEffect(PlayerMovement player)
     {
         if (originalExplosionRadiusVal.TryGetValue(player, out float originalExplosionRadius))
         {
-            player.explosionManager.explosionRadius = originalExplosionRadius;
-            originalExplosionRadiusVal.Remove(player);
-            appliedPlayers.Remove(player);
-            Debug.Log($"Damage Range deactivated. Restored explosion radius: {player.explosionManager.explosionRadius}");
+            //player.explosionManager.explosionRadius = originalExplosionRadius;
+            //originalExplosionRadiusVal.Remove(player);
+            //appliedPlayers.Remove(player);
+            //Debug.Log($"Damage Range deactivated. Restored explosion radius: {player.explosionManager.explosionRadius}");
         }
         else
         {

@@ -1,20 +1,32 @@
 using System;
+using UnityEngine;
+
 namespace DefaultNamespace.PowerUps
 {
+    public enum GravityAmmoType
+    {
+        Down,
+        Up,
+        Forward,
+        Backward,
+        Left,
+        Right
+    }
+
     public class GravityChangePowerup : PowerUpBase
     {
-        
+        [SerializeField] private GravityAmmoType ammoType;
+
         private void Start()
         {
             throw new NotImplementedException();
         }
 
-
-        protected override void ApplyEffect(QuakeCharController player)
+        protected override void ApplyEffect(PlayerMovement player)
         {
-            throw new System.NotImplementedException();
+            //player.SetCurrentGravityAmmoType(ammoType);
         }
-        protected override void RemoveEffect(QuakeCharController player)
+        protected override void RemoveEffect(PlayerMovement player)
         {
             throw new System.NotImplementedException();
         }

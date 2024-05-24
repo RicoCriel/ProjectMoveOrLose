@@ -8,6 +8,7 @@ TagManager:
   - Bullet
   - Block
   - WeaponCamera
+  - GravityProjectile
   layers:
   - Default
   - TransparentFX
@@ -25,7 +26,7 @@ TagManager:
   - Detailed
   - Stairs
   - Unclimbable
-  - 
+  - GravityProjectile
   - 
   - 
   - 

@@ -5,15 +5,17 @@ using UnityEngine;
 public class WeaponController : MonoBehaviour
 {
     [SerializeField] private Canon canon;
-    [SerializeField] private Shotgun shotGun;
+    [SerializeField] private GravityGun gravityGun;
     [SerializeField] private ExplosionManager explosionManager;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
 
     private Rigidbody playerRb;
 
-    private bool isFiringShotgun;
+    private bool isFiringGravityGun;
     private bool isFiringCanon;
+    private float gravityGunChargeTime;
+    private const float maxChargeTime = 3.0f;
 
     private void Start()
     {
@@ -23,18 +25,18 @@ public class WeaponController : MonoBehaviour
     private void Update()
     {
         HandleShootingInput();
+        HandleGravityGunCharging();
     }
 
     private void FixedUpdate()
     {
-        if(isFiringShotgun == true)
+        if (isFiringGravityGun)
         {
-            FireWeapon(shotGun.ShotgunForce);
-            isFiringShotgun = false;
-            playerMovement.gravityIncreaseRate = 1.5f;
+            isFiringGravityGun = false;
+            FireGravityGun();
         }
 
-        if(isFiringCanon == true)
+        if (isFiringCanon == true)
         {
             FireWeapon(canon.CanonForce);
             isFiringCanon = false;
@@ -51,17 +53,31 @@ public class WeaponController : MonoBehaviour
 
         if (Input.GetButtonDown("Fire1"))
         {
-            HandleShotGun();
+            gravityGunChargeTime = 0f;  
+        }
+
+        if (Input.GetButtonUp("Fire1"))
+        {
+            HandleGravityGun();
         }
     }
 
-    private void HandleShotGun()
+    private void HandleGravityGunCharging()
     {
-        if (shotGun.canShootShotgun)
+        if (Input.GetButton("Fire1"))
         {
-            isFiringShotgun = true;
+            gravityGunChargeTime += Time.deltaTime;
+            gravityGunChargeTime = Mathf.Min(gravityGunChargeTime, maxChargeTime); 
         }
-        shotGun.Shoot();
+    }
+
+    private void HandleGravityGun()
+    {
+        if(gravityGun.canShootGravityGun)
+        {
+            isFiringGravityGun =true;
+        }
+        gravityGun.Shoot(ref cameraView, this.gameObject, gravityGunChargeTime);
     }
 
     private void HandleCanon()
@@ -78,5 +94,13 @@ public class WeaponController : MonoBehaviour
         explosionManager.AddPush(-cameraView.transform.forward, force, playerRb);
         playerMovement.gravityIncreaseRate = 10f;
         Debug.Log(playerMovement.gravityIncreaseRate);
+    }
+
+    private void FireGravityGun()
+    {
+        gravityGun.Shoot(ref cameraView, this.gameObject, gravityGunChargeTime);
+        gravityGunChargeTime = 0f;  
+        playerMovement.gravityIncreaseRate = 1.5f;
+        Debug.Log("Fired gravity gun with charge time: " + gravityGunChargeTime);
     }
 }

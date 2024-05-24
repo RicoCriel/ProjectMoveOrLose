@@ -5,10 +5,10 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Photon test/Loading Scene.unity
     guid: d5a333cf0fb3ccb44b25332ffd9ef0aa
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Photon test/Lobby.unity
     guid: 7bbde0dcc6f43da4e80b4b8bd0a81ca9
   - enabled: 0
@@ -17,8 +17,11 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Photon test/NewGame.unity
     guid: c2dc1297a979e4146a143697156ff9c4
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Photon test/NewGameDestructableBlocks.unity
     guid: 80f1afb717c9d8445a5fc5b2aa6be311
+  - enabled: 1
+    path: Assets/Scenes/TestingScenes/RicoTestingScene.unity
+    guid: 0a350b82169c59945818eb920766a069
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9e7be553448fa2546aea5752021cbcf7, type: 2}

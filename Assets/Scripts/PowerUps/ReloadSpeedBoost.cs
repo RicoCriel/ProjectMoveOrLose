@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class ReloadSpeedBoost : PowerUpBase
 {
-    private Dictionary<QuakeCharController, float> originalReloadSpeeds = new Dictionary<QuakeCharController, float>();
-    private HashSet<QuakeCharController> appliedPlayers = new HashSet<QuakeCharController>();
+    private Dictionary<PlayerMovement, float> originalReloadSpeeds = new Dictionary<PlayerMovement, float>();
+    private HashSet<PlayerMovement> appliedPlayers = new HashSet<PlayerMovement>();
 
-    protected override void ApplyEffect(QuakeCharController player)
+    protected override void ApplyEffect(PlayerMovement player)
     {
         if (appliedPlayers.Contains(player))
         {
@@ -16,21 +16,21 @@ public class ReloadSpeedBoost : PowerUpBase
 
         if (!originalReloadSpeeds.ContainsKey(player))
         {
-            originalReloadSpeeds[player] = player.shotGun.reloadSpeed;
-            player.shotGun.reloadSpeed /= 2;
-            appliedPlayers.Add(player);
-            Debug.Log($"Reloadboost active. New reload speed: {player.shotGun.reloadSpeed}");
+            //originalReloadSpeeds[player] = player.shotGun.reloadSpeed;
+            //player.shotGun.reloadSpeed /= 2;
+            //appliedPlayers.Add(player);
+            //Debug.Log($"Reloadboost active. New reload speed: {player.shotGun.reloadSpeed}");
         }
     }
 
-    protected override void RemoveEffect(QuakeCharController player)
+    protected override void RemoveEffect(PlayerMovement player)
     {
         if (originalReloadSpeeds.TryGetValue(player, out float originalReloadSpeed))
         {
-            player.shotGun.reloadSpeed = originalReloadSpeed;
-            originalReloadSpeeds.Remove(player);
-            appliedPlayers.Remove(player);
-            Debug.Log($"Reloadboost deactivated. Restored reload speed: {player.shotGun.reloadSpeed}");
+            //player.shotGun.reloadSpeed = originalReloadSpeed;
+            //originalReloadSpeeds.Remove(player);
+            //appliedPlayers.Remove(player);
+            //Debug.Log($"Reloadboost deactivated. Restored reload speed: {player.shotGun.reloadSpeed}");
         }
         else
         {

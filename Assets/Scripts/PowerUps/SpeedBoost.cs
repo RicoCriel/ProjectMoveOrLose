@@ -3,10 +3,10 @@ using UnityEngine;
 
 public class SpeedBoost : PowerUpBase
 {
-    private Dictionary<QuakeCharController, float> originalSpeeds = new Dictionary<QuakeCharController, float>();
-    private HashSet<QuakeCharController> appliedPlayers = new HashSet<QuakeCharController>();
+    private Dictionary<PlayerMovement, float> originalSpeeds = new Dictionary<PlayerMovement, float>();
+    private HashSet<PlayerMovement> appliedPlayers = new HashSet<PlayerMovement>();
 
-    protected override void ApplyEffect(QuakeCharController player)
+    protected override void ApplyEffect(PlayerMovement player)
     {
         if (appliedPlayers.Contains(player))
         {
@@ -23,7 +23,7 @@ public class SpeedBoost : PowerUpBase
         }
     }
 
-    protected override void RemoveEffect(QuakeCharController player)
+    protected override void RemoveEffect(PlayerMovement player)
     {
         if (originalSpeeds.TryGetValue(player, out float originalSpeed))
         {

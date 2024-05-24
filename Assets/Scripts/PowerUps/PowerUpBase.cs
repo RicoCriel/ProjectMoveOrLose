@@ -10,8 +10,8 @@ public abstract class PowerUpBase : MonoBehaviourPun
     
     public PowerUpType _myPowerUpType;
 
-    protected abstract void ApplyEffect(QuakeCharController player);
-    protected abstract void RemoveEffect(QuakeCharController player);
+    protected abstract void ApplyEffect(PlayerMovement player);
+    protected abstract void RemoveEffect(PlayerMovement player);
 
     private void Awake()
     {
@@ -27,11 +27,11 @@ public abstract class PowerUpBase : MonoBehaviourPun
             {
                 MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
                 meshRenderer.enabled = false;
-                StartCoroutine(ActivatePowerUp(other.GetComponent<QuakeCharController>()));
+                StartCoroutine(ActivatePowerUp(other.GetComponent<PlayerMovement>()));
             }
         }
     }
-    private IEnumerator ActivatePowerUp(QuakeCharController player)
+    private IEnumerator ActivatePowerUp(PlayerMovement player)
     {
         ApplyEffect(player);
         yield return new WaitForSeconds(duration);

@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class Invincibility : PowerUpBase
 {
-    protected override void ApplyEffect(QuakeCharController player)
+    protected override void ApplyEffect(PlayerMovement player)
     {
-        player.isInvincible = true;
+        //player.isInvincible = true;
         Debug.Log("Invincibility active");
     }
 
-    protected override void RemoveEffect(QuakeCharController player)
+    protected override void RemoveEffect(PlayerMovement player)
     {
-        player.isInvincible = false;
+        //player.isInvincible = false;
         Debug.Log("Invincibility deactivated");
     }
 }
