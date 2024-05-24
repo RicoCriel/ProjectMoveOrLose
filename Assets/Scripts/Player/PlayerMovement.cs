@@ -60,6 +60,11 @@ public class PlayerMovement : MonoBehaviour
     private float moveHorizontal, moveVertical;
     private float mouseX, mouseY;
     private bool jump;
+    
+    private bool isRotating = false;
+    private Quaternion startRotation;
+    private Quaternion endRotation;
+    private float rotationTime;
 
 
     [SerializeField] private CameraController cameraController;
@@ -132,6 +137,17 @@ public class PlayerMovement : MonoBehaviour
         UpdateGravity();
         HandleMovement();
         HandleRotation();
+        if (isRotating)
+        {
+            rotationTime += Time.deltaTime * rotationTransitionSpeed;
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, rotationTime);
+
+            if (rotationTime >= 1f)
+            {
+                transform.rotation = endRotation;
+                isRotating = false;
+            }
+        }
     }
 
     private void HandleInput()
@@ -316,22 +332,40 @@ public class PlayerMovement : MonoBehaviour
         {
             time += Time.deltaTime * rotationTransitionSpeed;
             transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
-            yield return null;
+            yield return new WaitForSeconds(Time.deltaTime * rotationTransitionSpeed);
         }
         transform.rotation = endRotation;
         endRotation.y = yRotation;
+        
+        yield return new WaitForEndOfFrame();
     }
 
+    // public void SetGravityState(GravityState newGravityState)
+    // {
+    //     if (newGravityState != currentGravityState)
+    //     {
+    //         currentGravityState = newGravityState;
+    //
+    //         if(rotating != null)
+    //             StopCoroutine(rotating);
+    //
+    //         rotating = StartCoroutine(SmoothRotate());
+    //         ApplyGravity();
+    //     }
+    // }
+    
     public void SetGravityState(GravityState newGravityState)
     {
         if (newGravityState != currentGravityState)
         {
             currentGravityState = newGravityState;
 
-            if(rotating != null)
-                StopCoroutine(rotating);
+            // Initialize rotation parameters
+            startRotation = transform.rotation;
+            endRotation = rotations[currentGravityState];
+            rotationTime = 0f;
+            isRotating = true;
 
-            rotating = StartCoroutine(SmoothRotate());
             ApplyGravity();
         }
     }

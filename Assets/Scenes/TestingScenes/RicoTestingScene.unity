@@ -3237,6 +3237,7 @@ MonoBehaviour:
   gravityBulletSpeed: 10
   gravityGunCountDown: 0
   gravityGunAnimator: {fileID: 227918722}
+  playerMovement: {fileID: 0}
   GravityGunForce: 600
   canShootGravityGun: 1
   IsGravityGunShooting: 0
