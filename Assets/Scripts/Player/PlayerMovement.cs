@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     public float rotateSpeed = 100f;
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
-    
+
     [SerializeField] private float airControlFactor = 0.8f;
     [SerializeField] private float airAcceleration = 30f;
 
@@ -184,7 +184,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             currentRotationLerp += (Time.deltaTime * rotationTransitionSpeed) / _actualRotationTime;
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, currentRotationLerp);
+            transform.rotation = Quaternion.Lerp(startRotation, endRotation, currentRotationLerp);
 
             if (currentRotationLerp >= 1f)
             {
@@ -206,76 +206,76 @@ public class PlayerMovement : MonoBehaviour
         mouseX = Input.GetAxis("Mouse X");
     }
 
-   void HandleMovement()
-{
-    Vector3 targetVelocity = rb.velocity;
-    Vector3 currentVelocity = rb.velocity;
-    bool isGrounded = IsPlayerGrounded();
-
-    // Separate horizontal and vertical movement inputs
-    Vector3 horizontalVelocity = transform.right * moveHorizontal * moveSpeed;
-    Vector3 verticalVelocity = transform.forward * moveVertical * moveSpeed;
-
-    if (isGrounded)
+    void HandleMovement()
     {
-        // Grounded movement logic
-        if (moveHorizontal != 0 && moveVertical != 0)
+        Vector3 targetVelocity = rb.velocity;
+        Vector3 currentVelocity = rb.velocity;
+        bool isGrounded = IsPlayerGrounded();
+
+        // Separate horizontal and vertical movement inputs
+        Vector3 horizontalVelocity = transform.right * moveHorizontal * moveSpeed;
+        Vector3 verticalVelocity = transform.forward * moveVertical * moveSpeed;
+
+        if (isGrounded)
         {
-            targetVelocity = (horizontalVelocity + verticalVelocity).normalized * moveSpeed;
-        }
-        else if (moveHorizontal != 0)
-        {
-            targetVelocity = horizontalVelocity;
-        }
-        else if (moveVertical != 0)
-        {
-            targetVelocity = verticalVelocity;
+            // Grounded movement logic
+            if (moveHorizontal != 0 && moveVertical != 0)
+            {
+                targetVelocity = (horizontalVelocity + verticalVelocity).normalized * moveSpeed;
+            }
+            else if (moveHorizontal != 0)
+            {
+                targetVelocity = horizontalVelocity;
+            }
+            else if (moveVertical != 0)
+            {
+                targetVelocity = verticalVelocity;
+            }
+            else
+            {
+                // Apply deceleration when no input is given
+                targetVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, Time.deltaTime * deceleration);
+            }
         }
         else
         {
-            // Apply deceleration when no input is given
-            targetVelocity = Vector3.Lerp(currentVelocity, Vector3.zero, Time.deltaTime * deceleration);
-        }
-    }
-    else
-    {
-        // Non-grounded movement logic (air control)
-        Vector3 airControlVelocity = (horizontalVelocity + verticalVelocity) * airControlFactor;
-        targetVelocity = currentVelocity + airControlVelocity;
+            // Non-grounded movement logic (air control)
+            Vector3 airControlVelocity = (horizontalVelocity + verticalVelocity) * airControlFactor;
+            targetVelocity = currentVelocity + airControlVelocity;
 
-        // Ensure air control doesn't make the character faster than grounded movement
-        if (targetVelocity.magnitude > moveSpeed)
+            // Ensure air control doesn't make the character faster than grounded movement
+            if (targetVelocity.magnitude > moveSpeed)
+            {
+                targetVelocity = targetVelocity.normalized * moveSpeed;
+            }
+        }
+
+        // Interpolate towards target velocity
+        Vector3 newVelocity = Vector3.Lerp(currentVelocity, targetVelocity, Time.deltaTime * (isGrounded ? acceleration : airAcceleration));
+
+        // Maintain current velocity component based on gravity state
+        if (velocityAxes[currentGravityState] == Vector3.up)
         {
-            targetVelocity = targetVelocity.normalized * moveSpeed;
+            newVelocity = new Vector3(newVelocity.x, currentVelocity.y, newVelocity.z);
+        }
+        else if (velocityAxes[currentGravityState] == Vector3.forward)
+        {
+            newVelocity = new Vector3(newVelocity.x, newVelocity.y, currentVelocity.z);
+        }
+        else if (velocityAxes[currentGravityState] == Vector3.right)
+        {
+            newVelocity = new Vector3(currentVelocity.x, newVelocity.y, newVelocity.z);
+        }
+
+        // Apply the calculated velocity to the rigidbody
+        rb.velocity = newVelocity;
+
+        // Handle jump
+        if (jump && isGrounded)
+        {
+            Jump();
         }
     }
-
-    // Interpolate towards target velocity
-    Vector3 newVelocity = Vector3.Lerp(currentVelocity, targetVelocity, Time.deltaTime * (isGrounded ? acceleration : airAcceleration));
-
-    // Maintain current velocity component based on gravity state
-    if (velocityAxes[currentGravityState] == Vector3.up)
-    {
-        newVelocity = new Vector3(newVelocity.x, currentVelocity.y, newVelocity.z);
-    }
-    else if (velocityAxes[currentGravityState] == Vector3.forward)
-    {
-        newVelocity = new Vector3(newVelocity.x, newVelocity.y, currentVelocity.z);
-    }
-    else if (velocityAxes[currentGravityState] == Vector3.right)
-    {
-        newVelocity = new Vector3(currentVelocity.x, newVelocity.y, newVelocity.z);
-    }
-
-    // Apply the calculated velocity to the rigidbody
-    rb.velocity = newVelocity;
-
-    // Handle jump
-    if (jump && isGrounded)
-    {
-        Jump();
-    }
-}
 
 
     public void HandleRotation()
@@ -463,14 +463,6 @@ public class PlayerMovement : MonoBehaviour
             endRotation = rotations[currentGravityState];
             currentRotationLerp = 0f;
 
-            // if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
-            // {
-            //     _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
-            // }
-            // else
-            // {
-            //     _actualRotationTime = _minTimeToRotate;
-            // }
             isRotating = true;
 
             ApplyGravity();
