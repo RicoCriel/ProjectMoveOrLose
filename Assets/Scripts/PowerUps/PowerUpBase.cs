@@ -5,7 +5,7 @@ using System;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
-    protected float duration = 5f;  
+    protected float duration = 10f;  
     protected PhotonView _myView;
     
     public PowerUpType _myPowerUpType;
@@ -25,7 +25,7 @@ public abstract class PowerUpBase : MonoBehaviourPun
             PhotonView playerView = other.GetComponent<PhotonView>();
             if (playerView != null && playerView.IsMine)
             {
-                MeshRenderer meshRenderer = this.GetComponent<MeshRenderer>();
+                MeshRenderer meshRenderer = this.GetComponentInChildren<MeshRenderer>();
                 meshRenderer.enabled = false;
                 StartCoroutine(ActivatePowerUp(other.GetComponent<PlayerMovement>()));
             }

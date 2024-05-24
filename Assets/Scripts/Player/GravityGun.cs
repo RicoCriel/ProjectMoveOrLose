@@ -1,7 +1,6 @@
 using DefaultNamespace.PowerUps;
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -23,6 +22,7 @@ public class GravityGun : MonoBehaviour
 
     private PhotonView photonView;
     private Coroutine countdown;
+    private GravityAmmoType currentAmmoType;
 
     private void Awake()
     {
@@ -31,20 +31,24 @@ public class GravityGun : MonoBehaviour
 
     public void Shoot(ref Transform playerView, GameObject playerObject, float speedMultiplier)
     {
-        if(canShootGravityGun)
+        PlayerMovement playerMovement = playerObject.GetComponent<PlayerMovement>();
+        if(playerMovement != null)
+        {
+            currentAmmoType = playerMovement.GetCurrentGravityAmmoType();
+        }
+
+        if (canShootGravityGun)
         {
             IsGravityGunShooting = true;
 
-            //GravityAmmoType currentAmmoType = playerMovement.GetCurrentGravityAmmoType();
-
             GameObject bullet = /*PhotonNetwork.*/Instantiate(gravityBullet, gravityBulletExit.transform.position, gravityBulletExit.transform.rotation);
-            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            GravityProjectTile gravityProjectile = bullet.GetComponent<GravityProjectTile>();
+            gravityProjectile.ammotype = currentAmmoType;
 
             //bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
             //bullet.GetComponent<Rocket>().player = playerObject;
-
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             rbBullet.velocity = playerView.transform.forward * gravityBulletSpeed * speedMultiplier;
-
 
             gravityGunAnimator.SetTrigger("Shot");
             canShootGravityGun = false;

@@ -9,6 +9,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private ExplosionManager explosionManager;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
+    [SerializeField] private GameObject player;
 
     private Rigidbody playerRb;
 
@@ -40,7 +41,6 @@ public class WeaponController : MonoBehaviour
         {
             FireWeapon(canon.CanonForce);
             isFiringCanon = false;
-            playerMovement.gravityIncreaseRate = 1.5f;
         }
     }
 
@@ -77,7 +77,7 @@ public class WeaponController : MonoBehaviour
         {
             isFiringGravityGun =true;
         }
-        gravityGun.Shoot(ref cameraView, this.gameObject, gravityGunChargeTime);
+        gravityGun.Shoot(ref cameraView, player, gravityGunChargeTime);
     }
 
     private void HandleCanon()
@@ -92,15 +92,11 @@ public class WeaponController : MonoBehaviour
     private void FireWeapon(float force)
     {
         explosionManager.AddPush(-cameraView.transform.forward, force, playerRb);
-        playerMovement.gravityIncreaseRate = 10f;
-        Debug.Log(playerMovement.gravityIncreaseRate);
     }
 
     private void FireGravityGun()
     {
         gravityGun.Shoot(ref cameraView, this.gameObject, gravityGunChargeTime);
         gravityGunChargeTime = 0f;  
-        playerMovement.gravityIncreaseRate = 1.5f;
-        Debug.Log("Fired gravity gun with charge time: " + gravityGunChargeTime);
     }
 }

@@ -19,11 +19,11 @@ namespace DefaultNamespace.PowerUps
 
         protected override void ApplyEffect(PlayerMovement player)
         {
-            //player.SetCurrentGravityAmmoType(ammoType);
+            player.SetCurrentGravityAmmoType(ammoType);
         }
         protected override void RemoveEffect(PlayerMovement player)
         {
-            Debug.Log("");
+            return;
         }
     }
 }

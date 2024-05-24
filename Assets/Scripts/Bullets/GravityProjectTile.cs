@@ -2,6 +2,7 @@ using DefaultNamespace.PowerUps;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public enum GravityEffect
 {
@@ -16,13 +17,14 @@ public enum GravityEffect
 public class GravityProjectTile : MonoBehaviour
 {
     private Rigidbody rb;
-    private GravityAmmoType gravityEffect;
+    public GravityAmmoType ammotype;
     private Dictionary<GravityAmmoType, PlayerMovement.GravityState> gravityEffectMapping;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        InitializeGravityEffectMapping();
+        Destroy(this.gameObject, 3f);
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -30,22 +32,13 @@ public class GravityProjectTile : MonoBehaviour
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
         if (playerMovement != null)
         {
-            Debug.Log(playerMovement.currentGravityState);
-            playerMovement.SetGravityState(PlayerMovement.GravityState.Up);
+            InitializeGravityEffectMapping();
 
-
+            if (gravityEffectMapping.TryGetValue(ammotype, out var newGravityState))
+            {
+                playerMovement.SetGravityState(newGravityState);
+            }
         }
-
-        //if (playerMovement != null && gravityEffectMapping.TryGetValue(gravityEffect, out var newGravityState))
-        //{
-        //    playerMovement.SetGravityState(newGravityState);
-        //    Debug.Log("Player gravity state set to: " + playerMovement.currentGravityState);
-        //}
-    }
-
-    public void SetGravityEffect(GravityAmmoType ammoType)
-    {
-        gravityEffect = ammoType;
     }
 
     private void InitializeGravityEffectMapping()
