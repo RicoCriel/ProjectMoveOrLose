@@ -3368,6 +3368,22 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4350699908551451183, guid: 8d63fc91e600b8f4f90451ae5042f31b, type: 3}
+      propertyPath: _maxTimeToRotate
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4350699908551451183, guid: 8d63fc91e600b8f4f90451ae5042f31b, type: 3}
+      propertyPath: _minTimeToRotate
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4350699908551451183, guid: 8d63fc91e600b8f4f90451ae5042f31b, type: 3}
+      propertyPath: _maxrotationDistanceTreshHold
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 4350699908551451183, guid: 8d63fc91e600b8f4f90451ae5042f31b, type: 3}
+      propertyPath: _minrotationDistanceTreshHold
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4843554188406118952, guid: 8d63fc91e600b8f4f90451ae5042f31b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

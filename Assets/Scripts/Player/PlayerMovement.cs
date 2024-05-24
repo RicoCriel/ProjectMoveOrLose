@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer robotMesh;
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
-    
+
 
     private Quaternion targetRotation;
     private Coroutine rotating;
@@ -60,25 +60,43 @@ public class PlayerMovement : MonoBehaviour
     private float moveHorizontal, moveVertical;
     private float mouseX, mouseY;
     private bool jump;
-    
+
+    //rotation
     private bool isRotating = false;
     private Quaternion startRotation;
     private Quaternion endRotation;
-    private float rotationTime;
+    private float currentRotationLerp;
 
+    [Header("RoationSpeedAndTreshHolds")]
+    [SerializeField]
+    [Range(0f, 10f)]
+    private float _minrotationDistanceTreshHold = 5f;
+    [SerializeField]
+    [Range(5f, 100f)]
+    private float _maxrotationDistanceTreshHold = 20f;
+    [SerializeField]
+    [Range(0.2f, 5f)]
+    private float _minTimeToRotate = 0.5f;
+    [SerializeField]
+    [Range(0.5f, 10f)]
+    private float _maxTimeToRotate = 2f;
+
+    private float _actualRotationTime;
 
     [SerializeField] private CameraController cameraController;
 
     void Start()
     {
-        if(disableMesh)
+        SetRotationtimers();
+
+        if (disableMesh)
         {
             robotMesh.enabled = false;
         }
 
         rb = GetComponent<Rigidbody>();
         view = GetComponent<PhotonView>();
-        
+
         InitializeDictionaries();
         UpdateGravity();
         targetRotation = rotations[currentGravityState];
@@ -92,6 +110,20 @@ public class PlayerMovement : MonoBehaviour
 
         originalGravityForce = gravityForce;
         adjustedGravityForce = gravityForce;
+    }
+    private void SetRotationtimers()
+    {
+
+        if (_minrotationDistanceTreshHold > _maxrotationDistanceTreshHold)
+        {
+            _maxrotationDistanceTreshHold = _minrotationDistanceTreshHold;
+            Debug.LogError("Min rotation distance treshhold can't be greater than max rotation distance treshhold");
+        }
+        if (_minTimeToRotate > _maxTimeToRotate)
+        {
+            _maxTimeToRotate = _minTimeToRotate;
+            Debug.LogError("Min rotation time can't be greater than max rotation time");
+        }
     }
 
     void InitializeDictionaries()
@@ -139,10 +171,19 @@ public class PlayerMovement : MonoBehaviour
         HandleRotation();
         if (isRotating)
         {
-            rotationTime += Time.deltaTime * rotationTransitionSpeed;
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, rotationTime);
+            if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
+            {
+                _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
+            }
+            else
+            {
+                _actualRotationTime = _minTimeToRotate;
+            }
+            
+            currentRotationLerp += (Time.deltaTime * rotationTransitionSpeed) /_actualRotationTime;
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, currentRotationLerp);
 
-            if (rotationTime >= 1f)
+            if (currentRotationLerp >= 1f)
             {
                 transform.rotation = endRotation;
                 isRotating = false;
@@ -207,7 +248,7 @@ public class PlayerMovement : MonoBehaviour
             { GravityState.Forward, true },
             { GravityState.Backward, false },
             { GravityState.Left, false },
-            { GravityState.Right, true}
+            { GravityState.Right, true }
         };
 
         if (invertMouseX.ContainsKey(currentGravityState) && invertMouseX[currentGravityState])
@@ -311,13 +352,30 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit hit;
         Vector3 rayDirection = gravityDirections[currentGravityState];
-        Debug.DrawRay(rb.position, rayDirection * 1f,Color.red);
-        if(Physics.Raycast(rb.position, rayDirection, out hit, 1f, groundLayer))
+        Debug.DrawRay(rb.position, rayDirection * 1f, Color.red);
+        if (Physics.Raycast(rb.position, rayDirection, out hit, 1f, groundLayer))
         {
             return true;
         }
         else
         {
+            return false;
+        }
+    }
+
+    private bool TryFindFallDistance(Vector3 newGravetyDirection, out float distance)
+    {
+        RaycastHit hit;
+
+        // Debug.DrawRay(rb.position, newGravetyDirection * 1f,Color.red);
+        if (Physics.Raycast(rb.position, newGravetyDirection, out hit, groundLayer))
+        {
+            distance = hit.distance;
+            return true;
+        }
+        else
+        {
+            distance = 0;
             return false;
         }
     }
@@ -353,7 +411,7 @@ public class PlayerMovement : MonoBehaviour
     //         ApplyGravity();
     //     }
     // }
-    
+
     public void SetGravityState(GravityState newGravityState)
     {
         if (newGravityState != currentGravityState)
@@ -363,10 +421,36 @@ public class PlayerMovement : MonoBehaviour
             // Initialize rotation parameters
             startRotation = transform.rotation;
             endRotation = rotations[currentGravityState];
-            rotationTime = 0f;
+            currentRotationLerp = 0f;
+
+            // if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
+            // {
+            //     _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
+            // }
+            // else
+            // {
+            //     _actualRotationTime = _minTimeToRotate;
+            // }
             isRotating = true;
 
             ApplyGravity();
+        }
+    }
+
+    private float LerpRotationSpeedOnFallDistance(float minFallSpeed, float maxFallSpeed, float minDistance, float maxDistance, float actualFallDistance)
+    {
+        if (actualFallDistance <= minDistance)
+        {
+            return minFallSpeed;
+        }
+        else if (actualFallDistance >= maxDistance)
+        {
+            return maxFallSpeed;
+        }
+        else
+        {
+            float t = Mathf.InverseLerp(minDistance, maxDistance, actualFallDistance);
+            return Mathf.Lerp(minFallSpeed, maxFallSpeed, t);
         }
     }
 
