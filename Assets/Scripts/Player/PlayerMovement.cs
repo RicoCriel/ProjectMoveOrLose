@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.Threading;
+using DefaultNamespace.PowerUps;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     public Dictionary<GravityState, Vector3> gravityDirections;
     private Dictionary<GravityState, Vector3> velocityAxes;
     private Dictionary<GravityState, Quaternion> rotations;
+    private GravityAmmoType currentGravityAmmoType;
 
     [SerializeField] private SkinnedMeshRenderer robotMesh;
     [SerializeField] private bool disableMesh;
@@ -334,5 +336,13 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    
+    public void SetCurrentGravityAmmoType(GravityAmmoType ammoType)
+    {
+        currentGravityAmmoType = ammoType;
+    }
+
+    public GravityAmmoType GetCurrentGravityAmmoType()
+    {
+        return currentGravityAmmoType;
+    }
 }

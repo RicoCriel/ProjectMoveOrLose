@@ -17,18 +17,13 @@ namespace DefaultNamespace.PowerUps
     {
         [SerializeField] private GravityAmmoType ammoType;
 
-        private void Start()
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void ApplyEffect(PlayerMovement player)
         {
             //player.SetCurrentGravityAmmoType(ammoType);
         }
         protected override void RemoveEffect(PlayerMovement player)
         {
-            throw new System.NotImplementedException();
+            Debug.Log("");
         }
     }
 }
