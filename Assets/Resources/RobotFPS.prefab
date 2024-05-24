@@ -533,7 +533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canon: {fileID: 7811762089347705185}
-  shotGun: {fileID: 4373861159932176929}
+  gravityGun: {fileID: 0}
   explosionManager: {fileID: 8760779805515533163}
   playerMovement: {fileID: 4350699908551451183}
   cameraView: {fileID: 7919198137481756516}
@@ -730,10 +730,12 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: 20
+  moveSpeed: 30
   rotateSpeed: 100
-  acceleration: 10
-  deceleration: 5
+  acceleration: 18
+  deceleration: 8
+  airControlFactor: 0.8
+  airAcceleration: 8
   jumpForce: 40
   gravityForce: 30
   maxGravityForce: 500
@@ -743,6 +745,10 @@ MonoBehaviour:
   robotMesh: {fileID: 8108662171913128166}
   disableMesh: 0
   enableRandomGravity: 0
+  _minrotationDistanceTreshHold: 3
+  _maxrotationDistanceTreshHold: 30
+  _minTimeToRotate: 0.4
+  _maxTimeToRotate: 2.5
   cameraController: {fileID: 248029521578232115}
 --- !u!1 &7548108542683466175
 GameObject:
