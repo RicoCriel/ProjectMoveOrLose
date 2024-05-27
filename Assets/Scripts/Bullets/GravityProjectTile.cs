@@ -14,26 +14,29 @@ public enum GravityEffect
     Right
 }
 
-public class GravityProjectTile : MonoBehaviour
+public class GravityProjectTile : MonoBehaviourPun
 {
     public GravityAmmoType ammotype;
     private Dictionary<GravityAmmoType, PlayerMovement.GravityState> gravityEffectMapping;
+    private Coroutine killObject;
 
     private void Start()
     {
-        Destroy(this.gameObject, 3f);
+        InitializeGravityEffectMapping();
+        if(killObject != null)
+            StopCoroutine(killObject);
+
+        killObject = StartCoroutine(KillMe(3f));
     }
 
     private void OnTriggerEnter(Collider other)
     {
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-        if (playerMovement != null)
+        if (playerMovement != null && gravityEffectMapping.TryGetValue(ammotype, out var newGravityState))
         {
-            InitializeGravityEffectMapping();
-
-            if (gravityEffectMapping.TryGetValue(ammotype, out var newGravityState))
+            if (PhotonNetwork.IsMasterClient)
             {
-                playerMovement.SetGravityState(newGravityState);
+                photonView.RPC("ChangeGravityState", RpcTarget.All, other.GetComponent<PhotonView>().ViewID, (int)newGravityState);
             }
         }
     }
@@ -50,4 +53,25 @@ public class GravityProjectTile : MonoBehaviour
             { GravityAmmoType.Right, PlayerMovement.GravityState.Right }
         };
     }
+
+    [PunRPC]
+    private void ChangeGravityState(int playerViewID, int newGravityState)
+    {
+        PhotonView playerPhotonView = PhotonView.Find(playerViewID);
+        if (playerPhotonView != null)
+        {
+            PlayerMovement playerMovement = playerPhotonView.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.SetGravityState((PlayerMovement.GravityState)newGravityState);
+            }
+        }
+    }
+
+    private IEnumerator KillMe(float time)
+    {
+        yield return new WaitForSeconds(time);
+            PhotonNetwork.Destroy(this.gameObject);
+    }
 }
+
