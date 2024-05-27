@@ -19,6 +19,7 @@ namespace DefaultNamespace.PowerUps
 
         protected override void ApplyEffect(PlayerMovement player)
         {
+            Debug.Log("gravity gun ammo refilled ammotype:" + ammoType);
             player.SetCurrentGravityAmmoType(ammoType);
         }
         protected override void RemoveEffect(PlayerMovement player)

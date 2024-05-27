@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Photon.Pun;
 
 public enum AnimationState
 {
@@ -8,10 +9,11 @@ public enum AnimationState
     Jumping,
 }
 
-public class AnimationController : MonoBehaviour
+public class AnimationController : MonoBehaviour, IPunObservable
 {
     [Header("Player Animation Properties")]
     [SerializeField] private Animator robotAnimator;
+    [SerializeField] private PlayerMovement playerMovement;
 
     private AnimationState robotState = AnimationState.Idle;
     private string previousState = "";
@@ -23,10 +25,29 @@ public class AnimationController : MonoBehaviour
         { AnimationState.Running, "IsRunning" },
         { AnimationState.Jumping, "IsJumping" },
     };
+    private Dictionary<PlayerMovement.PlayerState, AnimationState> playerToAnimationState = new Dictionary<PlayerMovement.PlayerState, AnimationState>()
+    {
+        { PlayerMovement.PlayerState.Idle, AnimationState.Idle },
+        { PlayerMovement.PlayerState.Running, AnimationState.Running },
+        { PlayerMovement.PlayerState.Jumping, AnimationState.Jumping },
+    };
+
+    private PhotonView view;
+
+    void Start()
+    {
+        view = GetComponent<PhotonView>();
+    }
 
     private void Update()
     {
-        UpdateAnimation();
+        if (view.IsMine)
+        {
+            if (playerToAnimationState.TryGetValue(playerMovement.playerState, out AnimationState animState))
+            {
+                SetAnimationState(animState);
+            }
+        }
     }
 
     private void UpdateAnimation()
@@ -48,11 +69,27 @@ public class AnimationController : MonoBehaviour
         previousState = nextState;
     }
 
-    public void SetPlayerState(AnimationState state)
+    public void SetAnimationState(AnimationState state)
     {
         robotState = state;
+        UpdateAnimation();
     }
 
-
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // We own this player: send the others our data
+            stream.SendNext(robotState);
+        }
+        else
+        {
+            // Network player, receive data
+            AnimationState receivedState = (AnimationState)stream.ReceiveNext();
+            if (receivedState != robotState)
+            {
+                SetAnimationState(receivedState);
+            }
+        }
+    }
 }
-

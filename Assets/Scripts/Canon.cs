@@ -32,13 +32,13 @@ public class Canon : MonoBehaviour
         if (canShootCanon)
         {
             IsCanonShooting = true;
-            //photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
-            //GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
-            //Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            //bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            //bullet.GetComponent<Rocket>().player = playerObject;
+            photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
+            GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
+            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+            bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
+            bullet.GetComponent<Rocket>().player = playerObject;
 
-            //rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
+            rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;

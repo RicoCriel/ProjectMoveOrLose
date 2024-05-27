@@ -16,15 +16,12 @@ public enum GravityEffect
 
 public class GravityProjectTile : MonoBehaviour
 {
-    private Rigidbody rb;
     public GravityAmmoType ammotype;
     private Dictionary<GravityAmmoType, PlayerMovement.GravityState> gravityEffectMapping;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
         Destroy(this.gameObject, 3f);
-        PhotonNetwork.Destroy(this.gameObject);
     }
 
     private void OnTriggerEnter(Collider other)

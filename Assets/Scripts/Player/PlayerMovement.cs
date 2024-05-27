@@ -6,7 +6,7 @@ using Photon.Pun;
 using System.Threading;
 using DefaultNamespace.PowerUps;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPunObservable
 {
     public enum GravityState
     {
@@ -18,6 +18,14 @@ public class PlayerMovement : MonoBehaviour
         Right
     }
 
+    public enum PlayerState
+    {
+        Idle,
+        Running,
+        Jumping,
+    }
+
+    public PlayerState playerState;
     public GravityState currentGravityState;
     public LayerMask groundLayer;
 
@@ -86,19 +94,20 @@ public class PlayerMovement : MonoBehaviour
 
     private float _actualRotationTime;
 
-    [SerializeField] private CameraController cameraController;
+    private Vector3 remotePosition;
+    private Quaternion remoteRotation;
 
     void Start()
     {
         SetRotationtimers();
 
-        if (disableMesh)
+        rb = GetComponent<Rigidbody>();
+        view = GetComponent<PhotonView>();
+
+        if (view.IsMine)
         {
             robotMesh.enabled = false;
         }
-
-        rb = GetComponent<Rigidbody>();
-        view = GetComponent<PhotonView>();
 
         InitializeDictionaries();
         UpdateGravity();
@@ -113,6 +122,10 @@ public class PlayerMovement : MonoBehaviour
 
         originalGravityForce = gravityForce;
         adjustedGravityForce = gravityForce;
+
+        // Initialize remote position and rotation with the current values
+        remotePosition = rb.position;
+        remoteRotation = rb.rotation;
     }
     private void SetRotationtimers()
     {
@@ -164,11 +177,24 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        HandleInput();
-        Debug.Log(gravityIncreaseRate);
+        if (!view.IsMine)
+        {
+            // Interpolate position and rotation for remote player objects
+            rb.position = Vector3.Lerp(rb.position, remotePosition, Time.deltaTime * 10);
+            rb.rotation = Quaternion.Lerp(rb.rotation, remoteRotation, Time.deltaTime * 10);
+        }
+
+        if(view.IsMine)
+        {
+            HandleInput();
+            UpdatePlayerState();
+        }
     }
     void FixedUpdate()
     {
+        if(!view.IsMine)
+            return;
+
         UpdateGravity();
         HandleMovement();
         HandleRotation();
@@ -276,7 +302,6 @@ public class PlayerMovement : MonoBehaviour
             Jump();
         }
     }
-
 
     public void HandleRotation()
     {
@@ -469,6 +494,35 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void UpdatePlayerState()
+    {
+        bool isMoving = moveHorizontal != 0 || moveVertical != 0;
+        bool isGrounded = IsPlayerGrounded();
+        // Calculate the velocity component opposite to the current gravity direction
+        Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
+        float gravityVelocityComponent = Vector3.Dot(rb.velocity, oppositeGravityDirection);
+
+        bool isJumping = gravityVelocityComponent > 1f;
+
+        Dictionary<Func<bool>, PlayerState> stateMappings = new Dictionary<Func<bool>, PlayerState>()
+        {
+            { () => isGrounded && isMoving, PlayerState.Running },
+            { () => isGrounded && !isMoving, PlayerState.Idle },
+            { () => isMoving && jump, PlayerState.Jumping },
+            { () => isMoving && !isGrounded, PlayerState.Jumping },
+            { () => isJumping, PlayerState.Jumping }
+        };
+
+        foreach (var state in stateMappings)
+        {
+            if (state.Key())
+            {
+                playerState = state.Value;
+                return;
+            }
+        }
+    }
+
     private float LerpRotationSpeedOnFallDistance(float minFallSpeed, float maxFallSpeed, float minDistance, float maxDistance, float actualFallDistance)
     {
         if (actualFallDistance <= minDistance)
@@ -494,5 +548,23 @@ public class PlayerMovement : MonoBehaviour
     public GravityAmmoType GetCurrentGravityAmmoType()
     {
         return currentGravityAmmoType;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // We own this player: send the others our data
+            stream.SendNext(rb.position);
+            stream.SendNext(rb.rotation);
+            stream.SendNext(currentGravityState);
+        }
+        else
+        {
+            // Network player, receive data
+            remotePosition = (Vector3)stream.ReceiveNext();
+            remoteRotation = (Quaternion)stream.ReceiveNext();
+            currentGravityState = (GravityState)stream.ReceiveNext();
+        }
     }
 }

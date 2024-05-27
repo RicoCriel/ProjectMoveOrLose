@@ -82,7 +82,7 @@ MonoBehaviour:
   MinAmountToSpawn: 2147483647
   MaxAmountToSpawn: 2147483647
   _powerUpsToSpawn:
-  - {fileID: 8929578067918323152, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
+  - {fileID: 0}
 --- !u!114 &2636099115205180403
 MonoBehaviour:
   m_ObjectHideFlags: 0

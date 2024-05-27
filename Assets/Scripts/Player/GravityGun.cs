@@ -15,10 +15,8 @@ public class GravityGun : MonoBehaviour
     [SerializeField] private Animator gravityGunAnimator;
     [SerializeField] private PlayerMovement playerMovement;
 
-    public float GravityGunForce = 600f;
     public bool canShootGravityGun = true;
     public bool IsGravityGunShooting = false;
-    public float rocketJumpForce;
 
     private PhotonView photonView;
     private Coroutine countdown;
@@ -41,12 +39,10 @@ public class GravityGun : MonoBehaviour
         {
             IsGravityGunShooting = true;
 
-            GameObject bullet = /*PhotonNetwork.*/Instantiate(gravityBullet, gravityBulletExit.transform.position, gravityBulletExit.transform.rotation);
+            GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, gravityBulletExit.transform.position, gravityBulletExit.transform.rotation);
             GravityProjectTile gravityProjectile = bullet.GetComponent<GravityProjectTile>();
             gravityProjectile.ammotype = currentAmmoType;
 
-            //bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            //bullet.GetComponent<Rocket>().player = playerObject;
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             rbBullet.velocity = playerView.transform.forward * gravityBulletSpeed * speedMultiplier;
 

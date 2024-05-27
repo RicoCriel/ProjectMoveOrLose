@@ -1,26 +1,44 @@
 using UnityEngine;
-using System.Collections.Generic;
-using System.Threading;
+using Photon.Pun;
 
-public class CameraController : MonoBehaviour
+public class CameraController : MonoBehaviourPun
 {
     [SerializeField] private float mouseSensitivity;
-    [SerializeField] private float rotationSpeed;
     [SerializeField] private Transform robotArms;
-    [SerializeField] PlayerMovement playerMovement;
     [SerializeField] private Vector3 robotArmsOffset;
-    [SerializeField] private Vector3 camOffset;
     private float xRotation = 0f;
+    private bool canControl = true;
+
+    private PhotonView view;
+    private Camera mainCamera;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        view = GetComponent<PhotonView>();
+
+        if (view.IsMine)
+        {
+            mainCamera = Camera.main;
+            mainCamera.transform.SetParent(transform); 
+            mainCamera.transform.localPosition = Vector3.zero; 
+            mainCamera.transform.localRotation = Quaternion.identity; 
+
+            Cursor.lockState = CursorLockMode.Locked;
+            canControl = true;
+        }
+        else
+        {
+            canControl = false;
+        }
     }
 
-    private void LateUpdate()
+    void LateUpdate()
     {
-        RotateCamera();
-        UpdateRobotArmsPosition();
+        if (view.IsMine && canControl)
+        {
+            RotateCamera();
+            UpdateRobotArmsPosition();
+        }
     }
 
     void RotateCamera()
@@ -29,17 +47,12 @@ public class CameraController : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        Quaternion playerRotation = playerMovement.transform.rotation;
-
-        this.transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-        //this.transform.position = playerMovement.transform.position + camOffset;
-        this.transform.rotation = playerRotation * this.transform.localRotation;
+        transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
     }
 
     void UpdateRobotArmsPosition()
     {
-        robotArms.localPosition = this.transform.localPosition + robotArmsOffset;
+        robotArms.localPosition = transform.localPosition + robotArmsOffset;
     }
-
-
 }
+
