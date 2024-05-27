@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class CameraController : MonoBehaviourPun
+public class CameraController : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private float mouseSensitivity;
     [SerializeField] private Transform robotArms;
@@ -15,15 +15,14 @@ public class CameraController : MonoBehaviourPun
     void Start()
     {
         view = GetComponent<PhotonView>();
+        Cursor.lockState = CursorLockMode.Locked;
 
         if (view.IsMine)
         {
             mainCamera = Camera.main;
-            mainCamera.transform.SetParent(transform); 
-            mainCamera.transform.localPosition = Vector3.zero; 
-            mainCamera.transform.localRotation = Quaternion.identity; 
-
-            Cursor.lockState = CursorLockMode.Locked;
+            mainCamera.transform.SetParent(transform);
+            mainCamera.transform.localPosition = Vector3.zero;
+            mainCamera.transform.localRotation = Quaternion.identity;
             canControl = true;
         }
         else
@@ -38,6 +37,7 @@ public class CameraController : MonoBehaviourPun
         {
             RotateCamera();
             UpdateRobotArmsPosition();
+            photonView.RPC("UpdateRobotArmsRotation", RpcTarget.Others, transform.localRotation);
         }
     }
 
@@ -53,6 +53,26 @@ public class CameraController : MonoBehaviourPun
     void UpdateRobotArmsPosition()
     {
         robotArms.localPosition = transform.localPosition + robotArmsOffset;
+        //robotArms.localRotation = transform.localRotation;
+    }
+
+    [PunRPC]
+    void UpdateRobotArmsRotation(Quaternion newRotation)
+    {
+        transform.localRotation = newRotation;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.localRotation);
+        }
+        else
+        {
+            transform.localRotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
+
 
