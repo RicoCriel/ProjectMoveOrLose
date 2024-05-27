@@ -49,7 +49,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 485255490388226247}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -262,7 +262,7 @@ MeshRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4533240615313052009}
   m_Enabled: 1
-  m_CastShadows: 1
+  m_CastShadows: 0
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
@@ -468,7 +468,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 6232699390366388956}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -607,7 +608,7 @@ MonoBehaviour:
   gravityBullet: {fileID: 6935522685164969670, guid: 1a5c724e82f3ad645833b7ce35b17b6b, type: 3}
   gravityBulletExit: {fileID: 8038384555272349316}
   muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
-  gravityBulletSpeed: 25
+  gravityBulletSpeed: 50
   gravityGunCountDown: 0
   gravityGunAnimator: {fileID: 5509581480161231146}
   playerMovement: {fileID: 0}

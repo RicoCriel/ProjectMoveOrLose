@@ -52,9 +52,9 @@ MonoBehaviour:
   MaxAmountToSpawn: 4
   _powerUpsToSpawn:
   - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
-  - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
-  - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
-  - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
+  - {fileID: 7817379241246212584, guid: 02aa34fa9e9b325469d209b70f56f5b7, type: 3}
+  - {fileID: 6153291478886726206, guid: 72e16500ead7a38439714644f14a1ed7, type: 3}
+  - {fileID: 8817799488071941970, guid: 9f89b764bdb75dd4baffece4931c1d3c, type: 3}
   - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
 --- !u!114 &6309927999952907648
 MonoBehaviour:
