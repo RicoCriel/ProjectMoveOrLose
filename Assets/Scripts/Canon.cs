@@ -11,7 +11,8 @@ public class Canon : MonoBehaviour
     [SerializeField] private Transform rocketBulletExit;
     [SerializeField] private VisualEffect muzzleFlashVFX;
     [SerializeField] private float RocketBulletSpeed;
-    [SerializeField] private float CanonCountDown;
+    public float ReloadSpeed = 1f;
+    public float AnimationSpeed;
 
     [SerializeField] private Animator canonAnimator;
 
@@ -25,6 +26,7 @@ public class Canon : MonoBehaviour
     private void Awake()
     {
         photonView = GetComponent<PhotonView>();
+        AnimationSpeed = canonAnimator.speed;
     }
 
     public void Shoot(ref Transform playerView, GameObject playerObject)
@@ -42,7 +44,7 @@ public class Canon : MonoBehaviour
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;
-            StartCoroutine(CanonCooldown(CanonCountDown));
+            StartCoroutine(CanonCooldown(ReloadSpeed));
         }
     }
 

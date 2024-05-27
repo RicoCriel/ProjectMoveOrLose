@@ -100,9 +100,9 @@ MonoBehaviour:
   rocketBulletExit: {fileID: 2468296727248080561}
   muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
   RocketBulletSpeed: 40
-  CanonCountDown: 1
+  ReloadSpeed: 1
+  AnimationSpeed: 0
   canonAnimator: {fileID: 1722350878608328595}
-  CanonDirectionSpeed: 100
   CanonForce: 800
   canShootCanon: 1
   IsCanonShooting: 0
@@ -797,7 +797,6 @@ MonoBehaviour:
   shotgunPellets: 10
   shotgunSpreadAngle: 12
   reloadSpeed: 1
-  ShotgunDirectionSpeed: 70
   ShotgunForce: 300
   canShootShotgun: 1
 --- !u!114 &8644131685037422978

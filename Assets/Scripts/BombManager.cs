@@ -31,7 +31,7 @@ namespace DefaultNamespace
         {
             PhotonView targetView = PhotonView.Find(viewID);
             if (targetView == null) return;
-            if (!targetView.IsMine) return;
+            if (targetView.IsMine) return;
             //targetView.GetComponent<QuakeCharController>()
             //     .AddImpact(explosionPosition, explosionforce);
 

@@ -1,7 +1,177 @@
+//using Photon.Pun;
+//using System;
+//using System.Collections;
+//using UnityEngine;
+//namespace DefaultNamespace
+//{
+//    public class Rocket : MonoBehaviourPunCallbacks
+//    {
+//        [Header("explosion")]
+//        [SerializeField] private float explosionRadius = 5f;
+//        [SerializeField] private bool destroyBlocks = true;
+//        [SerializeField] private float explosionForce = 1000f;
+//        [SerializeField] private float radiusDestroyMultiplier = 1.5f;
+
+//        [SerializeField] private int minDamage = 1;
+//        [SerializeField] private int maxDamage = 10;
+
+//        [SerializeField] private float maxExplosionForce = 1000f;
+//        [SerializeField] private float minExplosionForce = 100f;
+
+//        public GameObject player;
+//        public PhotonView view;
+
+//        [Header("refs")]
+//        [SerializeField] GameObject explosionEffect;
+//        [SerializeField] GameObject sparkEffect;
+
+//        bool exploded = false;
+//        bool collHappened = false;
+//        Vector3 collisionpoint;
+
+//        private void Awake()
+//        {
+//            if (view == null)
+//            {
+//                view = GetComponent<PhotonView>();
+//            }
+
+//            StartCoroutine(KillMe(1.5f));
+//        }
+
+//        private void OnTriggerEnter(Collider other)
+//        {
+//            if (other.gameObject != player)
+//            {
+//                if (exploded) return;
+//                collHappened = true;
+//                collisionpoint = other.transform.position;
+//                Explode();
+//                //Debug.Log(other.name);
+//            }
+//        }
+
+//        public void Explode()
+//        {
+//            if (exploded) return;
+//            exploded = true;
+
+//            if (PhotonNetwork.IsMasterClient)
+//            {
+//                Explosion();
+//            }
+//        }
+
+//        public void Explosion()
+//        {
+//            bool posSet = false;
+//            Vector3 explosionPoint = new Vector3();
+
+//            while (!posSet)
+//            {
+//                if (collHappened)
+//                {
+//                    explosionPoint = collisionpoint;
+//                    posSet = true;
+//                }
+//                else
+//                {
+//                    explosionPoint = transform.position;
+//                    posSet = true;
+//                }
+
+//                // yield return null;
+//            }
+
+//            view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
+
+//            Collider[] Playercolliders = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
+
+//            foreach (var hit in Playercolliders)
+//            {
+//                if (hit.tag == "Player")
+//                {
+//                    PhotonView component = hit.GetComponent<PhotonView>();
+//                    Debug.Log("Hit Player with id" + component.ViewID);
+//                    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.125f, 0.125f, 0.125f));
+//                    view.RPC("PushTargetRPC", RpcTarget.All, component.ViewID, explosionForce, explosionPoint, explosionRadius);
+//                    BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
+//                }
+//            }
+
+//            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius);
+//            foreach (var hit in BlockCollider)
+//            {
+//                if (hit.tag == "Block")
+//                {
+//                    float distance = Vector3.Distance(transform.position, hit.transform.position);
+//                    int calculatedDamage = CalculateDamage(distance);
+
+//                    MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
+//                }
+//            }
+//            MapGenerator.instance.SetRoomDirty();
+//            BombManager.instance.DestroyBomb(view.ViewID);
+//        }
+
+//        private int CalculateDamage(float distance)
+//        {
+//            int damage = Mathf.CeilToInt(Mathf.Lerp(maxDamage, minDamage, distance));
+//            return damage;
+//        }
+
+//        private int CalculateExplosionForce(float distance)
+//        {
+//            float t = Mathf.Clamp01(distance / explosionRadius);
+//            float explosionForce = Mathf.Lerp(minExplosionForce, maxExplosionForce, t);
+//            return Mathf.RoundToInt(explosionForce);
+//        }
+
+//        private IEnumerator KillMe(float cd)
+//        {
+//            yield return new WaitForSeconds(cd);
+//            PhotonNetwork.Destroy(gameObject);
+//        }
+
+
+//        [PunRPC]
+//        void triggerEffectRPC(Vector3 pos)
+//        {
+//            GameObject effect = Instantiate(explosionEffect, pos, Quaternion.identity);
+//            Destroy(effect, 2f);
+//        }
+
+//        [PunRPC]
+//        private void SpawnSparks(Vector3 pos, Vector3 scale)
+//        {
+//            GameObject spark = Instantiate(sparkEffect, pos, Quaternion.identity);
+//            spark.transform.localScale = scale;
+//        }
+
+//        [PunRPC]
+//        void PushTargetRPC(int viewID, float explosionforce, Vector3 explosionPosition, float explosionRadius)
+//        {
+//            PhotonView targetView = PhotonView.Find(viewID);
+//            if (targetView == null) return;
+//            if (targetView.IsMine) return;
+
+//            Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
+//            if (targetRigidbody == null) return;
+
+//            Vector3 direction = targetView.transform.position - explosionPosition;
+//            float distance = direction.magnitude;
+//            float force = explosionforce * (1 - distance / explosionRadius);
+//            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);
+//        }
+
+//    }
+//}
+
 using Photon.Pun;
 using System;
 using System.Collections;
 using UnityEngine;
+
 namespace DefaultNamespace
 {
     public class Rocket : MonoBehaviourPunCallbacks
@@ -47,7 +217,6 @@ namespace DefaultNamespace
                 collHappened = true;
                 collisionpoint = other.transform.position;
                 Explode();
-                Debug.Log(other.name);
             }
         }
 
@@ -79,8 +248,6 @@ namespace DefaultNamespace
                     explosionPoint = transform.position;
                     posSet = true;
                 }
-
-                // yield return null;
             }
 
             view.RPC("triggerEffectRPC", RpcTarget.All, transform.position);
@@ -92,9 +259,9 @@ namespace DefaultNamespace
                 if (hit.tag == "Player")
                 {
                     PhotonView component = hit.GetComponent<PhotonView>();
-                    Debug.Log("Pushing Player with id" + component.ViewID);
-                    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.075f, 0.075f, 0.075f));
-                    BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
+                    Debug.Log("Hit Player with id" + component.ViewID);
+                    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.125f, 0.125f, 0.125f));
+                    //view.RPC("PushTargetRPC", RpcTarget.All, component.ViewID, explosionForce, hit.transform.position, explosionRadius);
                 }
             }
 
@@ -130,9 +297,7 @@ namespace DefaultNamespace
         {
             yield return new WaitForSeconds(cd);
             PhotonNetwork.Destroy(gameObject);
-            Debug.Log("Rocket Destroyed");
         }
-
 
         [PunRPC]
         void triggerEffectRPC(Vector3 pos)
@@ -148,5 +313,26 @@ namespace DefaultNamespace
             spark.transform.localScale = scale;
         }
 
+        [PunRPC]
+        void PushTargetRPC(int viewID, float explosionforce, Vector3 explosionPosition, float explosionRadius)
+        {
+            PhotonView targetView = PhotonView.Find(viewID);
+            if (targetView == null) return;
+            if (targetView.IsMine) return;
+
+            Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
+            if (targetRigidbody == null)
+            {
+                Debug.Log("NO RIGIDBODY FOUND ON PLAYER");
+            }
+
+            Vector3 direction = targetView.transform.position - explosionPosition;
+            float distance = direction.magnitude;
+            float force = explosionforce * (1 - distance / explosionRadius);
+            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);
+        }
+
     }
 }
+
+

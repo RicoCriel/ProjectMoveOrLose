@@ -6,8 +6,8 @@ using System;
 
 public class WeaponController : MonoBehaviour
 {
-    [SerializeField] private Canon canon;
-    [SerializeField] private GravityGun gravityGun;
+    public Canon canon;
+    public GravityGun gravityGun;
     [SerializeField] private ExplosionManager explosionManager;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
@@ -25,7 +25,7 @@ public class WeaponController : MonoBehaviour
     private const float minChargeTime = 0.25f; 
     private float originalGravityIncreaseRate;
     private float currentGravityIncreaseRate;
-    private float cannonCooldownDuration = 0.5f;
+    public float cannonCooldownDuration = 0.5f;
     private float cannonCooldownTimer = 0.0f;
     private float smoothTime = 1f;
 

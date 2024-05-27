@@ -31,6 +31,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     public float moveSpeed = 5f;
     public float rotateSpeed = 100f;
+    public bool isInvinsible;
+
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
 

@@ -17,7 +17,7 @@ public class SpeedBoost : PowerUpBase
         if (!originalSpeeds.ContainsKey(player))
         {
             originalSpeeds[player] = player.moveSpeed;
-            player.moveSpeed *= 1.5f; 
+            player.moveSpeed *= 2f; 
             appliedPlayers.Add(player);
             Debug.Log($"Speed boost active. New speed: {player.moveSpeed}");
         }
