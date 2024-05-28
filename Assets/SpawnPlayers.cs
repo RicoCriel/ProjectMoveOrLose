@@ -22,33 +22,26 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
     private GameObject player;
 
     [SerializeField] private string _sceneToReload;
-
-
-
     private PhotonView view;
 
     private void Awake()
     {
-
         view = GetComponent<PhotonView>();
         startbuttonobject.SetActive(false);
         ReloadSceneButton.SetActive(false);
         Canvas.SetActive(true);
         view.RPC("StartButton", RpcTarget.MasterClient);
     }
+
     [PunRPC]
     void StartButton()
     {
-
         startbuttonobject.SetActive(true);
-
     }
     [PunRPC]
     void ReloadScene()
     {
-
         ReloadSceneButton.SetActive(true);
-
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -59,62 +52,68 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
     {
         view.RPC("ReloadSceneButRPC", RpcTarget.All);
         // PhotonNetwork.LoadLevel(_sceneToReload);
-
     }
     [PunRPC]
     public void ReloadSceneButRPC()
     {
         ExitGames.Client.Photon.Hashtable properties = new ExitGames.Client.Photon.Hashtable();
         PhotonNetwork.LoadLevel(_sceneToReload);
-
-
     }
 
 
     public void PlayerSpawn()
     {
         view.RPC("PlayerSpawnRPC", RpcTarget.All);
-
     }
 
     [PunRPC]
     void PlayerSpawnRPC()
     {
         Vector3 mapCenter = MapGenerator.instance.MapCenter;
-        int randomDirection = UnityEngine.Random.Range(0, MapGenerator.instance.CubeDirections.Length);
+        int maxAttempts = 100;
+        float spawnRadius = 2.0f; 
+        float spawnSpacing = 1.0f; 
 
-        RaycastHit hit;
-        if (Physics.Raycast(mapCenter, MapGenerator.instance.CubeDirections[randomDirection], out hit, 100))
+        Vector3 spawnPosition = FindSpawnPosition(mapCenter, spawnRadius, spawnSpacing, maxAttempts);
+        if (spawnPosition == Vector3.zero)
         {
-            player = PhotonNetwork.Instantiate(playerPrefab.name, hit.point, Quaternion.identity);
-        }
-        else
-        {
-            player = PhotonNetwork.Instantiate(playerPrefab.name, mapCenter, Quaternion.identity);
+            spawnPosition = mapCenter;
         }
 
-        QuakeCharController charcontroller = player.gameObject.GetComponent<QuakeCharController>();
-        // charcontroller.SetGravity(-directions[randomDirection] * 10);
+        player = PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition, Quaternion.identity);
 
         startbuttonobject.SetActive(false);
         Canvas.SetActive(false);
-
     }
 
-    // private void Update()
-    // {
-    //     if (player != null)
-    //     {
-    //         if (player.transform.position.y < -7.5f)
-    //         {
-    //             view.RPC("ReloadScene", RpcTarget.MasterClient);
-    //             view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
-    //         }
-    //     }
-    //
-    //
-    // }
-    
+    Vector3 FindSpawnPosition(Vector3 center, float radius, float spacing, int maxAttempts)
+    {
+        for (int i = 0; i < maxAttempts; i++)
+        {
+            Vector3 randomPosition = center + (UnityEngine.Random.insideUnitSphere * radius);
+            randomPosition.y = center.y; 
+
+            if (!IsPositionOccupied(randomPosition, spacing))
+            {
+                return randomPosition;
+            }
+        }
+        return Vector3.zero; 
+    }
+
+    bool IsPositionOccupied(Vector3 position, float spacing)
+    {
+        Collider[] colliders = Physics.OverlapSphere(position, spacing);
+        foreach (var collider in colliders)
+        {
+            if (collider.CompareTag("Player"))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void Update()
     {
         if (player != null)
@@ -144,8 +143,6 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
         view.RPC("ReloadScene", RpcTarget.MasterClient);
         view.RPC("Endgame", RpcTarget.All, PhotonNetwork.LocalPlayer.UserId);
     }
-
-
 
     [PunRPC]
     void Endgame(string id)

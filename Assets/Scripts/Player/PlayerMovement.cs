@@ -128,6 +128,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         // Initialize remote position and rotation with the current values
         remotePosition = rb.position;
         remoteRotation = rb.rotation;
+
+        SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
     }
     private void SetRotationtimers()
     {
