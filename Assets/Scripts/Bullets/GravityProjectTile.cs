@@ -19,13 +19,13 @@ public class GravityProjectTile : MonoBehaviourPun
 {
     public GravityAmmoType ammotype;
     [SerializeField] private GameObject sparkEffect;
-    private Dictionary<GravityAmmoType, PlayerMovement.GravityState> gravityEffectMapping;
+    private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityEffectMapping;
     private Coroutine killObject;
 
     private void Start()
     {
-        InitializeGravityEffectMapping();
-        if(killObject != null)
+        InitializeReversedGravityEffectMapping();
+        if (killObject != null)
             StopCoroutine(killObject);
 
         killObject = StartCoroutine(KillMe(3f));
@@ -34,26 +34,30 @@ public class GravityProjectTile : MonoBehaviourPun
     private void OnTriggerEnter(Collider other)
     {
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-        if (playerMovement != null && gravityEffectMapping.TryGetValue(ammotype, out var newGravityState))
+        if (playerMovement != null)
         {
-            if (PhotonNetwork.IsMasterClient)
+            PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
+            if (reversedGravityEffectMapping.TryGetValue(currentGravityState, out var reversedGravityState))
             {
-                photonView.RPC("ChangeGravityState", RpcTarget.All, other.GetComponent<PhotonView>().ViewID, (int)newGravityState);
-                photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    photonView.RPC("ChangeGravityState", RpcTarget.All, other.GetComponent<PhotonView>().ViewID, (int)reversedGravityState);
+                    photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
+                }
             }
         }
     }
 
-    private void InitializeGravityEffectMapping()
+    private void InitializeReversedGravityEffectMapping()
     {
-        gravityEffectMapping = new Dictionary<GravityAmmoType, PlayerMovement.GravityState>
+        reversedGravityEffectMapping = new Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState>
         {
-            { GravityAmmoType.Down, PlayerMovement.GravityState.Down },
-            { GravityAmmoType.Up, PlayerMovement.GravityState.Up },
-            { GravityAmmoType.Forward, PlayerMovement.GravityState.Forward },
-            { GravityAmmoType.Backward, PlayerMovement.GravityState.Backward },
-            { GravityAmmoType.Left, PlayerMovement.GravityState.Left },
-            { GravityAmmoType.Right, PlayerMovement.GravityState.Right }
+            { PlayerMovement.GravityState.Down, PlayerMovement.GravityState.Up },
+            { PlayerMovement.GravityState.Up, PlayerMovement.GravityState.Down },
+            { PlayerMovement.GravityState.Forward, PlayerMovement.GravityState.Backward },
+            { PlayerMovement.GravityState.Backward, PlayerMovement.GravityState.Forward },
+            { PlayerMovement.GravityState.Left, PlayerMovement.GravityState.Right },
+            { PlayerMovement.GravityState.Right, PlayerMovement.GravityState.Left }
         };
     }
 
@@ -81,7 +85,6 @@ public class GravityProjectTile : MonoBehaviourPun
     private IEnumerator KillMe(float time)
     {
         yield return new WaitForSeconds(time);
-            PhotonNetwork.Destroy(this.gameObject);
+        PhotonNetwork.Destroy(this.gameObject);
     }
 }
-

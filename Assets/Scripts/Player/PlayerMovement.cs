@@ -496,6 +496,11 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         }
     }
 
+    public GravityState GetGravityState()
+    {
+        return currentGravityState;
+    }
+
     private void UpdatePlayerState()
     {
         bool isMoving = moveHorizontal != 0 || moveVertical != 0;
