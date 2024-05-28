@@ -646,7 +646,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.168, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6550914533013533231}
@@ -938,13 +938,14 @@ MonoBehaviour:
   rocketBulletExit: {fileID: 3881966129331373444}
   muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
   RocketBulletSpeed: 80
-  ReloadSpeed: 0
+  ReloadSpeed: 1
   AnimationSpeed: 0
   canonAnimator: {fileID: 1211343042948181967}
   CanonForce: 80
   canShootCanon: 1
   IsCanonShooting: 0
   rocketJumpForce: 5
+  player: {fileID: 7482990259270619148}
 --- !u!114 &2930702238567205419
 MonoBehaviour:
   m_ObjectHideFlags: 0

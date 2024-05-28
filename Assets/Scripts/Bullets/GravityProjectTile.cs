@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using Unity.Burst.CompilerServices;
 
 public enum GravityEffect
 {
@@ -17,7 +16,7 @@ public enum GravityEffect
 
 public class GravityProjectTile : MonoBehaviourPun
 {
-    public GravityAmmoType ammotype;
+    public GravityAmmoType ammoType;
     [SerializeField] private GameObject sparkEffect;
     private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityEffectMapping;
     private Coroutine killObject;
@@ -25,10 +24,6 @@ public class GravityProjectTile : MonoBehaviourPun
     private void Start()
     {
         InitializeReversedGravityEffectMapping();
-        if (killObject != null)
-            StopCoroutine(killObject);
-
-        killObject = StartCoroutine(KillMe(3f));
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,9 +34,12 @@ public class GravityProjectTile : MonoBehaviourPun
             PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
             if (reversedGravityEffectMapping.TryGetValue(currentGravityState, out var reversedGravityState))
             {
+                Debug.Log($"Player hit. Current state: {currentGravityState}, Reversed state: {reversedGravityState}");
+
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    photonView.RPC("ChangeGravityState", RpcTarget.All, other.GetComponent<PhotonView>().ViewID, (int)reversedGravityState);
+                    Debug.Log("Is Master Client, sending RPCs");
+                    photonView.RPC("ChangeGravityState", RpcTarget.AllBuffered, other.GetComponent<PhotonView>().ViewID, (int)reversedGravityState);
                     photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
                 }
             }
@@ -70,6 +68,7 @@ public class GravityProjectTile : MonoBehaviourPun
             PlayerMovement playerMovement = playerPhotonView.GetComponent<PlayerMovement>();
             if (playerMovement != null)
             {
+                Debug.Log($"Changing gravity state to: {(PlayerMovement.GravityState)newGravityState} for player: {playerViewID}");
                 playerMovement.SetGravityState((PlayerMovement.GravityState)newGravityState);
             }
         }
@@ -86,5 +85,6 @@ public class GravityProjectTile : MonoBehaviourPun
     {
         yield return new WaitForSeconds(time);
         PhotonNetwork.Destroy(this.gameObject);
+        Debug.Log("Projectile Destroyed");
     }
 }

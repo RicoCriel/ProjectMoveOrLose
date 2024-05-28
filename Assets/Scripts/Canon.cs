@@ -21,7 +21,9 @@ public class Canon : MonoBehaviour
     public bool IsCanonShooting = false;
     public float rocketJumpForce;
 
+    [SerializeField] private GameObject player;
     private PhotonView photonView;
+
 
     private void Awake()
     {
@@ -29,7 +31,7 @@ public class Canon : MonoBehaviour
         AnimationSpeed = canonAnimator.speed;
     }
 
-    public void Shoot(ref Transform playerView, GameObject playerObject)
+    public void Shoot(ref Transform playerView)
     {
         if (canShootCanon)
         {
@@ -38,7 +40,7 @@ public class Canon : MonoBehaviour
             GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
-            bullet.GetComponent<Rocket>().player = playerObject;
+            bullet.GetComponent<Rocket>().player = player;
 
             rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");

@@ -298,7 +298,7 @@ public class QuakeCharController : MonoBehaviour
         if (Input.GetButtonDown("Fire2"))
         {
             HandleCanonFire();
-            canon.Shoot(ref playerView, this.gameObject);
+            canon.Shoot(ref playerView /*this.gameObject*/);
         }
 
         if (Input.GetButtonDown("Fire1"))

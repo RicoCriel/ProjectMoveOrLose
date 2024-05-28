@@ -110,7 +110,7 @@ public class WeaponController : MonoBehaviour
             cannonOnCooldown = true;
             cannonCooldownTimer = cannonCooldownDuration;
         }
-        canon.Shoot(ref cameraView, this.gameObject);
+        canon.Shoot(ref cameraView);
     }
 
     private void HandleCanonCooldown()

@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec6b0bb3746ce6f45bd4b0bf01c57eb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ammotype: 0
+  ammoType: 0
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
 --- !u!114 &2102387943778224644
 MonoBehaviour:
