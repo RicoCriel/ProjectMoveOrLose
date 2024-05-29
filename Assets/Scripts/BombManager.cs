@@ -21,9 +21,10 @@ namespace DefaultNamespace
         {
             view.RPC("PushTargetRPC", RpcTarget.All, viewID, explosionforce, explosionPosition, explosionRadius);
         }
-        public void PushShotTarget(int viewID, float explosionforce, Vector3 direction)
+        public void PushShotTarget(int viewID, float explosionforce, Vector3 direction, Rigidbody targetRB)
         {
-            view.RPC("PushShotTargetRPC", RpcTarget.All, viewID, explosionforce, direction);
+            view.RPC("PushShotTargetRPC", RpcTarget.All, viewID, explosionforce, direction, targetRB);
+            Debug.Log("Pushing Target.....");
         }
 
         [PunRPC]
@@ -32,8 +33,6 @@ namespace DefaultNamespace
             PhotonView targetView = PhotonView.Find(viewID);
             if (targetView == null) return;
             if (targetView.IsMine) return;
-            //targetView.GetComponent<QuakeCharController>()
-            //     .AddImpact(explosionPosition, explosionforce);
 
             Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
             if (targetRigidbody == null) return;
@@ -45,16 +44,14 @@ namespace DefaultNamespace
         }
         
         [PunRPC]
-        void PushShotTargetRPC(int viewID, float explosionforce, Vector3 direction)
+        void PushShotTargetRPC(int viewID, float explosionforce, Vector3 direction, Rigidbody targetRB)
         {
             PhotonView targetView = PhotonView.Find(viewID);
             if (targetView == null) return;
             if (!targetView.IsMine) return;
-            targetView.GetComponent<QuakeCharController>()
-                .AddPush(direction, explosionforce);
 
-
-            
+            targetView.GetComponent<ExplosionManager>()
+                .AddPush(direction, explosionforce, targetRB);
         }
 
         public void DestroyBomb(int viewID)

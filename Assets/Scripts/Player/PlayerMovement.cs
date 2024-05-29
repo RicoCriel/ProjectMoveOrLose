@@ -448,39 +448,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             return false;
         }
     }
-
-    // IEnumerator SmoothRotate()
-    // {
-    //     Quaternion startRotation = transform.rotation;
-    //     Quaternion endRotation = rotations[currentGravityState];
-    //     float time = 0f;
-    //
-    //     while (time < 1f)
-    //     {
-    //         time += Time.deltaTime * rotationTransitionSpeed;
-    //         transform.rotation = Quaternion.Slerp(startRotation, endRotation, time);
-    //         yield return new WaitForSeconds(Time.deltaTime * rotationTransitionSpeed);
-    //     }
-    //     transform.rotation = endRotation;
-    //     endRotation.y = yRotation;
-    //     
-    //     yield return new WaitForEndOfFrame();
-    // }
-
-    // public void SetGravityState(GravityState newGravityState)
-    // {
-    //     if (newGravityState != currentGravityState)
-    //     {
-    //         currentGravityState = newGravityState;
-    //
-    //         if(rotating != null)
-    //             StopCoroutine(rotating);
-    //
-    //         rotating = StartCoroutine(SmoothRotate());
-    //         ApplyGravity();
-    //     }
-    // }
-
+        
     public void SetGravityState(GravityState newGravityState)
     {
         if (newGravityState != currentGravityState)

@@ -81,7 +81,7 @@ public class ExplosionManager : MonoBehaviour
     //    Debug.Log("Add push executed");
     //}
 
-    public void AddPush(Vector3 direction, /*float directionSpeed,*/ float force, Rigidbody playerRb)
+    public void AddPush(Vector3 direction, float force, Rigidbody playerRb)
     {
         // Apply the directional push force to the player's Rigidbody
         Vector3 forceVector = direction.normalized * force;

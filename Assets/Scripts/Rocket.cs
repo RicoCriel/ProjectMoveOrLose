@@ -90,9 +90,7 @@ namespace DefaultNamespace
                 if (hit.tag == "Player")
                 {
                     PhotonView component = hit.GetComponent<PhotonView>();
-                    Debug.Log("Hit Player with id" + component.ViewID);
-                    view.RPC("SpawnSparks", RpcTarget.All, hit.transform.position, new Vector3(0.125f, 0.125f, 0.125f));
-                    //view.RPC("PushTargetRPC", RpcTarget.All, component.ViewID, explosionForce, hit.transform.position, explosionRadius);
+                    BombManager.instance.PushTarget(component.ViewID, explosionForce, hit.transform.position, explosionRadius);
                 }
             }
 
@@ -101,10 +99,10 @@ namespace DefaultNamespace
             {
                 if (hit.tag == "Block")
                 {
-                    float distance = Vector3.Distance(transform.position, hit.transform.position);
-                    int calculatedDamage = CalculateDamage(distance);
+                    //float distance = Vector3.Distance(transform.position, hit.transform.position);
+                    //int calculatedDamage = CalculateDamage(distance);
 
-                    MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
+                    //MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
                 }
             }
             MapGenerator.instance.SetRoomDirty();
@@ -143,25 +141,7 @@ namespace DefaultNamespace
             GameObject spark = Instantiate(sparkEffect, pos, Quaternion.identity);
             spark.transform.localScale = scale;
         }
-
-        [PunRPC]
-        void PushTargetRPC(int viewID, float explosionforce, Vector3 explosionPosition, float explosionRadius)
-        {
-            PhotonView targetView = PhotonView.Find(viewID);
-            if (targetView == null) return;
-            if (targetView.IsMine) return;
-
-            Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
-            if (targetRigidbody == null)
-            {
-                Debug.Log("NO RIGIDBODY FOUND ON PLAYER");
-            }
-
-            Vector3 direction = targetView.transform.position - explosionPosition;
-            float distance = direction.magnitude;
-            float force = explosionforce * (1 - distance / explosionRadius);
-            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);
-        }
+        
 
     }
 }
