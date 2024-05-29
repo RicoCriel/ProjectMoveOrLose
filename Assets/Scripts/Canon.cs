@@ -9,17 +9,16 @@ public class Canon : MonoBehaviour
 {
     [SerializeField] private GameObject rocketBullet;
     [SerializeField] private Transform rocketBulletExit;
-    [SerializeField] private VisualEffect muzzleFlashVFX;
+    [SerializeField] private GameObject muzzleFlashPrefab;
     [SerializeField] private float RocketBulletSpeed;
     public float ReloadSpeed = 1f;
     public float AnimationSpeed;
 
     [SerializeField] private Animator canonAnimator;
 
-    public float CanonForce = 600f;
+    public float CanonForce;
     public bool canShootCanon = true;
     public bool IsCanonShooting = false;
-    public float rocketJumpForce;
 
     [SerializeField] private GameObject player;
     private PhotonView photonView;
@@ -62,9 +61,9 @@ public class Canon : MonoBehaviour
     private void SpawnMuzzleFlash()
     {
         Vector3 vfxPosition = rocketBulletExit.position; 
-        Quaternion vfxRotation = Quaternion.LookRotation(-rocketBulletExit.forward); 
-
-        VisualEffect muzzleFlashInstance = Instantiate(muzzleFlashVFX, vfxPosition, vfxRotation);
-        muzzleFlashInstance.Play(); 
+        Quaternion vfxRotation = Quaternion.LookRotation(-rocketBulletExit.forward);
+        GameObject muzzleFlash = PhotonNetwork.Instantiate(muzzleFlashPrefab.name, vfxPosition, vfxRotation);
+        VisualEffect muzzleFlashInstance = muzzleFlash.GetComponent<VisualEffect>();
+        muzzleFlashInstance.Play();
     }
 }

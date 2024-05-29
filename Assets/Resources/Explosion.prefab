@@ -9787,7 +9787,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2192529720444562249}
   - component: {fileID: 6720565252601356192}
-  - component: {fileID: 5677300964661898459}
+  - component: {fileID: -1204634824044786459}
   m_Layer: 0
   m_Name: Explosion
   m_TagString: Untagged
@@ -9834,7 +9834,7 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5677300964661898459
+--- !u!114 &-1204634824044786459
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9843,6 +9843,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6814283735993518990}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 420a6f51bf7acbd4eb6cdab108fd762e, type: 3}
+  m_Script: {fileID: 11500000, guid: 715d34c3fb63af24a969745cd16f0dd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  killTime: 1.5

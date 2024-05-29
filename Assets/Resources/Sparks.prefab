@@ -5073,6 +5073,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3767411516119164157}
   - component: {fileID: 3290040377307699452}
+  - component: {fileID: 4294204329082393123}
   m_Layer: 0
   m_Name: Sparks
   m_TagString: Untagged
@@ -5090,7 +5091,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.92826515, y: 0.25589386, z: 2.894785}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7071352337003532348}
@@ -5118,3 +5119,16 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &4294204329082393123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6609119137876188725}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 715d34c3fb63af24a969745cd16f0dd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  killTime: 1

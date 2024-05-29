@@ -352,7 +352,7 @@ Transform:
   m_GameObject: {fileID: 6530957673138532655}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.527}
+  m_LocalPosition: {x: 0, y: 0, z: 0.673}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -482,7 +482,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6443403447860729137}
-  - component: {fileID: 4828582985135207749}
   - component: {fileID: 6349704217330304504}
   - component: {fileID: 4144997443418568670}
   - component: {fileID: 2061764228405405642}
@@ -511,27 +510,6 @@ Transform:
   - {fileID: 5921085342154534392}
   m_Father: {fileID: 7271102529883445765}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4828582985135207749
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6908889391656868184}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.36066252, y: 0.33510756, z: 0.856413}
-  m_Center: {x: 0.008358902, y: 0.049681008, z: 0.19820654}
 --- !u!114 &6349704217330304504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,7 +549,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
+  m_SynchronizeScale: 1
   m_UseLocal: 1
 --- !u!114 &2061764228405405642
 MonoBehaviour:
@@ -646,7 +624,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.168, z: 0}
-  m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6550914533013533231}
@@ -727,7 +705,7 @@ MonoBehaviour:
   deceleration: 8
   airControlFactor: 0.8
   airAcceleration: 18
-  jumpForce: 40
+  jumpForce: 5
   gravityForce: 15
   maxGravityForce: 500
   rotationTransitionSpeed: 3
@@ -864,7 +842,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 248029521578232115}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -881,7 +860,6 @@ GameObject:
   - component: {fileID: 7811762089347705185}
   - component: {fileID: 2930702238567205419}
   - component: {fileID: 4314304662981881536}
-  - component: {fileID: 7968333808888288842}
   m_Layer: 11
   m_Name: Canon
   m_TagString: Untagged
@@ -920,7 +898,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
+  m_SynchronizeScale: 1
   m_UseLocal: 1
 --- !u!114 &7811762089347705185
 MonoBehaviour:
@@ -936,15 +914,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 3881966129331373444}
-  muzzleFlashVFX: {fileID: 5474502038078615458, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
+  muzzleFlashPrefab: {fileID: 6755666327395234864, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
   RocketBulletSpeed: 80
   ReloadSpeed: 1
   AnimationSpeed: 0
   canonAnimator: {fileID: 1211343042948181967}
-  CanonForce: 80
+  CanonForce: 20
   canShootCanon: 1
   IsCanonShooting: 0
-  rocketJumpForce: 5
   player: {fileID: 7482990259270619148}
 --- !u!114 &2930702238567205419
 MonoBehaviour:
@@ -991,27 +968,6 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!65 &7968333808888288842
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8184331843974031727}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 0.36066252, y: 0.33510756, z: 0.856413}
-  m_Center: {x: 0.008358902, y: 0.049681008, z: 0.19820654}
 --- !u!1 &8466615470981666852
 GameObject:
   m_ObjectHideFlags: 0
@@ -1740,6 +1696,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1483315770493226234, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2438060286924720540}
+    - targetCorrespondingSourceObject: {fileID: 1483315770493226234, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 580472823297265167}
   m_SourcePrefab: {fileID: 100100000, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}
 --- !u!95 &2267784440351991250 stripped
 Animator:
@@ -1771,6 +1730,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2438060286924720540}
+  - {fileID: 580472823297265167}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -1788,6 +1748,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   robotAnimator: {fileID: 2267784440351991250}
   playerMovement: {fileID: 4350699908551451183}
+--- !u!114 &580472823297265167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4815251349071144210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 3
+    SynchronizeType: 0
+    Name: New Int
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsRunning
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsJumping
+  - Type: 4
+    SynchronizeType: 1
+    Name: IsIdling
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
 --- !u!4 &5294915424035582769 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2251148650019314393, guid: ed40aa0822b7c624cb895bdf6240c134, type: 3}

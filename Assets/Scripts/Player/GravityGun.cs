@@ -29,29 +29,23 @@ public class GravityGun : MonoBehaviour
 
     public void Shoot(ref Transform playerView, GameObject playerObject, float speedMultiplier)
     {
-        PlayerMovement playerMovement = playerObject.GetComponent<PlayerMovement>();
-        //if(playerMovement != null)
-        //{
-        //    currentAmmoType = playerMovement.GetCurrentGravityAmmoType();
-        //}
-
         if (canShootGravityGun)
         {
             IsGravityGunShooting = true;
 
-            GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, gravityBulletExit.transform.position, gravityBulletExit.transform.rotation);
-            //GravityProjectTile gravityProjectile = bullet.GetComponent<GravityProjectTile>();
-            //gravityProjectile.ammotype = currentAmmoType;
+            Vector3 bulletStartPosition = gravityBulletExit.position + playerView.forward; 
+
+            GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, bulletStartPosition, playerView.rotation);
 
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            rbBullet.velocity = playerView.transform.forward * gravityBulletSpeed * speedMultiplier;
+            rbBullet.velocity = playerView.forward * gravityBulletSpeed * speedMultiplier;
 
             gravityGunAnimator.SetTrigger("Shot");
             canShootGravityGun = false;
 
-            if(countdown != null)
+            if (countdown != null)
                 StopCoroutine(countdown);
-            
+
             countdown = StartCoroutine(GravityGunCooldown(gravityGunCountDown));
         }
     }

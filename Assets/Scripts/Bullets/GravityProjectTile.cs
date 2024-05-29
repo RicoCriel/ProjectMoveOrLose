@@ -1,62 +1,82 @@
-using DefaultNamespace.PowerUps;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-
-public enum GravityEffect
-{
-    Down,
-    Up,
-    Forward,
-    Backward,
-    Left,
-    Right
-}
+using DefaultNamespace.PowerUps;
 
 public class GravityProjectTile : MonoBehaviourPun
 {
     public GravityAmmoType ammoType;
     [SerializeField] private GameObject sparkEffect;
-    private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityEffectMapping;
-    private Coroutine killObject;
 
-    private void Start()
+    private const float gravityChangeCooldown = 0.5f;
+    private Dictionary<int, float> playerHitTimestamps = new Dictionary<int, float>();
+
+    private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityStates = new Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState>
     {
-        InitializeReversedGravityEffectMapping();
+        { PlayerMovement.GravityState.Down, PlayerMovement.GravityState.Up },
+        { PlayerMovement.GravityState.Up, PlayerMovement.GravityState.Down },
+        { PlayerMovement.GravityState.Forward, PlayerMovement.GravityState.Backward },
+        { PlayerMovement.GravityState.Backward, PlayerMovement.GravityState.Forward },
+        { PlayerMovement.GravityState.Left, PlayerMovement.GravityState.Right },
+        { PlayerMovement.GravityState.Right, PlayerMovement.GravityState.Left }
+    };
+
+    private void Awake()
+    {
+        StartCoroutine(KillMe(2f));
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-        if (playerMovement != null)
-        {
-            PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
-            if (reversedGravityEffectMapping.TryGetValue(currentGravityState, out var reversedGravityState))
-            {
-                Debug.Log($"Player hit. Current state: {currentGravityState}, Reversed state: {reversedGravityState}");
+        if (!photonView.IsMine)
+            return;
 
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    Debug.Log("Is Master Client, sending RPCs");
-                    photonView.RPC("ChangeGravityState", RpcTarget.AllBuffered, other.GetComponent<PhotonView>().ViewID, (int)reversedGravityState);
-                    photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
-                }
-            }
+        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+        if (playerMovement == null)
+            return;
+
+        int playerViewID = other.GetComponent<PhotonView>().ViewID;
+        if (!CanChangeGravityState(playerViewID))
+            return;
+
+        PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
+        PlayerMovement.GravityState reversedGravityState = GetReversedGravityState(currentGravityState);
+        if (reversedGravityState != currentGravityState)
+        {
+            photonView.RPC("ChangeGravityState", RpcTarget.All, playerViewID, (int)reversedGravityState);
+            photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
+            playerHitTimestamps[playerViewID] = Time.time;
         }
+
+        PhotonNetwork.Destroy(this.gameObject);
     }
 
-    private void InitializeReversedGravityEffectMapping()
+    private bool CanChangeGravityState(int playerViewID)
     {
-        reversedGravityEffectMapping = new Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState>
+        float currentTime = Time.time;
+        if (playerHitTimestamps.TryGetValue(playerViewID, out float lastHitTime))
         {
-            { PlayerMovement.GravityState.Down, PlayerMovement.GravityState.Up },
-            { PlayerMovement.GravityState.Up, PlayerMovement.GravityState.Down },
-            { PlayerMovement.GravityState.Forward, PlayerMovement.GravityState.Backward },
-            { PlayerMovement.GravityState.Backward, PlayerMovement.GravityState.Forward },
-            { PlayerMovement.GravityState.Left, PlayerMovement.GravityState.Right },
-            { PlayerMovement.GravityState.Right, PlayerMovement.GravityState.Left }
-        };
+            if (currentTime - lastHitTime < gravityChangeCooldown)
+            {
+                Debug.Log($"Cooldown active. Ignoring hit on player {playerViewID}");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private PlayerMovement.GravityState GetReversedGravityState(PlayerMovement.GravityState currentState)
+    {
+        if (reversedGravityStates.TryGetValue(currentState, out PlayerMovement.GravityState reversedState))
+        {
+            return reversedState;
+        }
+        else
+        {
+            Debug.LogError($"Reversed gravity state not found for current state: {currentState}");
+            return currentState; 
+        }
     }
 
     [PunRPC]
@@ -68,9 +88,17 @@ public class GravityProjectTile : MonoBehaviourPun
             PlayerMovement playerMovement = playerPhotonView.GetComponent<PlayerMovement>();
             if (playerMovement != null)
             {
-                Debug.Log($"Changing gravity state to: {(PlayerMovement.GravityState)newGravityState} for player: {playerViewID}");
                 playerMovement.SetGravityState((PlayerMovement.GravityState)newGravityState);
+                Debug.Log($"Changing gravity state to: {(PlayerMovement.GravityState)newGravityState} for player: {playerViewID}");
             }
+            else
+            {
+                Debug.LogError($"PlayerMovement component not found for player: {playerViewID}");
+            }
+        }
+        else
+        {
+            Debug.LogError($"PhotonView not found for playerViewID: {playerViewID}");
         }
     }
 
@@ -85,6 +113,10 @@ public class GravityProjectTile : MonoBehaviourPun
     {
         yield return new WaitForSeconds(time);
         PhotonNetwork.Destroy(this.gameObject);
-        Debug.Log("Projectile Destroyed");
+        Debug.Log(this.gameObject.name + "Destroyed");
     }
 }
+
+
+
+
