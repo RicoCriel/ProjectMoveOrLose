@@ -99,10 +99,12 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Vector3 remotePosition;
     private Quaternion remoteRotation;
 
+    private Camera playerCamera;
+
     void Start()
     {
         SetRotationtimers();
-
+        playerCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
         view = GetComponent<PhotonView>();
 
@@ -231,7 +233,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         jump = Input.GetKey(KeyCode.Space);
         if (Input.GetKeyDown(KeyCode.E))
         {
-            SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
+            //SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
+            SetGravityStateBasedOnLookDirection();
         }
         mouseX = Input.GetAxis("Mouse X");
     }
@@ -515,6 +518,28 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             float t = Mathf.InverseLerp(minDistance, maxDistance, actualFallDistance);
             return Mathf.Lerp(minFallSpeed, maxFallSpeed, t);
         }
+    }
+
+    void SetGravityStateBasedOnLookDirection()
+    {
+        Vector3 lookDirection = playerCamera.transform.forward;
+        GravityState newGravityState = currentGravityState;
+
+        // Determine the closest gravity state based on the look direction
+        float maxDot = -1f;
+
+        foreach (var gravityDirection in gravityDirections)
+        {
+            float dot = Vector3.Dot(lookDirection, gravityDirection.Value);
+
+            if (dot > maxDot)
+            {
+                maxDot = dot;
+                newGravityState = gravityDirection.Key;
+            }
+        }
+
+        SetGravityState(newGravityState);
     }
 
     public void SetCurrentGravityAmmoType(GravityAmmoType ammoType)

@@ -9,9 +9,6 @@ public class GravityProjectTile : MonoBehaviourPun
     public GravityAmmoType ammoType;
     [SerializeField] private GameObject sparkEffect;
 
-    private const float gravityChangeCooldown = 0.5f;
-    private Dictionary<int, float> playerHitTimestamps = new Dictionary<int, float>();
-
     private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityStates = new Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState>
     {
         { PlayerMovement.GravityState.Down, PlayerMovement.GravityState.Up },
@@ -37,33 +34,15 @@ public class GravityProjectTile : MonoBehaviourPun
             return;
 
         int playerViewID = other.GetComponent<PhotonView>().ViewID;
-        if (!CanChangeGravityState(playerViewID))
-            return;
-
         PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
         PlayerMovement.GravityState reversedGravityState = GetReversedGravityState(currentGravityState);
         if (reversedGravityState != currentGravityState)
         {
             photonView.RPC("ChangeGravityState", RpcTarget.All, playerViewID, (int)reversedGravityState);
             photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
-            playerHitTimestamps[playerViewID] = Time.time;
         }
 
         PhotonNetwork.Destroy(this.gameObject);
-    }
-
-    private bool CanChangeGravityState(int playerViewID)
-    {
-        float currentTime = Time.time;
-        if (playerHitTimestamps.TryGetValue(playerViewID, out float lastHitTime))
-        {
-            if (currentTime - lastHitTime < gravityChangeCooldown)
-            {
-                Debug.Log($"Cooldown active. Ignoring hit on player {playerViewID}");
-                return false;
-            }
-        }
-        return true;
     }
 
     private PlayerMovement.GravityState GetReversedGravityState(PlayerMovement.GravityState currentState)
@@ -75,7 +54,7 @@ public class GravityProjectTile : MonoBehaviourPun
         else
         {
             Debug.LogError($"Reversed gravity state not found for current state: {currentState}");
-            return currentState; 
+            return currentState;
         }
     }
 
@@ -89,16 +68,7 @@ public class GravityProjectTile : MonoBehaviourPun
             if (playerMovement != null)
             {
                 playerMovement.SetGravityState((PlayerMovement.GravityState)newGravityState);
-                Debug.Log($"Changing gravity state to: {(PlayerMovement.GravityState)newGravityState} for player: {playerViewID}");
             }
-            else
-            {
-                Debug.LogError($"PlayerMovement component not found for player: {playerViewID}");
-            }
-        }
-        else
-        {
-            Debug.LogError($"PhotonView not found for playerViewID: {playerViewID}");
         }
     }
 
@@ -116,7 +86,3 @@ public class GravityProjectTile : MonoBehaviourPun
         Debug.Log(this.gameObject.name + "Destroyed");
     }
 }
-
-
-
-
