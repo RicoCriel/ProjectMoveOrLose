@@ -27,7 +27,7 @@ public class GravityGun : MonoBehaviour
         photonView = GetComponent<PhotonView>();
     }
 
-    public void Shoot(ref Transform playerView, GameObject playerObject, float speedMultiplier)
+    public void Shoot(ref Transform playerView, float speedMultiplier)
     {
         if (canShootGravityGun)
         {

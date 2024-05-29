@@ -25,8 +25,6 @@ public class WeaponController : MonoBehaviour
     private const float minChargeTime = 0.25f; 
     private float originalGravityIncreaseRate;
     private float currentGravityIncreaseRate;
-    public float cannonCooldownDuration = 0.5f;
-    private float cannonCooldownTimer = 0.0f;
     private float smoothTime = 1f;
 
     private void Start()
@@ -43,7 +41,6 @@ public class WeaponController : MonoBehaviour
         {
             HandleShootingInput();
             HandleGravityGunCharging();
-            HandleCanonCooldown();
             HandleGravityStrength();
         }
     }
@@ -95,34 +92,19 @@ public class WeaponController : MonoBehaviour
         if (gravityGunChargeTime >= minChargeTime && gravityGun.canShootGravityGun)
         {
             isFiringGravityGun = true;
-            gravityGun.Shoot(ref cameraView, player, gravityGunChargeTime);
+            gravityGun.Shoot(ref cameraView, gravityGunChargeTime);
         }
     }
 
     private void HandleCanon()
     {
-        if (!cannonOnCooldown && canon.canShootCanon)
+        if (canon.canShootCanon)
         {
             isFiringCanon = true;
             explosionManager.AddPush(-cameraView.forward, canon.CanonForce, playerRb);
             playerMovement.gravityIncreaseRate = 20f;
-
-            cannonOnCooldown = true;
-            cannonCooldownTimer = cannonCooldownDuration;
         }
         canon.Shoot(ref cameraView);
-    }
-
-    private void HandleCanonCooldown()
-    {
-        if (cannonOnCooldown)
-        {
-            cannonCooldownTimer -= Time.deltaTime;
-            if (cannonCooldownTimer <= 0.0f)
-            {
-                cannonOnCooldown = false;
-            }
-        }
     }
 
     private void FireWeapon(float force)
@@ -132,7 +114,7 @@ public class WeaponController : MonoBehaviour
 
     private void FireGravityGun()
     {
-        gravityGun.Shoot(ref cameraView, this.gameObject, gravityGunChargeTime);
+        gravityGun.Shoot(ref cameraView, gravityGunChargeTime);
         gravityGunChargeTime = 0f;
     }
 
