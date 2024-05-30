@@ -197,6 +197,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ammoType: 0
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
+  sphereRadius: 1.5
+  gravityRadius: 5
 --- !u!114 &2102387943778224644
 MonoBehaviour:
   m_ObjectHideFlags: 0

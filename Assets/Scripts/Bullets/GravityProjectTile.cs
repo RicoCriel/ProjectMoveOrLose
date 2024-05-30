@@ -1,73 +1,89 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using DefaultNamespace.PowerUps;
 
-public class GravityProjectTile : MonoBehaviourPun
+public class GravityProjectile : MonoBehaviourPun
 {
     public GravityAmmoType ammoType;
     [SerializeField] private GameObject sparkEffect;
-
-    private Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState> reversedGravityStates = new Dictionary<PlayerMovement.GravityState, PlayerMovement.GravityState>
-    {
-        { PlayerMovement.GravityState.Down, PlayerMovement.GravityState.Up },
-        { PlayerMovement.GravityState.Up, PlayerMovement.GravityState.Down },
-        { PlayerMovement.GravityState.Forward, PlayerMovement.GravityState.Backward },
-        { PlayerMovement.GravityState.Backward, PlayerMovement.GravityState.Forward },
-        { PlayerMovement.GravityState.Left, PlayerMovement.GravityState.Right },
-        { PlayerMovement.GravityState.Right, PlayerMovement.GravityState.Left }
-    };
+    [SerializeField] private float sphereRadius;
+    [SerializeField] private float gravityRadius;
 
     private void Awake()
     {
         StartCoroutine(KillMe(2f));
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void FixedUpdate()
     {
         if (!photonView.IsMine)
             return;
 
+        Vector3 direction = GetComponent<Rigidbody>().velocity.normalized;
+
+        RaycastHit hit;
+        if (Physics.SphereCast(transform.position, sphereRadius, direction, out hit, gravityRadius))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                HandlePlayerCollision(hit.collider);
+            }
+        }
+    }
+
+    private void HandlePlayerCollision(Collider other)
+    {
         PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
         if (playerMovement == null)
+        {
+            Debug.LogError("PlayerMovement component not found on the player");
             return;
+        }
 
-        int playerViewID = other.GetComponent<PhotonView>().ViewID;
         PlayerMovement.GravityState currentGravityState = playerMovement.GetGravityState();
-        PlayerMovement.GravityState reversedGravityState = GetReversedGravityState(currentGravityState);
+        PlayerMovement.GravityState reversedGravityState = ReverseGravityState(currentGravityState);
         if (reversedGravityState != currentGravityState)
         {
-            photonView.RPC("ChangeGravityState", RpcTarget.All, playerViewID, (int)reversedGravityState);
+            photonView.RPC("ChangeGravityState", RpcTarget.All, other.GetComponent<PhotonView>().ViewID, reversedGravityState);
             photonView.RPC("SpawnSparks", RpcTarget.All, other.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
         }
 
         PhotonNetwork.Destroy(this.gameObject);
     }
 
-    private PlayerMovement.GravityState GetReversedGravityState(PlayerMovement.GravityState currentState)
+    private PlayerMovement.GravityState ReverseGravityState(PlayerMovement.GravityState currentState)
     {
-        if (reversedGravityStates.TryGetValue(currentState, out PlayerMovement.GravityState reversedState))
+        switch (currentState)
         {
-            return reversedState;
-        }
-        else
-        {
-            Debug.LogError($"Reversed gravity state not found for current state: {currentState}");
-            return currentState;
+            case PlayerMovement.GravityState.Down:
+                return PlayerMovement.GravityState.Up;
+            case PlayerMovement.GravityState.Up:
+                return PlayerMovement.GravityState.Down;
+            case PlayerMovement.GravityState.Forward:
+                return PlayerMovement.GravityState.Backward;
+            case PlayerMovement.GravityState.Backward:
+                return PlayerMovement.GravityState.Forward;
+            case PlayerMovement.GravityState.Left:
+                return PlayerMovement.GravityState.Right;
+            case PlayerMovement.GravityState.Right:
+                return PlayerMovement.GravityState.Left;
+            default:
+                Debug.LogError($"Unknown gravity state: {currentState}");
+                return currentState;
         }
     }
 
     [PunRPC]
-    private void ChangeGravityState(int playerViewID, int newGravityState)
+    private void ChangeGravityState(int playerViewID, PlayerMovement.GravityState newGravityState)
     {
         PhotonView playerPhotonView = PhotonView.Find(playerViewID);
-        if (playerPhotonView != null)
+        if (playerPhotonView != null && playerPhotonView.IsMine)
         {
             PlayerMovement playerMovement = playerPhotonView.GetComponent<PlayerMovement>();
             if (playerMovement != null)
             {
-                playerMovement.SetGravityState((PlayerMovement.GravityState)newGravityState);
+                playerMovement.SetGravityState(newGravityState);
             }
         }
     }
@@ -83,6 +99,8 @@ public class GravityProjectTile : MonoBehaviourPun
     {
         yield return new WaitForSeconds(time);
         PhotonNetwork.Destroy(this.gameObject);
-        Debug.Log(this.gameObject.name + "Destroyed");
+        Debug.Log(this.gameObject.name + " Destroyed");
     }
 }
+
+
