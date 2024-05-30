@@ -34,13 +34,22 @@ namespace DefaultNamespace
             if (targetView == null) return;
             if (targetView.IsMine) return;
 
+            Debug.Log("Pushing Target with force: " + explosionforce + "|| at position: " + explosionPosition + "|| with radius: " + explosionRadius);
+            
             Rigidbody targetRigidbody = targetView.GetComponent<Rigidbody>();
             if (targetRigidbody == null) return;
 
             Vector3 direction = targetView.transform.position - explosionPosition;
+            
             float distance = direction.magnitude;
             float force = explosionforce * (1 - distance / explosionRadius);
-            targetRigidbody.AddForce(direction.normalized * force, ForceMode.Impulse);
+            
+            Debug.Log("Push direction: " + direction + "|| Push force: " + force + "|| Distance: " + distance);
+            
+            Vector3 directionNormalized = direction.normalized * force;
+            Debug.Log("direction normalized : " +directionNormalized);
+            
+            targetRigidbody.AddForce(directionNormalized, ForceMode.Impulse);
         }
         
         [PunRPC]

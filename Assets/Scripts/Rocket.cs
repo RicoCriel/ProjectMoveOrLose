@@ -42,13 +42,15 @@ namespace DefaultNamespace
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject != player)
-            {
+            // if (other.gameObject != player)
+            // {
                 if (exploded) return;
                 collHappened = true;
-                collisionpoint = other.transform.position;
+                collisionpoint = other.ClosestPoint(transform.position);
+                
+               
                 Explode();
-            }
+            // }
         }
 
         public void Explode()
@@ -90,7 +92,7 @@ namespace DefaultNamespace
                 if (hit.tag == "Player")
                 {
                     PhotonView component = hit.GetComponent<PhotonView>();
-                    BombManager.instance.PushTarget(component.ViewID, explosionForce, hit.transform.position, explosionRadius);
+                    BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
                 }
             }
 
@@ -99,10 +101,10 @@ namespace DefaultNamespace
             {
                 if (hit.tag == "Block")
                 {
-                    //float distance = Vector3.Distance(transform.position, hit.transform.position);
-                    //int calculatedDamage = CalculateDamage(distance);
+                    float distance = Vector3.Distance(transform.position, hit.transform.position);
+                    int calculatedDamage = CalculateDamage(distance);
 
-                    //MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
+                    MapGenerator.instance.DamageBlock(hit.transform.position, calculatedDamage);
                 }
             }
             MapGenerator.instance.SetRoomDirty();

@@ -429,7 +429,6 @@ MonoBehaviour:
   playerMovement: {fileID: 4350699908551451183}
   cameraView: {fileID: 7919198137481756516}
   player: {fileID: 7482990259270619148}
-  cannonCooldownDuration: 0.5
 --- !u!114 &7591317613064029999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -624,7 +623,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.168, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6550914533013533231}
@@ -677,7 +676,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.71
   m_Height: 2.2
   m_Direction: 1
   m_Center: {x: 0, y: 0.2, z: 0}
@@ -757,8 +756,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizeVelocity: 1
   m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 1
-  m_TeleportIfDistanceGreaterThan: 3
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 10
 --- !u!114 &7151282100802357745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -915,7 +914,7 @@ MonoBehaviour:
   rocketBullet: {fileID: 6701560607116327262, guid: 27d2ed4850adc1f4c9a38d8e98569dc1, type: 3}
   rocketBulletExit: {fileID: 3881966129331373444}
   muzzleFlashPrefab: {fileID: 6755666327395234864, guid: 19f74a74644b0444aa8558c6cb54b2ba, type: 3}
-  RocketBulletSpeed: 80
+  RocketBulletSpeed: 20
   ReloadSpeed: 0.75
   AnimationSpeed: 0
   canonAnimator: {fileID: 1211343042948181967}

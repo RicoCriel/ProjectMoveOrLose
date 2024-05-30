@@ -29,7 +29,7 @@ public class ReloadSpeedBoost : PowerUpBase
                 Debug.Log($"New ReloadSpeed after division: {weaponController.canon.ReloadSpeed}");
 
                 weaponController.canon.AnimationSpeed *= 4f;
-                weaponController.cannonCooldownDuration /= 2f;
+                // weaponController.cannonCooldownDuration /= 2f;
                 appliedPlayers.Add(player);
 
                 Debug.Log($"Reloadboost active. New reload speed: {weaponController.canon.ReloadSpeed}");
@@ -47,7 +47,7 @@ public class ReloadSpeedBoost : PowerUpBase
             {
                 weaponController.canon.ReloadSpeed = 1f;
                 weaponController.canon.AnimationSpeed /= 4f;
-                weaponController.cannonCooldownDuration *= 2f;
+                // weaponController.cannonCooldownDuration *= 2f;
                 originalReloadSpeeds.Remove(player);
                 appliedPlayers.Remove(player);
                 Debug.Log($"Reloadboost deactivated. Restored reload speed: {weaponController.canon.ReloadSpeed}");
