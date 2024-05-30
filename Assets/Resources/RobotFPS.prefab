@@ -664,7 +664,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7482990259270619148}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: e8fce2a1f302e3948b2f9f7336ac0e55, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -697,13 +697,13 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: 20
+  moveSpeed: 13
   rotateSpeed: 100
   isInvinsible: 0
   acceleration: 10
   deceleration: 8
   airControlFactor: 0.8
-  airAcceleration: 18
+  airAcceleration: 13
   jumpForce: 5
   gravityForce: 15
   maxGravityForce: 500
@@ -756,8 +756,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizeVelocity: 1
   m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
-  m_TeleportIfDistanceGreaterThan: 10
+  m_TeleportEnabled: 1
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &7151282100802357745
 MonoBehaviour:
   m_ObjectHideFlags: 0

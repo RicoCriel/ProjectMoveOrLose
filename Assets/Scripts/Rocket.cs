@@ -37,20 +37,19 @@ namespace DefaultNamespace
                 view = GetComponent<PhotonView>();
             }
 
-            StartCoroutine(KillMe(1.5f));
+            StartCoroutine(KillMe(2.5f));
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            // if (other.gameObject != player)
-            // {
+            if (other.gameObject != player)
+            {
                 if (exploded) return;
                 collHappened = true;
-                collisionpoint = other.ClosestPoint(transform.position);
-                
-               
+                collisionpoint = transform.position;
+
                 Explode();
-            // }
+            }
         }
 
         public void Explode()

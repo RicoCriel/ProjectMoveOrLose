@@ -291,9 +291,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30023199957d411ca21bcfdc3d435bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 4
+  explosionRadius: 5
   destroyBlocks: 1
-  explosionForce: 600
+  explosionForce: 400
   radiusDestroyMultiplier: 1.5
   minDamage: 2
   maxDamage: 12
