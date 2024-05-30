@@ -36,9 +36,10 @@ public class GravityGun : MonoBehaviour
             Vector3 bulletStartPosition = gravityBulletExit.position + playerView.forward; 
 
             GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, bulletStartPosition, playerView.rotation);
-
+            bullet.GetComponent<GravityProjectile>().player = playerMovement.gameObject;
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             rbBullet.velocity = playerView.forward * gravityBulletSpeed * speedMultiplier;
+            
 
             gravityGunAnimator.SetTrigger("Shot");
             canShootGravityGun = false;

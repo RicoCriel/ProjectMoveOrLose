@@ -176,7 +176,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8688006319963062938}
@@ -199,6 +199,7 @@ MonoBehaviour:
   sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
   sphereRadius: 1.5
   gravityRadius: 5
+  player: {fileID: 0}
 --- !u!114 &2102387943778224644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +285,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.12, y: 0.18, z: 0.42}
+  m_Size: {x: 0.25, y: 0.25, z: 0.42}
   m_Center: {x: 0, y: 0.04, z: 0}
 --- !u!1001 &9158992104695932273
 PrefabInstance:

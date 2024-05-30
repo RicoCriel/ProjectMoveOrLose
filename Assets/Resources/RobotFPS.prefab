@@ -588,7 +588,7 @@ MonoBehaviour:
   gravityBulletSpeed: 50
   gravityGunCountDown: 0
   gravityGunAnimator: {fileID: 5509581480161231146}
-  playerMovement: {fileID: 0}
+  playerMovement: {fileID: 4350699908551451183}
   canShootGravityGun: 1
   IsGravityGunShooting: 0
 --- !u!1 &7482990259270619148
@@ -623,7 +623,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.168, z: 0}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6550914533013533231}

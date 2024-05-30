@@ -10,26 +10,85 @@ public class GravityProjectile : MonoBehaviourPun
     [SerializeField] private float sphereRadius;
     [SerializeField] private float gravityRadius;
 
+    public GameObject player;
+    bool exploded = false;
+    bool collHappened = false;
+    
     private void Awake()
     {
-        StartCoroutine(KillMe(2f));
+        StartCoroutine(KillMe(2.5f));
+    }
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject != player)
+        {
+            if (exploded) return;
+            collHappened = true;
+          
+            if (other.CompareTag("Player"))
+            {
+                Collide(other.GetComponent<PlayerMovement>());
+            }
+          
+        }
+    }
+    private void Collide(PlayerMovement HitPlayer)
+    {
+       
+                PhotonView component = HitPlayer.gameObject.GetComponent<PhotonView>();
+                if (HitPlayer == null)
+                {
+                    Debug.LogError("PlayerMovement component not found on the player");
+                    return;
+                }
+                
+                PlayerMovement.GravityState currentGravityState = HitPlayer.GetGravityState();
+                PlayerMovement.GravityState reversedGravityState = ReverseGravityState(currentGravityState);
+                if (reversedGravityState != currentGravityState)
+                {
+                    int viewID = HitPlayer.GetComponent<PhotonView>().ViewID;
+                    photonView.RPC("ChangeGravityStateNew", RpcTarget.All, viewID, reversedGravityState);
+                    photonView.RPC("SpawnSparks", RpcTarget.All, HitPlayer.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
+                }
+
+                PhotonNetwork.Destroy(this.gameObject);
+                
+             
+         
+    }
+    
+    [PunRPC]
+    private void ChangeGravityStateNew(int playerViewID, PlayerMovement.GravityState newGravityState)
+    {
+        PhotonView targetView = PhotonView.Find(playerViewID);
+        if (targetView == null) return;
+        if (!targetView.IsMine) return;
+        
+     
+            PlayerMovement playerMovement = targetView.gameObject.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.SetGravityState(newGravityState);
+            }
+        
     }
 
     private void FixedUpdate()
     {
-        if (!photonView.IsMine)
-            return;
-
-        Vector3 direction = GetComponent<Rigidbody>().velocity.normalized;
-
-        RaycastHit hit;
-        if (Physics.SphereCast(transform.position, sphereRadius, direction, out hit, gravityRadius))
-        {
-            if (hit.collider.CompareTag("Player"))
-            {
-                HandlePlayerCollision(hit.collider);
-            }
-        }
+        // if (!photonView.IsMine)
+        //     return;
+        //
+        // Vector3 direction = GetComponent<Rigidbody>().velocity.normalized;
+        //
+        // RaycastHit hit;
+        // if (Physics.SphereCast(transform.position, sphereRadius, direction, out hit, gravityRadius))
+        // {
+        //     if (hit.collider.CompareTag("Player"))
+        //     {
+        //         HandlePlayerCollision(hit.collider);
+        //     }
+        // }
     }
 
     private void HandlePlayerCollision(Collider other)
