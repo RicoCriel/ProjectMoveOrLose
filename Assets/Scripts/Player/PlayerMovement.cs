@@ -96,8 +96,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private float _actualRotationTime;
 
-    private Vector3 remotePosition;
-    private Quaternion remoteRotation;
+    // private Vector3 remotePosition;
+    // private Quaternion remoteRotation;
 
     private Camera playerCamera;
 
@@ -128,8 +128,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         adjustedGravityForce = gravityForce;
 
         // Initialize remote position and rotation with the current values
-        remotePosition = rb.position;
-        remoteRotation = rb.rotation;
+        // remotePosition = rb.position;
+        // remoteRotation = rb.rotation;
 
         SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
     }
@@ -185,9 +185,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         if (!view.IsMine)
         {
-            // Interpolate position and rotation for remote player objects
-            rb.position = Vector3.Lerp(rb.position, remotePosition, Time.deltaTime * 10);
-            rb.rotation = Quaternion.Lerp(rb.rotation, remoteRotation, Time.deltaTime * 10);
+            // // Interpolate position and rotation for remote player objects
+            // rb.position = Vector3.Lerp(rb.position, remotePosition, Time.deltaTime * 10);
+            // rb.rotation = Quaternion.Lerp(rb.rotation, remoteRotation, Time.deltaTime * 10);
         }
 
         if(view.IsMine)
@@ -198,32 +198,33 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     }
     void FixedUpdate()
     {
-        if(!view.IsMine)
-            return;
-
-        UpdateGravity();
-        HandleMovement();
-        HandleRotation();
-        if (isRotating)
+        if (view.IsMine)
         {
-            if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
+            UpdateGravity();
+            HandleMovement();
+            HandleRotation();
+            if (isRotating)
             {
-                _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
-            }
-            else
-            {
-                _actualRotationTime = _minTimeToRotate;
-            }
+                if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
+                {
+                    _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
+                }
+                else
+                {
+                    _actualRotationTime = _minTimeToRotate;
+                }
 
-            currentRotationLerp += (Time.deltaTime * rotationTransitionSpeed) / _actualRotationTime;
-            transform.rotation = Quaternion.Lerp(startRotation, endRotation, currentRotationLerp);
+                currentRotationLerp += (Time.deltaTime * rotationTransitionSpeed) / _actualRotationTime;
+                transform.rotation = Quaternion.Lerp(startRotation, endRotation, currentRotationLerp);
 
-            if (currentRotationLerp >= 1f)
-            {
-                transform.rotation = endRotation;
-                isRotating = false;
+                if (currentRotationLerp >= 1f)
+                {
+                    transform.rotation = endRotation;
+                    isRotating = false;
+                }
             }
         }
+
     }
 
     private void HandleInput()
@@ -557,15 +558,15 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         if (stream.IsWriting)
         {
             // We own this player: send the others our data
-            stream.SendNext(rb.position);
-            stream.SendNext(rb.rotation);
+            // stream.SendNext(rb.position);
+            // stream.SendNext(rb.rotation);
             stream.SendNext(currentGravityState);
         }
         else
         {
             // Network player, receive data
-            remotePosition = (Vector3)stream.ReceiveNext();
-            remoteRotation = (Quaternion)stream.ReceiveNext();
+            // remotePosition = (Vector3)stream.ReceiveNext();
+            // remoteRotation = (Quaternion)stream.ReceiveNext();
             currentGravityState = (GravityState)stream.ReceiveNext();
         }
     }

@@ -605,7 +605,7 @@ GameObject:
   - component: {fileID: 4350699908551451183}
   - component: {fileID: 7091707630177167925}
   - component: {fileID: 3181196176437330215}
-  - component: {fileID: 7151282100802357745}
+  - component: {fileID: 124579741522322253}
   m_Layer: 0
   m_Name: RobotFPS
   m_TagString: Player
@@ -738,7 +738,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 4350699908551451183}
   - {fileID: 3181196176437330215}
-  - {fileID: 7151282100802357745}
+  - {fileID: 124579741522322253}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -758,7 +758,7 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 1
   m_TeleportIfDistanceGreaterThan: 3
---- !u!114 &7151282100802357745
+--- !u!114 &124579741522322253
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -772,8 +772,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
-  m_SynchronizeScale: 1
-  m_UseLocal: 0
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1 &7548108542683466175
 GameObject:
   m_ObjectHideFlags: 0

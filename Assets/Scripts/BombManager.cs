@@ -32,7 +32,7 @@ namespace DefaultNamespace
         {
             PhotonView targetView = PhotonView.Find(viewID);
             if (targetView == null) return;
-            if (targetView.IsMine) return;
+            if (!targetView.IsMine) return;
 
             Debug.Log("Pushing Target with force: " + explosionforce + "|| at position: " + explosionPosition + "|| with radius: " + explosionRadius);
             
