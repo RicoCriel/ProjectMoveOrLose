@@ -291,14 +291,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30023199957d411ca21bcfdc3d435bf7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionRadius: 5
+  explosionRadius: 2.5
   destroyBlocks: 1
-  explosionForce: 400
+  explosionForce: 50
   radiusDestroyMultiplier: 1.5
   minDamage: 2
   maxDamage: 12
-  maxExplosionForce: 1800
-  minExplosionForce: 500
+  maxExplosionForce: 300
+  minExplosionForce: 50
   player: {fileID: 0}
   view: {fileID: 7621161380306642954}
   explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}

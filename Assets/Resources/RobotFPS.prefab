@@ -697,7 +697,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 256
-  moveSpeed: 13
+  moveSpeed: 8
   rotateSpeed: 100
   isInvinsible: 0
   acceleration: 10
@@ -705,10 +705,10 @@ MonoBehaviour:
   airControlFactor: 0.8
   airAcceleration: 13
   jumpForce: 5
-  gravityForce: 15
-  maxGravityForce: 500
+  gravityForce: 10
+  maxGravityForce: 400
   rotationTransitionSpeed: 3
-  gravityIncreaseRate: 1.5
+  gravityIncreaseRate: 3
   rb: {fileID: 0}
   robotMesh: {fileID: 8108662171913128166}
   disableMesh: 0
@@ -918,7 +918,7 @@ MonoBehaviour:
   ReloadSpeed: 0.75
   AnimationSpeed: 0
   canonAnimator: {fileID: 1211343042948181967}
-  CanonForce: 25
+  CanonForce: 15
   canShootCanon: 1
   IsCanonShooting: 0
   player: {fileID: 7482990259270619148}
