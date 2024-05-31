@@ -38,12 +38,12 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(JoinInput.text);
     }
     
-    public override void OnJoinedRoom()
-    
-    {
-        Debug.Log("Successfully joined room: " + PhotonNetwork.CurrentRoom.Name);
-        PhotonNetwork.LoadLevel(GameSceneToLoadString);
-    }
+    // public override void OnJoinedRoom()
+    //
+    // {
+    //     Debug.Log("Successfully joined room: " + PhotonNetwork.CurrentRoom.Name);
+    //     PhotonNetwork.LoadLevel(GameSceneToLoadString);
+    // }
     
     public override void OnCreateRoomFailed(short returnCode, string message)
     {

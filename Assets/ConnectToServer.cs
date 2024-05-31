@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class ConnectToServer : MonoBehaviourPunCallbacks
 {
+    public string SceneToLoad = "Lobby";
+    
     private void Start()
     {
         PhotonNetwork.ConnectUsingSettings();
@@ -19,6 +21,6 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     
     public override void OnJoinedLobby()
     {
-        SceneManager.LoadScene("Lobby");
+        SceneManager.LoadScene(SceneToLoad);
     }
 }
