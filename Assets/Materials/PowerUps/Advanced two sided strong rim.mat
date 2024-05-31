@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Simple two sided strong rim
+  m_Name: Advanced two sided strong rim
   m_Shader: {fileID: 4800000, guid: 002f6eab9ba9b994d8eec7af12c232ac, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords:
-  - _INVERT_ON
+  m_ValidKeywords:
+  - SCAN2_ON
+  m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -85,13 +85,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Scan2:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Texture: {fileID: 2800000, guid: d6717a765e8c7c44ab4227d5d07ecfac, type: 3}
+        m_Scale: {x: 1, y: 10}
+        m_Offset: {x: 0, y: 40}
     - _Scanlines:
         m_Texture: {fileID: 2800000, guid: d6717a765e8c7c44ab4227d5d07ecfac, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: -5}
+        m_Offset: {x: 0, y: -10}
     - _SecondaryFlicker:
         m_Texture: {fileID: 2800000, guid: ac782bf64bc0d4447bfd606db3ca6968, type: 3}
         m_Scale: {x: 0.1, y: 0.1}
@@ -117,9 +117,9 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RimFalloff: 0.5
-    - _RimStrenght: 1
+    - _RimStrenght: 2
     - _ScanStr: 1
-    - _ScanStr2: 0
+    - _ScanStr2: 1
     - _Shading: 0.25
     - _SrcBlend: 1
     - _UVSec: 0
