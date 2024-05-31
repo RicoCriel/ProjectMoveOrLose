@@ -18,10 +18,10 @@ public class DamageRangeBoost : PowerUpBase
 
         if (!originalExplosionRadiusVal.ContainsKey(player))
         {
-            //originalExplosionRadiusVal[player] = player.explosionManager.explosionRadius;
-            //player.explosionManager.explosionRadius *= 1.5f;
-            //appliedPlayers.Add(player);
-            //Debug.Log($"Damage Range active. New explosion radius: {player.explosionManager.explosionRadius}");
+            originalExplosionRadiusVal[player] = player.GetComponentInChildren<WeaponController>().explosionManager.explosionRadius;
+            player.GetComponentInChildren<WeaponController>().explosionManager.explosionRadius *= 1.5f;
+            appliedPlayers.Add(player);
+            Debug.Log($"Damage Range active. New explosion radius: {player.GetComponentInChildren<WeaponController>().explosionManager.explosionRadius}");
         }
     }
 
@@ -29,10 +29,10 @@ public class DamageRangeBoost : PowerUpBase
     {
         if (originalExplosionRadiusVal.TryGetValue(player, out float originalExplosionRadius))
         {
-            //player.explosionManager.explosionRadius = originalExplosionRadius;
-            //originalExplosionRadiusVal.Remove(player);
-            //appliedPlayers.Remove(player);
-            //Debug.Log($"Damage Range deactivated. Restored explosion radius: {player.explosionManager.explosionRadius}");
+            player.GetComponentInChildren<WeaponController>().explosionManager.explosionRadius = originalExplosionRadius;
+            originalExplosionRadiusVal.Remove(player);
+            appliedPlayers.Remove(player);
+            Debug.Log($"Damage Range deactivated. Restored explosion radius: {player.GetComponentInChildren<WeaponController>().explosionManager.explosionRadius}");
         }
         else
         {

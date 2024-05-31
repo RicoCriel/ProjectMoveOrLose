@@ -8,7 +8,7 @@ public class WeaponController : MonoBehaviour
 {
     public Canon canon;
     public GravityGun gravityGun;
-    [SerializeField] private ExplosionManager explosionManager;
+    public ExplosionManager explosionManager;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
     [SerializeField] private GameObject player;

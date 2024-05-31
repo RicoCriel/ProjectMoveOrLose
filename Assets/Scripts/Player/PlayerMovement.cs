@@ -31,7 +31,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     public float moveSpeed = 5f;
     public float rotateSpeed = 100f;
-    public bool isInvinsible;
 
     [SerializeField] private float acceleration;
     [SerializeField] private float deceleration;
@@ -100,6 +99,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion remoteRotation;
 
     private Camera playerCamera;
+    public bool IsInvincible;
 
     void Start()
     {
@@ -234,7 +234,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         jump = Input.GetKey(KeyCode.Space);
         if (Input.GetKeyDown(KeyCode.E))
         {
-            //SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
             SetGravityStateBasedOnLookDirection();
         }
         mouseX = Input.GetAxis("Mouse X");
@@ -365,9 +364,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     void UpdateGravity()
     {
-        //Vector3 gravity = gravityDirections[currentGravityState].normalized * gravityForce;
-        //rb.AddForce(gravity, ForceMode.Acceleration);
-
         if (!IsPlayerGrounded())
         {
             if (!isFalling)
@@ -383,8 +379,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             {
                 t = 1f;
             }
-
-            //Debug.Log($"Elapsed Time: {elapsedTime}, t: {t}, adjustedGravityForce: {adjustedGravityForce}");
 
             adjustedGravityForce = Mathf.Lerp(originalGravityForce, maxGravityForce, t);
         }

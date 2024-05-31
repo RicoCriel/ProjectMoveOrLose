@@ -91,7 +91,10 @@ namespace DefaultNamespace
                 if (hit.tag == "Player")
                 {
                     PhotonView component = hit.GetComponent<PhotonView>();
-                    BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
+                    if(!hit.GetComponent<PlayerMovement>().IsInvincible)
+                    {
+                        BombManager.instance.PushTarget(component.ViewID, explosionForce, explosionPoint, explosionRadius);
+                    }
                 }
             }
 

@@ -51,11 +51,11 @@ MonoBehaviour:
   MinAmountToSpawn: 1
   MaxAmountToSpawn: 4
   _powerUpsToSpawn:
-  - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
+  - {fileID: 5911932849833030128, guid: f1176b9ac9357e24c96e856ba3bb602e, type: 3}
   - {fileID: 7817379241246212584, guid: 02aa34fa9e9b325469d209b70f56f5b7, type: 3}
   - {fileID: 6153291478886726206, guid: 72e16500ead7a38439714644f14a1ed7, type: 3}
-  - {fileID: 8817799488071941970, guid: 9f89b764bdb75dd4baffece4931c1d3c, type: 3}
-  - {fileID: 3489479104141895368, guid: bc2273bd8829a4e4e817ea2db25c578f, type: 3}
+  - {fileID: 2225858875185259691, guid: 4d783a9c80564044cbbf99334d5cfb68, type: 3}
+  - {fileID: 7463842096981715103, guid: b9d45ca022b6cd546971ca7d29dc8e28, type: 3}
 --- !u!114 &6309927999952907648
 MonoBehaviour:
   m_ObjectHideFlags: 0

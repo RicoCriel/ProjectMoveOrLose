@@ -30,32 +30,30 @@ public class GravityProjectile : MonoBehaviourPun
             {
                 Collide(other.GetComponent<PlayerMovement>());
             }
-          
         }
     }
     private void Collide(PlayerMovement HitPlayer)
     {
-       
-                PhotonView component = HitPlayer.gameObject.GetComponent<PhotonView>();
-                if (HitPlayer == null)
-                {
-                    Debug.LogError("PlayerMovement component not found on the player");
-                    return;
-                }
+       PhotonView component = HitPlayer.gameObject.GetComponent<PhotonView>();
+       if (HitPlayer == null)
+       {
+            Debug.LogError("PlayerMovement component not found on the player");
+            return;
+       }
                 
-                PlayerMovement.GravityState currentGravityState = HitPlayer.GetGravityState();
-                PlayerMovement.GravityState reversedGravityState = ReverseGravityState(currentGravityState);
-                if (reversedGravityState != currentGravityState)
-                {
-                    int viewID = HitPlayer.GetComponent<PhotonView>().ViewID;
-                    photonView.RPC("ChangeGravityStateNew", RpcTarget.All, viewID, reversedGravityState);
-                    photonView.RPC("SpawnSparks", RpcTarget.All, HitPlayer.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
-                }
+       PlayerMovement.GravityState currentGravityState = HitPlayer.GetGravityState();
+       PlayerMovement.GravityState reversedGravityState = ReverseGravityState(currentGravityState);
+       if (reversedGravityState != currentGravityState)
+       {
+            int viewID = HitPlayer.GetComponent<PhotonView>().ViewID;
+            if(!HitPlayer.IsInvincible)
+            {
+                photonView.RPC("ChangeGravityStateNew", RpcTarget.All, viewID, reversedGravityState);
+            }
+            photonView.RPC("SpawnSparks", RpcTarget.All, HitPlayer.transform.position, new Vector3(0.25f, 0.25f, 0.25f));
+       }
 
-                PhotonNetwork.Destroy(this.gameObject);
-                
-             
-         
+       PhotonNetwork.Destroy(this.gameObject);
     }
     
     [PunRPC]
@@ -72,23 +70,6 @@ public class GravityProjectile : MonoBehaviourPun
                 playerMovement.SetGravityState(newGravityState);
             }
         
-    }
-
-    private void FixedUpdate()
-    {
-        // if (!photonView.IsMine)
-        //     return;
-        //
-        // Vector3 direction = GetComponent<Rigidbody>().velocity.normalized;
-        //
-        // RaycastHit hit;
-        // if (Physics.SphereCast(transform.position, sphereRadius, direction, out hit, gravityRadius))
-        // {
-        //     if (hit.collider.CompareTag("Player"))
-        //     {
-        //         HandlePlayerCollision(hit.collider);
-        //     }
-        // }
     }
 
     private void HandlePlayerCollision(Collider other)
