@@ -699,7 +699,6 @@ MonoBehaviour:
     m_Bits: 256
   moveSpeed: 8
   rotateSpeed: 100
-  isInvinsible: 0
   acceleration: 10
   deceleration: 8
   airControlFactor: 0.8
@@ -717,6 +716,7 @@ MonoBehaviour:
   _maxrotationDistanceTreshHold: 30
   _minTimeToRotate: 0.4
   _maxTimeToRotate: 2.5
+  IsInvincible: 0
 --- !u!114 &7091707630177167925
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -77,8 +77,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c120122d1734fe292d858507471db16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minTimeBetweenSpawns: 3
-  _maxTimeBetweenSpawns: 8
+  _minTimeBetweenSpawns: 60
+  _maxTimeBetweenSpawns: 120
   MinAmountToSpawn: 2147483647
   MaxAmountToSpawn: 2147483647
   _powerUpsToSpawn:

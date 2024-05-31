@@ -70,10 +70,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Alpha: 0.4
     - _Emission: 1
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _lerpamount: 1
+    - _lerpamount: 0
     m_Colors:
     - _BaseColor: {r: 0.617257, g: 0.824072, b: 0.9150943, a: 1}
     - _EmissionColor: {r: 2.0078433, g: 0.5803922, b: 0, a: 0}
