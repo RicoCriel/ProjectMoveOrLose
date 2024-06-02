@@ -2,13 +2,18 @@ using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 using System;
+using UnityEngine.UI;
+using Photon.Realtime;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
-    protected float duration = 10f;  
+    protected float duration = 10f;
     protected PhotonView _myView;
-    
+    protected Canvas powerUpCanvas;
+    protected Image powerUpImage;
+
     public PowerUpType _myPowerUpType;
+    public Sprite powerUpSprite;
 
     protected abstract void ApplyEffect(PlayerMovement player);
     protected abstract void RemoveEffect(PlayerMovement player);
@@ -31,12 +36,23 @@ public abstract class PowerUpBase : MonoBehaviourPun
             }
         }
     }
+
     private IEnumerator ActivatePowerUp(PlayerMovement player)
     {
         ApplyEffect(player);
+        powerUpCanvas = player.GetComponentInChildren<Canvas>(true);
+        if(powerUpCanvas != null)
+        {
+            powerUpCanvas.gameObject.SetActive(true);
+            powerUpImage = powerUpCanvas.GetComponentInChildren<Image>(true);
+            powerUpImage.sprite = powerUpSprite;
+        }
+        
         yield return new WaitForSeconds(duration);
+
         RemoveEffect(player);
-        PhotonNetwork.Destroy(gameObject);  
+        powerUpCanvas.gameObject.SetActive(false);
+        PhotonNetwork.Destroy(gameObject);
     }
 
     private void Update()

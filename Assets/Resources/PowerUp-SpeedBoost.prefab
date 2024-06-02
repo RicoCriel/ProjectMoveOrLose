@@ -88,6 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _myPowerUpType: 0
+  powerUpSprite: {fileID: 21300000, guid: 02dda6baaf165b248a5df5e5985f3134, type: 3}
 --- !u!65 &3641197310681142619
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -170,7 +171,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2bd4e237edc30914c836ebe5cd4b0b33, type: 2}
+  - {fileID: 2100000, guid: c7d2377bac188394ab06476cfe37db16, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
