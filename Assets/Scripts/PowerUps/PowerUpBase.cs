@@ -1,9 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using Photon.Pun;
-using System;
 using UnityEngine.UI;
-using Photon.Realtime;
+using DG.Tweening;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
@@ -11,6 +10,7 @@ public abstract class PowerUpBase : MonoBehaviourPun
     protected PhotonView _myView;
     protected Canvas powerUpCanvas;
     protected Image powerUpImage;
+    protected Image powerUpDurationImage;
 
     public PowerUpType _myPowerUpType;
     public Sprite powerUpSprite;
@@ -41,17 +41,43 @@ public abstract class PowerUpBase : MonoBehaviourPun
     {
         ApplyEffect(player);
         powerUpCanvas = player.GetComponentInChildren<Canvas>(true);
-        if(powerUpCanvas != null)
+        if (powerUpCanvas != null)
         {
             powerUpCanvas.gameObject.SetActive(true);
-            powerUpImage = powerUpCanvas.GetComponentInChildren<Image>(true);
-            powerUpImage.sprite = powerUpSprite;
+            powerUpDurationImage = powerUpCanvas.GetComponentInChildren<Image>();
+
+            if (powerUpDurationImage != null)
+            {
+                foreach (Transform child in powerUpDurationImage.transform)
+                {
+                    Image childImage = child.GetComponent<Image>();
+                    if (childImage != null)
+                    {
+                        powerUpImage = childImage;
+                        break;
+                    }
+                }
+
+                if (powerUpImage != null)
+                {
+                    powerUpImage.sprite = powerUpSprite;
+                    powerUpDurationImage.fillAmount = 1;
+
+                    DOTween.To(() => powerUpDurationImage.fillAmount, x => powerUpDurationImage.fillAmount = x, 0, duration)
+                           .SetEase(Ease.Linear)
+                           .OnUpdate(() => powerUpDurationImage.color = Color.Lerp(Color.red, Color.green, powerUpDurationImage.fillAmount))
+                           .OnComplete(() => powerUpCanvas.gameObject.SetActive(false));
+                }
+                else
+                {
+                    Debug.LogError("Child Image not found.");
+                }
+            }
         }
-        
+
         yield return new WaitForSeconds(duration);
 
         RemoveEffect(player);
-        powerUpCanvas.gameObject.SetActive(false);
         PhotonNetwork.Destroy(gameObject);
     }
 

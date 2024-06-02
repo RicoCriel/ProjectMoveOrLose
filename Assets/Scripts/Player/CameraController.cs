@@ -37,7 +37,7 @@ public class CameraController : MonoBehaviourPun, IPunObservable
         {
             RotateCamera();
             UpdateRobotArmsPosition();
-            //photonView.RPC("UpdateRobotArmsRotation", RpcTarget.Others, transform.localRotation);
+            photonView.RPC("UpdateRobotArmsRotation", RpcTarget.Others, transform.localRotation);
         }
     }
 

@@ -37,12 +37,12 @@ public class WeaponController : MonoBehaviour
 
     private void Update()
     {
-        //if (view.IsMine)
-        //{
-        //    HandleShootingInput();
-        //    HandleGravityGunCharging();
-        //    HandleGravityStrength();
-        //}
+        if (view.IsMine)
+        {
+            HandleShootingInput();
+            HandleGravityGunCharging();
+            HandleGravityStrength();
+        }
     }
 
     private void FixedUpdate()
