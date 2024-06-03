@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GunCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 115736115860132669, guid: dda32a23af2b5b044ae6f28385a349a9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2427906852205115206, guid: dda32a23af2b5b044ae6f28385a349a9, type: 3}
       propertyPath: m_Pivot.x
       value: 0

@@ -26,7 +26,7 @@ public class GravityGunChargeUI : MonoBehaviour
     {
         UpdateFillAmount(ChargeTime);
         UpdateColor(ChargeTime);
-        UpdatePulse();
+        //UpdatePulse();
     }
 
     private void UpdatePulse()

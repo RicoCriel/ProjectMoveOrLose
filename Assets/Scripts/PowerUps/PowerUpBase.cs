@@ -30,8 +30,6 @@ public abstract class PowerUpBase : MonoBehaviourPun
             PhotonView playerView = other.GetComponent<PhotonView>();
             if (playerView != null && playerView.IsMine)
             {
-                MeshRenderer meshRenderer = this.GetComponentInChildren<MeshRenderer>();
-                meshRenderer.enabled = false;
                 StartCoroutine(ActivatePowerUp(other.GetComponent<PlayerMovement>()));
             }
         }
@@ -39,7 +37,17 @@ public abstract class PowerUpBase : MonoBehaviourPun
 
     private IEnumerator ActivatePowerUp(PlayerMovement player)
     {
+        if (player.activePowerUp != null)
+        {
+            yield break;
+        }
+
+        player.activePowerUp = this;
+
         ApplyEffect(player);
+        MeshRenderer meshRenderer = this.GetComponentInChildren<MeshRenderer>();
+        meshRenderer.enabled = false;
+
         powerUpCanvas = player.GetComponentInChildren<Canvas>(true);
         if (powerUpCanvas != null)
         {
@@ -67,10 +75,6 @@ public abstract class PowerUpBase : MonoBehaviourPun
                            .SetEase(Ease.Linear)
                            .OnUpdate(() => powerUpDurationImage.color = Color.Lerp(Color.red, Color.green, powerUpDurationImage.fillAmount))
                            .OnComplete(() => powerUpCanvas.gameObject.SetActive(false));
-                }
-                else
-                {
-                    Debug.LogError("Child Image not found.");
                 }
             }
         }

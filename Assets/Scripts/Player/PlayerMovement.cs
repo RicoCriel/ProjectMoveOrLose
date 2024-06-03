@@ -100,6 +100,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private Camera playerCamera;
     public bool IsInvincible;
+    public PowerUpBase activePowerUp;
 
     void Start()
     {
