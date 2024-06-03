@@ -27,7 +27,7 @@ public class CanonUI : MonoBehaviour
         if (fadeSequence != null && fadeSequence.IsActive())
         {
             fadeSequence.Kill();
-            canonImage.DOFade(1f, 0.1f); // Ensure image is fully visible
+            canonImage.DOFade(1f, 0.1f); 
         }
     }
 }

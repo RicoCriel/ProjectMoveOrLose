@@ -11,6 +11,7 @@ public abstract class PowerUpBase : MonoBehaviourPun
     protected Canvas powerUpCanvas;
     protected Image powerUpImage;
     protected Image powerUpDurationImage;
+    protected PlayerMovement player;
 
     public PowerUpType _myPowerUpType;
     public Sprite powerUpSprite;
@@ -25,23 +26,20 @@ public abstract class PowerUpBase : MonoBehaviourPun
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if(!other.CompareTag("Player")) return;
+
+        PhotonView playerView = other.GetComponent<PhotonView>();
+        if (playerView == null || !playerView.IsMine) return;
+
+        PlayerMovement player = other.GetComponent<PlayerMovement>();
+        if (player != null && player.activePowerUp == null)
         {
-            PhotonView playerView = other.GetComponent<PhotonView>();
-            if (playerView != null && playerView.IsMine)
-            {
-                StartCoroutine(ActivatePowerUp(other.GetComponent<PlayerMovement>()));
-            }
+            StartCoroutine(ActivatePowerUp(player));
         }
     }
 
     private IEnumerator ActivatePowerUp(PlayerMovement player)
     {
-        if (player.activePowerUp != null)
-        {
-            yield break;
-        }
-
         player.activePowerUp = this;
 
         ApplyEffect(player);

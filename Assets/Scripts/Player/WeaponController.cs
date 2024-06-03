@@ -55,8 +55,8 @@ public class WeaponController : MonoBehaviour
         {
             HandleShootingInput();
             HandleGravityGunCharging();
-            HandleGravityStrength();
             gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
+            HandleGravityStrength();
         }
     }
 
@@ -90,6 +90,7 @@ public class WeaponController : MonoBehaviour
         if (Input.GetButtonUp("Fire1"))
         {
             HandleGravityGun();
+            gravityGunChargeUI.ResetFillAmount();
         }
     }
 
@@ -138,6 +139,7 @@ public class WeaponController : MonoBehaviour
     {
         gravityGun.Shoot(ref cameraView, gravityGunChargeTime);
         gravityGunChargeTime = 0f;
+        gravityGunChargeUI.ResetFillAmount();
     }
 
     private void HandleGravityStrength()

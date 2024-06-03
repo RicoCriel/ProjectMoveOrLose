@@ -48,6 +48,7 @@ public class GravityProjectile : MonoBehaviourPun
             int viewID = HitPlayer.GetComponent<PhotonView>().ViewID;
             if(!HitPlayer.IsInvincible)
             {
+                HitPlayer.IsShot = true;
                 photonView.RPC("ChangeGravityStateNew", RpcTarget.All, viewID, reversedGravityState);
             }
             photonView.RPC("SpawnSparks", RpcTarget.All, HitPlayer.transform.position, new Vector3(0.25f, 0.25f, 0.25f));

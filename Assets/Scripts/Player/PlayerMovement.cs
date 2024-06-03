@@ -62,6 +62,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion targetRotation;
     private Coroutine rotating;
     private Coroutine randomGravity;
+    private Coroutine playerShot;
     private bool isFalling;
     private bool changingGravityState = false;
     private float fallStartTime;
@@ -100,6 +101,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private Camera playerCamera;
     public bool IsInvincible;
+    public bool IsShot;
     public PowerUpBase activePowerUp;
 
     void Start()
@@ -195,6 +197,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             HandleInput();
             UpdatePlayerState();
+            SetGravityShotValue();
         }
     }
     void FixedUpdate()
@@ -233,8 +236,10 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
         jump = Input.GetKey(KeyCode.Space);
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && !IsShot)
         {
+            Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
+            rb.AddForce(oppositeGravityDirection * 25, ForceMode.Impulse);
             SetGravityStateBasedOnLookDirection();
         }
         mouseX = Input.GetAxis("Mouse X");
@@ -536,6 +541,24 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         }
 
         SetGravityState(newGravityState);
+    }
+
+    private void SetGravityShotValue()
+    {
+        if (IsShot)
+        {
+            if(playerShot != null)
+            {
+                StopCoroutine(HandleGravityShot(3f));
+                playerShot = StartCoroutine(HandleGravityShot(3f));
+            }
+        }
+    }
+
+    private IEnumerator HandleGravityShot(float duration)
+    {
+       yield return new WaitForSeconds(duration);
+       IsShot = false;
     }
 
     public void SetCurrentGravityAmmoType(GravityAmmoType ammoType)

@@ -258,7 +258,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5d4609a02022fb648ac107f57366fd22, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bde6fdf2b0aa9b148a22da6df42dc0f1, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChargeTime: 0
   chargeImage: {fileID: 8505124828191247150}
-  maxChargeTime: 4
+  maxChargeTime: 3
   minColor: {r: 1, g: 0, b: 0, a: 1}
   maxColor: {r: 0, g: 1, b: 0, a: 1}
   scaleChangeDuration: 0.1
