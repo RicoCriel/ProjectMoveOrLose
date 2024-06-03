@@ -606,6 +606,8 @@ MonoBehaviour:
   playerMovement: {fileID: 4350699908551451183}
   cameraView: {fileID: 7919198137481756516}
   player: {fileID: 7482990259270619148}
+  gravityGunChargeTime: 0
+  canvasPrefab: {fileID: 115736115860132669, guid: dda32a23af2b5b044ae6f28385a349a9, type: 3}
 --- !u!114 &7591317613064029999
 MonoBehaviour:
   m_ObjectHideFlags: 0

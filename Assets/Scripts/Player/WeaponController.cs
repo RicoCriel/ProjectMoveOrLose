@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 using System;
+using DG.Tweening;
 
 public class WeaponController : MonoBehaviour
 {
@@ -20,12 +22,17 @@ public class WeaponController : MonoBehaviour
     private bool isFiringCanon;
     private bool cannonOnCooldown = false;
 
-    private float gravityGunChargeTime;
+    public float gravityGunChargeTime;
     private const float maxChargeTime = 5.0f;
     private const float minChargeTime = 0.25f; 
     private float originalGravityIncreaseRate;
     private float currentGravityIncreaseRate;
     private float smoothTime = 1f;
+
+    [SerializeField]
+    private GameObject canvasPrefab; 
+    private GravityGunChargeUI gravityGunChargeUI;
+    private CanonUI canonUI;
 
     private void Start()
     {
@@ -33,6 +40,13 @@ public class WeaponController : MonoBehaviour
         view = GetComponent<PhotonView>();
         originalGravityIncreaseRate = playerMovement.gravityIncreaseRate;
         currentGravityIncreaseRate = originalGravityIncreaseRate;
+
+        if (canvasPrefab != null)
+        {
+            GameObject gunCanvas = Instantiate(canvasPrefab, player.transform);
+            gravityGunChargeUI = gunCanvas.GetComponentInChildren<GravityGunChargeUI>();
+            canonUI = gunCanvas.GetComponentInChildren<CanonUI>();
+        }
     }
 
     private void Update()
@@ -42,6 +56,7 @@ public class WeaponController : MonoBehaviour
             HandleShootingInput();
             HandleGravityGunCharging();
             HandleGravityStrength();
+            gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
         }
     }
 
@@ -103,6 +118,13 @@ public class WeaponController : MonoBehaviour
             isFiringCanon = true;
             explosionManager.AddPush(-cameraView.forward, canon.CanonForce, playerRb);
             playerMovement.gravityIncreaseRate = 20f;
+
+            if (!cannonOnCooldown)
+            {
+                cannonOnCooldown = true;
+                canonUI.StartFading();
+                StartCoroutine(CanonCooldown());
+            }
         }
         canon.Shoot(ref cameraView);
     }
@@ -125,5 +147,12 @@ public class WeaponController : MonoBehaviour
             playerMovement.gravityIncreaseRate = Mathf.Lerp(playerMovement.gravityIncreaseRate,
                 originalGravityIncreaseRate, Time.deltaTime * smoothTime);
         }
+    }
+
+    private IEnumerator CanonCooldown()
+    {
+        yield return new WaitForSeconds(canon.ReloadSpeed); 
+        cannonOnCooldown = false;
+        canonUI.StopFading();
     }
 }

@@ -37,14 +37,13 @@ public class CreateAndJoinRoom : MonoBehaviourPunCallbacks
         RandomSystem.SetSeed(JoinInput.text);
         PhotonNetwork.JoinRoom(JoinInput.text);
     }
-    
-    // public override void OnJoinedRoom()
-    //
-    // {
-    //     Debug.Log("Successfully joined room: " + PhotonNetwork.CurrentRoom.Name);
-    //     PhotonNetwork.LoadLevel(GameSceneToLoadString);
-    // }
-    
+
+    public override void OnJoinedRoom()
+    {
+        Debug.Log("Successfully joined room: " + PhotonNetwork.CurrentRoom.Name);
+        PhotonNetwork.LoadLevel(GameSceneToLoadString);
+    }
+
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         Debug.Log("Failed to create room: " + message);
