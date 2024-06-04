@@ -121,7 +121,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     public void InitializePlayer(Player localPlayer, Color color)
     {
         Player = localPlayer;
-        robotMesh.material.color = color;
+        // robotMesh.material.color = color;
     }
     
     void Start()

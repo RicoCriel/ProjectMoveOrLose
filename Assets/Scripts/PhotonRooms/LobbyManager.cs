@@ -30,6 +30,10 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public GameObject startGameButton;
 
+    public string gameSceneToLoad;
+    
+    
+
     private void Update()
     {
         if(PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
@@ -43,8 +47,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     }
     
     public void OnClickPlayButton()
-    { 
-        PhotonNetwork.LoadLevel("Game");
+    {
+        PhotonNetwork.LoadLevel(gameSceneToLoad);
     }
 
     private void Start()
@@ -69,7 +73,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
             roomOptions.BroadcastPropsChangeToAll = true;
             PhotonNetwork.CreateRoom(roomInputField.text, roomOptions);
         }
-
     }
 
     public override void OnJoinedRoom()
@@ -78,16 +81,32 @@ public class LobbyManager : MonoBehaviourPunCallbacks
         roomPanel.SetActive(true);
         roomName.text = "Room Name: " + PhotonNetwork.CurrentRoom.Name;
         UpdatePlayerList();
+        
+        SetPrayerReadyAmount();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdatePlayerList();
+        
+        SetPrayerReadyAmount();
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         UpdatePlayerList();
+
+        SetPrayerReadyAmount();
+    }
+    private static void SetPrayerReadyAmount()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+            {
+                { "TotalPlayers", PhotonNetwork.CurrentRoom.PlayerCount }
+            });
+        }
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -125,10 +144,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void OnClickLeaveRoom()
     {
         PhotonNetwork.LeaveRoom();
-
     }
     
-  
 
     public override void OnLeftRoom()
     {

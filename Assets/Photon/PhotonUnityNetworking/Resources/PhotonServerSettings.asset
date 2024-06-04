@@ -66,6 +66,11 @@ MonoBehaviour:
   - NetworkDestroy
   - DestroyNetworkObject
   - ChangeGravityStateNew
+  - BackToLobbyRPC
+  - ReloadSceneRPC
+  - SpawnPlayerRPC
+  - SetAllPlayersReady
+  - AllPlayersReadyRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

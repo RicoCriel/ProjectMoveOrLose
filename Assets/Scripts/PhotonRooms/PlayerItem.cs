@@ -29,7 +29,7 @@ namespace DefaultNamespace.PhotonRooms
 
         private void Awake()
         {
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         public void SetPlayerInfo(Player _player)

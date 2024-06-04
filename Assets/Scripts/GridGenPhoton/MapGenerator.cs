@@ -9,7 +9,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Vector2 = System.Numerics.Vector2;
 
-[ExecuteInEditMode]
+// [ExecuteInEditMode]
 public class MapGenerator : MonoBehaviourPunCallbacks
 {
     public static MapGenerator instance; // Singleton instance of MapGenerator
