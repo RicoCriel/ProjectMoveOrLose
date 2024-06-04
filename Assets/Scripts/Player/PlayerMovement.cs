@@ -179,7 +179,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             { GravityState.Down, Quaternion.Euler(0, 0, 0) },
             { GravityState.Forward, Quaternion.Euler(-90, 0, 0) },
             { GravityState.Backward, Quaternion.Euler(90, 0, 0) },
-            { GravityState.Left, Quaternion.Euler(0, 0, -90) },
+            { GravityState.Left, Quaternion.Euler(45, 0, -90) },
             { GravityState.Right, Quaternion.Euler(0, 0, 90) }
         };
     }

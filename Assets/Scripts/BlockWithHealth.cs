@@ -26,9 +26,9 @@ namespace DefaultNamespace
         private void Awake()
         {
             _myMeshRenderer.material.SetVector(Offset, new Vector2(Random.Range(0f, 10f) , Random.Range(0f, 10f)));
-
             RoundTransformPosition();
         }
+        
         private void RoundTransformPosition()
         {
 
