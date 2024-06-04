@@ -17,6 +17,7 @@ namespace DefaultNamespace.PhotonRooms
             {
                 PhotonNetwork.NickName = userNameInput.text;
                 ButtonText.text = "Connecting...";
+                PhotonNetwork.AutomaticallySyncScene = true;
                 PhotonNetwork.ConnectUsingSettings();
             }
         }

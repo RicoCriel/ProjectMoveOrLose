@@ -5,6 +5,7 @@ using UnityEngine;
 using Photon.Pun;
 using System.Threading;
 using DefaultNamespace.PowerUps;
+using Photon.Realtime;
 
 public class PlayerMovement : MonoBehaviour, IPunObservable
 {
@@ -104,6 +105,25 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     public bool IsShot;
     public PowerUpBase activePowerUp;
 
+    public bool CanMove = true;
+    public Player Player;
+    
+    public void EnablePlayer()
+    {
+        CanMove = true;
+    }
+    
+    public void DisablePlayer()
+    {
+        CanMove = false;
+    }
+
+    public void InitializePlayer(Player localPlayer, Color color)
+    {
+        Player = localPlayer;
+        robotMesh.material.color = color;
+    }
+    
     void Start()
     {
         SetRotationtimers();
