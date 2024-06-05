@@ -54,6 +54,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Dictionary<GravityState, Vector3> velocityAxes;
     private Dictionary<GravityState, Quaternion> rotations;
     private GravityAmmoType currentGravityAmmoType;
+    private Vector3 lookDirection;
 
     [SerializeField] private SkinnedMeshRenderer robotMesh;
     [SerializeField] private bool disableMesh;
@@ -208,7 +209,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         if (!view.IsMine)
         {
-            // // Interpolate position and rotation for remote player objects
             rb.position = Vector3.Lerp(rb.position, remotePosition, Time.deltaTime * 10);
             rb.rotation = Quaternion.Lerp(rb.rotation, remoteRotation, Time.deltaTime * 10);
         }
@@ -220,6 +220,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             SetGravityShotValue();
         }
     }
+
     void FixedUpdate()
     {
         if (view.IsMine)
@@ -231,7 +232,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             {
                 if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
                 {
-                    _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
+                    _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate,
+                        _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
                 }
                 else
                 {
@@ -248,7 +250,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 }
             }
         }
-
     }
 
     private void HandleInput()
@@ -258,8 +259,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         jump = Input.GetKey(KeyCode.Space);
         if (Input.GetKeyDown(KeyCode.E) && !IsShot)
         {
-            Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
-            rb.AddForce(oppositeGravityDirection * 25, ForceMode.Impulse);
             SetGravityStateBasedOnLookDirection();
         }
         mouseX = Input.GetAxis("Mouse X");
@@ -271,7 +270,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         Vector3 currentVelocity = rb.velocity;
         bool isGrounded = IsPlayerGrounded();
 
-        // Separate horizontal and vertical movement inputs
         Vector3 horizontalVelocity = transform.right * moveHorizontal * moveSpeed;
         Vector3 verticalVelocity = transform.forward * moveVertical * moveSpeed;
 
@@ -472,23 +470,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             return false;
         }
     }
-        
-    public void SetGravityState(GravityState newGravityState)
-    {
-        if (newGravityState != currentGravityState)
-        {
-            currentGravityState = newGravityState;
-
-            // Initialize rotation parameters
-            startRotation = transform.rotation;
-            endRotation = rotations[currentGravityState];
-            currentRotationLerp = 0f;
-
-            isRotating = true;
-
-            ApplyGravity();
-        }
-    }
 
     public GravityState GetGravityState()
     {
@@ -543,10 +524,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     void SetGravityStateBasedOnLookDirection()
     {
-        Vector3 lookDirection = playerCamera.transform.forward;
+        lookDirection = playerCamera.transform.forward;
         GravityState newGravityState = currentGravityState;
 
-        // Determine the closest gravity state based on the look direction
         float maxDot = -1f;
 
         foreach (var gravityDirection in gravityDirections)
@@ -561,6 +541,26 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         }
 
         SetGravityState(newGravityState);
+    }
+
+    public void SetGravityState(GravityState newGravityState)
+    {
+        if (newGravityState != currentGravityState)
+        {
+            currentGravityState = newGravityState;
+
+            Quaternion currentRotation = transform.rotation;
+            Quaternion targetRotation = rotations[currentGravityState];
+            Quaternion rotationDifference = Quaternion.FromToRotation(currentRotation * Vector3.up, targetRotation * Vector3.up);
+
+            startRotation = currentRotation;
+            endRotation = rotationDifference * currentRotation;
+            currentRotationLerp = 0f;
+
+            isRotating = true;
+
+            ApplyGravity();
+        }
     }
 
     private void SetGravityShotValue()

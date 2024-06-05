@@ -53,7 +53,6 @@ public class CameraController : MonoBehaviourPun, IPunObservable
     void UpdateRobotArmsPosition()
     {
         robotArms.localPosition = transform.localPosition + robotArmsOffset;
-        //robotArms.localRotation = transform.localRotation;
     }
 
     [PunRPC]

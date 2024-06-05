@@ -975,6 +975,7 @@ MonoBehaviour:
   IsInvincible: 0
   IsShot: 0
   activePowerUp: {fileID: 0}
+  CanMove: 1
 --- !u!114 &7091707630177167925
 MonoBehaviour:
   m_ObjectHideFlags: 0
