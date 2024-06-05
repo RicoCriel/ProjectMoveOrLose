@@ -6,6 +6,7 @@ using Photon.Pun;
 using System.Threading;
 using DefaultNamespace.PowerUps;
 using Photon.Realtime;
+using UnityEngine.VFX;
 
 public class PlayerMovement : MonoBehaviour, IPunObservable
 {
@@ -60,7 +61,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
 
-
     private Quaternion targetRotation;
     private Coroutine rotating;
     private Coroutine randomGravity;
@@ -82,7 +82,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion endRotation;
     private float currentRotationLerp;
 
-    [Header("RoationSpeedAndTreshHolds")]
+    [Header("RotationSpeedAndTreshHolds")]
     [SerializeField]
     [Range(0f, 10f)]
     private float _minrotationDistanceTreshHold = 5f;
@@ -102,6 +102,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion remoteRotation;
 
     private Camera playerCamera;
+    private CameraController cameraController;
+
     public bool IsInvincible;
     public bool IsShot;
     public PowerUpBase activePowerUp;
@@ -131,6 +133,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         playerCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
         view = GetComponent<PhotonView>();
+        cameraController = GetComponentInChildren<CameraController>();
 
         if (view.IsMine)
         {
@@ -260,6 +263,10 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         if (Input.GetKeyDown(KeyCode.E) && !IsShot)
         {
             SetGravityStateBasedOnLookDirection();
+            cameraController.PlayLinesVFX();
+            Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
+            rb.AddForce(oppositeGravityDirection * 2.5f, ForceMode.Impulse);
+
         }
         mouseX = Input.GetAxis("Mouse X");
     }
@@ -446,6 +453,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         Debug.DrawRay(rb.position, rayDirection * 1f, Color.red);
         if (Physics.Raycast(rb.position, rayDirection, out hit, 1f, groundLayer))
         {
+            cameraController.StopLinesVFX();
             return true;
         }
         else

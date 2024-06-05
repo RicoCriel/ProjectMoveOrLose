@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public abstract class PowerUpBase : MonoBehaviourPun
 {
-    protected float duration = 10f;
+    protected float duration = 20f;
     protected PhotonView _myView;
     protected Canvas powerUpCanvas;
     protected Image powerUpImage;

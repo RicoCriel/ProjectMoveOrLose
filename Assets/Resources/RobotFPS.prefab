@@ -968,6 +968,7 @@ MonoBehaviour:
   robotMesh: {fileID: 8108662171913128166}
   disableMesh: 0
   enableRandomGravity: 0
+  speedLines: {fileID: 5523819757207279807, guid: 1cd31fb6582bc984ab71626f88ab28b0, type: 3}
   _minrotationDistanceTreshHold: 3
   _maxrotationDistanceTreshHold: 30
   _minTimeToRotate: 0.4
@@ -1082,6 +1083,7 @@ MonoBehaviour:
   mouseSensitivity: 30
   robotArms: {fileID: 7271102529883445765}
   robotArmsOffset: {x: 0, y: -0.5, z: -0.3}
+  lines: {fileID: 5523819757207279807, guid: 1cd31fb6582bc984ab71626f88ab28b0, type: 3}
 --- !u!114 &2108740036227087724
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1116,7 +1118,6 @@ GameObject:
   - component: {fileID: 8435346999095652344}
   - component: {fileID: 7760477644838435653}
   - component: {fileID: 7811762089347705185}
-  - component: {fileID: 2930702238567205419}
   - component: {fileID: 4314304662981881536}
   m_Layer: 11
   m_Name: Canon
@@ -1181,26 +1182,7 @@ MonoBehaviour:
   canShootCanon: 1
   IsCanonShooting: 0
   player: {fileID: 7482990259270619148}
---- !u!114 &2930702238567205419
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8184331843974031727}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 619778cbbc310604d894d9b5512af046, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  explosionRadius: 0
-  radiusDestroyMultiplier: 1.5
-  explosionForce: 10
-  minDamage: 1
-  maxDamage: 10
-  explosionEffect: {fileID: 6814283735993518990, guid: e3bc7bb8c2e829a4e8d75de4bf16a1d8, type: 3}
-  sparkEffect: {fileID: 6609119137876188725, guid: 2719dae3551820e44854a68d9da5e9fa, type: 3}
-  view: {fileID: 0}
+  RadiusMultiplier: 1.5
 --- !u!114 &4314304662981881536
 MonoBehaviour:
   m_ObjectHideFlags: 0
