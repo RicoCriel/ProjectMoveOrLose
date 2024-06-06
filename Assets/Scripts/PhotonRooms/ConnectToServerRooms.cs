@@ -1,5 +1,6 @@
 using Photon.Pun;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 namespace DefaultNamespace.PhotonRooms
@@ -17,13 +18,14 @@ namespace DefaultNamespace.PhotonRooms
             {
                 PhotonNetwork.NickName = userNameInput.text;
                 ButtonText.text = "Connecting...";
-                PhotonNetwork.AutomaticallySyncScene = true;
+                // PhotonNetwork.AutomaticallySyncScene = true;
                 PhotonNetwork.ConnectUsingSettings();
             }
         }
         
         public override void OnConnectedToMaster()
         {
+            Debug.Log("Connected to Master Server. Loading scene: " + SceneToLoad);
             SceneManager.LoadScene(SceneToLoad);
         }
     }
