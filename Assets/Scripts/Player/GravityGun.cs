@@ -7,6 +7,7 @@ using UnityEngine.VFX;
 public class GravityGun : MonoBehaviour
 {
     [SerializeField] private GameObject gravityBullet;
+    [SerializeField] private GameObject gravityGun;
     [SerializeField] private Transform gravityBulletExit;
     [SerializeField] private VisualEffect muzzleFlashVFX;
     [SerializeField] private float gravityBulletSpeed;
@@ -17,6 +18,7 @@ public class GravityGun : MonoBehaviour
 
     public bool canShootGravityGun = true;
     public bool IsGravityGunShooting = false;
+    public bool IsSecondaryGun = false;
 
     private PhotonView photonView;
     private Coroutine countdown;
@@ -29,26 +31,33 @@ public class GravityGun : MonoBehaviour
 
     public void Shoot(ref Transform playerView, float speedMultiplier)
     {
-        if (canShootGravityGun)
+        if (!canShootGravityGun && !IsSecondaryGun)
         {
-            IsGravityGunShooting = true;
+            return;
+        }
+        
+        IsGravityGunShooting = true;
 
-            Vector3 bulletStartPosition = gravityBulletExit.position + playerView.forward; 
+        Vector3 bulletStartPosition = gravityBulletExit.position + playerView.forward; 
 
-            GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, bulletStartPosition, playerView.rotation);
-            bullet.GetComponent<GravityProjectile>().player = playerMovement.gameObject;
-            Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
-            rbBullet.velocity = playerView.forward * gravityBulletSpeed * speedMultiplier;
+        GameObject bullet = PhotonNetwork.Instantiate(gravityBullet.name, bulletStartPosition, playerView.rotation);
+        bullet.GetComponent<GravityProjectile>().player = playerMovement.gameObject;
+        Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
+        rbBullet.velocity = playerView.forward * gravityBulletSpeed * speedMultiplier;
             
 
-            gravityGunAnimator.SetTrigger("Shot");
-            canShootGravityGun = false;
+        gravityGunAnimator.SetTrigger("Shot");
+        canShootGravityGun = false;
 
-            if (countdown != null)
-                StopCoroutine(countdown);
+        if (countdown != null)
+            StopCoroutine(countdown);
 
-            countdown = StartCoroutine(GravityGunCooldown(gravityGunCountDown));
-        }
+        countdown = StartCoroutine(GravityGunCooldown(gravityGunCountDown));
+    }
+
+    private void Update()
+    {
+        gravityGun.SetActive(IsSecondaryGun);
     }
 
     IEnumerator GravityGunCooldown(float cd)

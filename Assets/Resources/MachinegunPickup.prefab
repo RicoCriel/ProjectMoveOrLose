@@ -554,6 +554,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5526864214132742617}
   - component: {fileID: 2360397167481278677}
+  - component: {fileID: 8061943972986221059}
+  - component: {fileID: 4547799951324491858}
+  - component: {fileID: 2164923103557466744}
   m_Layer: 0
   m_Name: MachinegunPickup
   m_TagString: Untagged
@@ -605,6 +608,57 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.2948817, y: 0.6497751, z: 1.0987079}
   m_Center: {x: 0.0023344867, y: -0.12841609, z: 0.04935415}
+--- !u!114 &8061943972986221059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5775203816965206728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &4547799951324491858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5775203816965206728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 8061943972986221059}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &2164923103557466744
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5775203816965206728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48eb6fb98dd18e742b2ace0297e8f816, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6497240522131997636
 GameObject:
   m_ObjectHideFlags: 0

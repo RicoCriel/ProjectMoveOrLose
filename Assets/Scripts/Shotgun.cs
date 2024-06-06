@@ -2,11 +2,13 @@ using System.Collections;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.VFX;
+using DefaultNamespace;
 
 public class Shotgun : MonoBehaviour
 {
     [SerializeField] private Transform shotgunBulletExit;
     [SerializeField] private float shotgunRange;
+    [SerializeField] private GameObject shotgun;
     [SerializeField] private Animator shotgunAnimator;
     [SerializeField] private TrailRenderer bulletTrail;
     [SerializeField] private VisualEffect muzzleFlashVFX;
@@ -20,6 +22,7 @@ public class Shotgun : MonoBehaviour
     public float reloadSpeed = 1f;
     public float ShotgunForce = 400f;
     public bool canShootShotgun = true;
+    public bool IsSecondaryGun = false;
 
     private void Awake()
     {
@@ -29,7 +32,7 @@ public class Shotgun : MonoBehaviour
 
     public void Shoot()
     {
-        if (!canShootShotgun)
+        if (!canShootShotgun && !IsSecondaryGun)
             return;
 
         RaycastHit hit;
@@ -50,25 +53,25 @@ public class Shotgun : MonoBehaviour
                 Debug.DrawRay(adjustedOrigin, spreadDirection * shotgunRange, Color.green, 3);
                 Vector3 sparkScale = new Vector3(0.04f, 0.04f, 0.04f);
 
-                //if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
-                //{
-                //    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
-                //        ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
+                if (hit.transform.gameObject.GetComponent<PhotonView>() != null)
+                {
+                    BombManager.instance.PushTarget(hit.transform.gameObject.GetComponent<PhotonView>().ViewID,
+                        ShotgunForce * 20f, transform.position, explosionManager.explosionRadius);
 
-                //    explosionManager.view.RPC("SpawnSparks", RpcTarget.All, hit.point, sparkScale);
-                //}
-                //else
-                //{
-                //    explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
-                //    StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
-                //}
+                    explosionManager.view.RPC("SpawnSparks", RpcTarget.All, hit.point, sparkScale);
+                }
+                else
+                {
+                    explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
+                    StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
+                }
 
-                //photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
+                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, hit.point);
             }
             else
             {
                 Vector3 endPos = adjustedOrigin + spreadDirection * shotgunRange;
-                //photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, endPos);
+                photonView.RPC("SpawnTrail", RpcTarget.All, adjustedOrigin, endPos);
             }
         }
 
@@ -77,7 +80,10 @@ public class Shotgun : MonoBehaviour
         shotgunAnimator.SetTrigger("shot");
     }
 
-  
+    private void Update()
+    {
+        shotgun.SetActive(IsSecondaryGun);
+    }
 
     private IEnumerator SpawnTrailCoroutine(TrailRenderer trail, Vector3 startPos, Vector3 endPos)
     {

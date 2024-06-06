@@ -87,9 +87,8 @@ public abstract class PowerUpBase : MonoBehaviourPun
     {
         if (photonView.IsMine)
         {
-            // Rotate 1 degree per second around the up axis
             float rotationSpeed = 45f;
-            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.right, rotationSpeed * Time.deltaTime);
         }
     }
 }
