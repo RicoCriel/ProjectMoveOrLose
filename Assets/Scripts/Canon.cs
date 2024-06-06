@@ -21,6 +21,7 @@ public class Canon : MonoBehaviour
     public bool IsCanonShooting = false;
 
     [SerializeField] private GameObject player;
+    public float RadiusMultiplier;
     private PhotonView photonView;
 
 
@@ -28,6 +29,7 @@ public class Canon : MonoBehaviour
     {
         photonView = GetComponent<PhotonView>();
         AnimationSpeed = canonAnimator.speed;
+        RadiusMultiplier = 1.5f;
     }
 
     public void Shoot(ref Transform playerView)
@@ -40,12 +42,15 @@ public class Canon : MonoBehaviour
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();
             bullet.GetComponent<Rocket>().player = player;
+            bullet.GetComponent<Rocket>().radiusDestroyMultiplier = RadiusMultiplier;
 
             rbBullet.velocity = playerView.transform.forward * RocketBulletSpeed;
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;
             StartCoroutine(CanonCooldown(ReloadSpeed));
+
+            Debug.Log(bullet.GetComponent<Rocket>().radiusDestroyMultiplier);
         }
     }
 

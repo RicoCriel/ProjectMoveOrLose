@@ -6,6 +6,7 @@ using Photon.Pun;
 using System.Threading;
 using DefaultNamespace.PowerUps;
 using Photon.Realtime;
+using UnityEngine.VFX;
 
 public class PlayerMovement : MonoBehaviour, IPunObservable
 {
@@ -54,18 +55,25 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Dictionary<GravityState, Vector3> velocityAxes;
     private Dictionary<GravityState, Quaternion> rotations;
     private GravityAmmoType currentGravityAmmoType;
+    private Vector3 lookDirection;
 
     [SerializeField] private SkinnedMeshRenderer robotMesh;
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
 
+    [SerializeField] private GameObject gravityCanvas;
+    private GravityUI gravityUI;
 
     private Quaternion targetRotation;
     private Coroutine rotating;
     private Coroutine randomGravity;
     private Coroutine playerShot;
+    private Coroutine gravityCooldown;
+
     private bool isFalling;
     private bool changingGravityState = false;
+    private bool gravityOnCoolDown;
+
     private float fallStartTime;
     private float fallDuration;
     private float originalGravityForce;
@@ -81,7 +89,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion endRotation;
     private float currentRotationLerp;
 
-    [Header("RoationSpeedAndTreshHolds")]
+    [Header("RotationSpeedAndTreshHolds")]
     [SerializeField]
     [Range(0f, 10f)]
     private float _minrotationDistanceTreshHold = 5f;
@@ -101,6 +109,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     private Quaternion remoteRotation;
 
     private Camera playerCamera;
+    private CameraController cameraController;
+
     public bool IsInvincible;
     public bool IsShot;
     public PowerUpBase activePowerUp;
@@ -130,10 +140,13 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         playerCamera = Camera.main;
         rb = GetComponent<Rigidbody>();
         view = GetComponent<PhotonView>();
+        cameraController = GetComponentInChildren<CameraController>();
 
         if (view.IsMine)
         {
             robotMesh.enabled = false;
+            gravityCanvas = PhotonNetwork.Instantiate(gravityCanvas.name, transform.position, Quaternion.identity);
+            gravityUI = gravityCanvas.GetComponent<GravityUI>();
         }
 
         InitializeDictionaries();
@@ -208,7 +221,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         if (!view.IsMine)
         {
-            // // Interpolate position and rotation for remote player objects
             rb.position = Vector3.Lerp(rb.position, remotePosition, Time.deltaTime * 10);
             rb.rotation = Quaternion.Lerp(rb.rotation, remoteRotation, Time.deltaTime * 10);
         }
@@ -220,6 +232,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             SetGravityShotValue();
         }
     }
+
     void FixedUpdate()
     {
         if (view.IsMine)
@@ -231,7 +244,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             {
                 if (TryFindFallDistance(gravityDirections[currentGravityState] * originalGravityForce, out float distance))
                 {
-                    _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate, _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
+                    _actualRotationTime = LerpRotationSpeedOnFallDistance(_minTimeToRotate, _maxTimeToRotate,
+                        _minrotationDistanceTreshHold, _maxrotationDistanceTreshHold, distance);
                 }
                 else
                 {
@@ -248,7 +262,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
                 }
             }
         }
-
     }
 
     private void HandleInput()
@@ -256,13 +269,33 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
         jump = Input.GetKey(KeyCode.Space);
+        
         if (Input.GetKeyDown(KeyCode.E) && !IsShot)
         {
-            Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
-            rb.AddForce(oppositeGravityDirection * 25, ForceMode.Impulse);
-            SetGravityStateBasedOnLookDirection();
+            HandleGravityChange();
         }
         mouseX = Input.GetAxis("Mouse X");
+    }
+
+    void HandleGravityChange()
+    {
+        if (!gravityOnCoolDown)
+        {
+            ApplyGravityChange();
+        }
+        else
+        {
+            gravityUI.DisplayGravityUI();
+        }
+    }
+
+    void ApplyGravityChange()
+    {
+        SetGravityStateBasedOnLookDirection();
+        cameraController.PlayLinesVFX();
+        Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
+        rb.AddForce(oppositeGravityDirection * 2.5f, ForceMode.Impulse);
+        gravityOnCoolDown = true;
     }
 
     void HandleMovement()
@@ -271,7 +304,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         Vector3 currentVelocity = rb.velocity;
         bool isGrounded = IsPlayerGrounded();
 
-        // Separate horizontal and vertical movement inputs
         Vector3 horizontalVelocity = transform.right * moveHorizontal * moveSpeed;
         Vector3 verticalVelocity = transform.forward * moveVertical * moveSpeed;
 
@@ -448,6 +480,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         Debug.DrawRay(rb.position, rayDirection * 1f, Color.red);
         if (Physics.Raycast(rb.position, rayDirection, out hit, 1f, groundLayer))
         {
+            cameraController.StopLinesVFX();
             return true;
         }
         else
@@ -470,23 +503,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             distance = 0;
             return false;
-        }
-    }
-        
-    public void SetGravityState(GravityState newGravityState)
-    {
-        if (newGravityState != currentGravityState)
-        {
-            currentGravityState = newGravityState;
-
-            // Initialize rotation parameters
-            startRotation = transform.rotation;
-            endRotation = rotations[currentGravityState];
-            currentRotationLerp = 0f;
-
-            isRotating = true;
-
-            ApplyGravity();
         }
     }
 
@@ -543,10 +559,9 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     void SetGravityStateBasedOnLookDirection()
     {
-        Vector3 lookDirection = playerCamera.transform.forward;
+        lookDirection = playerCamera.transform.forward;
         GravityState newGravityState = currentGravityState;
 
-        // Determine the closest gravity state based on the look direction
         float maxDot = -1f;
 
         foreach (var gravityDirection in gravityDirections)
@@ -563,14 +578,44 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         SetGravityState(newGravityState);
     }
 
+    public void SetGravityState(GravityState newGravityState)
+    {
+        if (newGravityState != currentGravityState)
+        {
+            currentGravityState = newGravityState;
+
+            Quaternion currentRotation = transform.rotation;
+            Quaternion targetRotation = rotations[currentGravityState];
+            Quaternion rotationDifference = Quaternion.FromToRotation(currentRotation * Vector3.up, targetRotation * Vector3.up);
+
+            startRotation = currentRotation;
+            endRotation = rotationDifference * currentRotation;
+            currentRotationLerp = 0f;
+
+            isRotating = true;
+            if(gravityCooldown != null)
+                StopCoroutine(GravityCoolDown(2f));
+
+            gravityCooldown = StartCoroutine(GravityCoolDown(2f));
+            ApplyGravity();
+        }
+    }
+
+    private IEnumerator GravityCoolDown(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        gravityOnCoolDown = false;
+        gravityUI.HideGravityUI();
+    }
+
     private void SetGravityShotValue()
     {
         if (IsShot)
         {
             if(playerShot != null)
             {
-                StopCoroutine(HandleGravityShot(3f));
-                playerShot = StartCoroutine(HandleGravityShot(3f));
+                StopCoroutine(HandleGravityShot(4f));
+                playerShot = StartCoroutine(HandleGravityShot(4f));
             }
         }
     }

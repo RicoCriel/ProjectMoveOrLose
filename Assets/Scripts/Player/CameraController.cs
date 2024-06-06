@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.VFX;
 
 public class CameraController : MonoBehaviourPun, IPunObservable
 {
@@ -11,6 +12,9 @@ public class CameraController : MonoBehaviourPun, IPunObservable
 
     private PhotonView view;
     private Camera mainCamera;
+    [SerializeField]
+    private GameObject lines;
+    private VisualEffect lineVFX;
 
     void Start()
     {
@@ -23,6 +27,12 @@ public class CameraController : MonoBehaviourPun, IPunObservable
             mainCamera.transform.SetParent(transform);
             mainCamera.transform.localPosition = Vector3.zero;
             mainCamera.transform.localRotation = Quaternion.identity;
+            lines = PhotonNetwork.Instantiate(lines.name, mainCamera.transform.position, Quaternion.identity);
+            lines.transform.SetParent(mainCamera.transform);
+            lines.transform.localPosition = new Vector3(0,0,50f);
+            lines.transform.localRotation = Quaternion.identity;
+            lineVFX = lines.GetComponent<VisualEffect>();
+
             canControl = true;
         }
         else
@@ -53,7 +63,6 @@ public class CameraController : MonoBehaviourPun, IPunObservable
     void UpdateRobotArmsPosition()
     {
         robotArms.localPosition = transform.localPosition + robotArmsOffset;
-        //robotArms.localRotation = transform.localRotation;
     }
 
     [PunRPC]
@@ -71,6 +80,22 @@ public class CameraController : MonoBehaviourPun, IPunObservable
         else
         {
             transform.localRotation = (Quaternion)stream.ReceiveNext();
+        }
+    }
+
+    public void PlayLinesVFX()
+    {
+        if (lines != null)
+        {
+            lineVFX.Play();
+        }
+    }
+
+    public void StopLinesVFX()
+    {
+        if(lines != null)
+        {
+            lineVFX.Stop();
         }
     }
 }

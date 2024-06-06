@@ -13,7 +13,7 @@ public class GravityProjectile : MonoBehaviourPun
     public GameObject player;
     bool exploded = false;
     bool collHappened = false;
-    
+
     private void Awake()
     {
         StartCoroutine(KillMe(2.5f));

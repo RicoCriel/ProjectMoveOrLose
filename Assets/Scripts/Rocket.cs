@@ -9,9 +9,9 @@ namespace DefaultNamespace
     {
         [Header("explosion")]
         [SerializeField] private float explosionRadius = 5f;
-        [SerializeField] private bool destroyBlocks = true;
+        //[SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
-        [SerializeField] private float radiusDestroyMultiplier = 1.5f;
+        public float radiusDestroyMultiplier = 1.5f;
 
         [SerializeField] private int minDamage = 1;
         [SerializeField] private int maxDamage = 10;
@@ -98,7 +98,7 @@ namespace DefaultNamespace
                 }
             }
 
-            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius);
+            Collider[] BlockCollider = Physics.OverlapSphere(explosionPoint, explosionRadius * radiusDestroyMultiplier);
             foreach (var hit in BlockCollider)
             {
                 if (hit.tag == "Block")
