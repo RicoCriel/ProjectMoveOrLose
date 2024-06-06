@@ -4,7 +4,7 @@ using Photon.Pun;
 using UnityEngine.VFX;
 using DefaultNamespace;
 
-public class Shotgun : MonoBehaviour
+public class Shotgun : Weapon
 {
     [SerializeField] private Transform shotgunBulletExit;
     [SerializeField] private float shotgunRange;
@@ -17,29 +17,26 @@ public class Shotgun : MonoBehaviour
     [SerializeField] private float shotgunSpreadAngle = 10f;
 
     private ExplosionManager explosionManager;
-    private PhotonView photonView;
 
     public float reloadSpeed = 1f;
     public float ShotgunForce = 400f;
     public bool canShootShotgun = true;
-    public bool IsSecondaryGun = false;
 
     private void Awake()
     {
         explosionManager = GetComponent<ExplosionManager>();
-        photonView = GetComponent<PhotonView>();
     }
 
     public void Shoot()
     {
-        if (!canShootShotgun && !IsSecondaryGun)
+        if (!canShootShotgun || !IsSecondaryGun)
             return;
 
         RaycastHit hit;
         Vector3 rayDirection = shotgunBulletExit.transform.forward;
         Vector3 adjustedOrigin = shotgunBulletExit.transform.position + rayDirection * 0.1f;
 
-        //photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
+        photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
 
         for (int i = 0; i < shotgunPellets; i++)
         {
@@ -78,11 +75,6 @@ public class Shotgun : MonoBehaviour
         canShootShotgun = false;
         StartCoroutine(ShotgunCooldown(reloadSpeed));
         shotgunAnimator.SetTrigger("shot");
-    }
-
-    private void Update()
-    {
-        shotgun.SetActive(IsSecondaryGun);
     }
 
     private IEnumerator SpawnTrailCoroutine(TrailRenderer trail, Vector3 startPos, Vector3 endPos)
@@ -124,6 +116,13 @@ public class Shotgun : MonoBehaviour
         muzzleFlashInstance.Play(); 
     }
 
-   
+    protected override void OnActivate()
+    {
+        shotgun.SetActive(true);
+    }
 
+    protected override void OnDeactivate()
+    {
+        shotgun.SetActive(false);
+    }
 }

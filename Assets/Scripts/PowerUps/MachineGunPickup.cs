@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class MachineGunPickup : WeaponPickUpBase
 {
+    protected override Weapon GetWeapon(PlayerMovement player)
+    {
+        throw new System.NotImplementedException();
+    }
+
     //private MachineGun machineGun;
     protected override void GiveWeapon(PlayerMovement player)
     {

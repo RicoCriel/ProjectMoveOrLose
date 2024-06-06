@@ -10,6 +10,8 @@ public class WeaponController : MonoBehaviour
 {
     public Canon canon;
     public GravityGun gravityGun;
+    public Shotgun shotgun;
+
     public ExplosionManager explosionManager;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
@@ -33,6 +35,8 @@ public class WeaponController : MonoBehaviour
     private GameObject canvasPrefab; 
     private GravityGunChargeUI gravityGunChargeUI;
     private CanonUI canonUI;
+
+    public Weapon currentSecondaryWeapon { get; private set; }
 
     private void Start()
     {
@@ -58,6 +62,8 @@ public class WeaponController : MonoBehaviour
             gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
             HandleGravityStrength();
         }
+
+        Debug.Log(currentSecondaryWeapon);
     }
 
     private void FixedUpdate()
@@ -72,6 +78,37 @@ public class WeaponController : MonoBehaviour
         {
             FireWeapon(canon.CanonForce);
             isFiringCanon = false;
+        }
+    }
+
+    public void DeactivateCurrentSecondaryWeapon()
+    {
+        if (currentSecondaryWeapon != null)
+        {
+            currentSecondaryWeapon.DeactivateAsSecondary();
+            currentSecondaryWeapon = null;
+        }
+    }
+
+    public void SetActiveSecondaryWeapon(Weapon weapon)
+    {
+        if (currentSecondaryWeapon == null)
+        {
+            currentSecondaryWeapon = weapon;
+            weapon.ActivateAsSecondary();
+        }
+        else
+        {
+            Debug.Log("A secondary weapon is already active. Cannot set a new one.");
+        }
+    }
+
+    public void RemoveActiveSecondaryWeapon(Weapon weapon)
+    {
+        if (currentSecondaryWeapon == weapon)
+        {
+            currentSecondaryWeapon.DeactivateAsSecondary();
+            currentSecondaryWeapon = null;
         }
     }
 
@@ -96,7 +133,7 @@ public class WeaponController : MonoBehaviour
 
     private void HandleGravityGunCharging()
     {
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButton("Fire1") && currentSecondaryWeapon == gravityGun)
         {
             gravityGunChargeTime += Time.deltaTime;
             gravityGunChargeTime = Mathf.Min(gravityGunChargeTime, maxChargeTime);
@@ -105,6 +142,9 @@ public class WeaponController : MonoBehaviour
 
     private void HandleGravityGun()
     {
+        if (!currentSecondaryWeapon == gravityGun)
+            return;
+
         if (gravityGunChargeTime >= minChargeTime && gravityGun.canShootGravityGun)
         {
             isFiringGravityGun = true;

@@ -8,12 +8,17 @@ public class GravityGunPickup : WeaponPickUpBase
     protected override void GiveWeapon(PlayerMovement player)
     {
         gravityGun = player.GetComponentInChildren<GravityGun>();
-        gravityGun.IsSecondaryGun = true;
+        gravityGun.ActivateAsSecondary();
     }
 
     protected override void RemoveWeapon(PlayerMovement player)
     {
-        gravityGun.IsSecondaryGun = false;
+        gravityGun.DeactivateAsSecondary();
+    }
+
+    protected override Weapon GetWeapon(PlayerMovement player)
+    {
+        return player.GetComponentInChildren<GravityGun>();
     }
 
 }

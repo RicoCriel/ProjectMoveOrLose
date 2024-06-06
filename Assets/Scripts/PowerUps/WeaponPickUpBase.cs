@@ -1,15 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening;
 using Photon.Pun;
 
-
-public abstract class WeaponPickUpBase: MonoBehaviourPun
+public abstract class WeaponPickUpBase : MonoBehaviourPun
 {
     protected float duration = 60f;
     protected abstract void GiveWeapon(PlayerMovement player);
     protected abstract void RemoveWeapon(PlayerMovement player);
+    protected abstract Weapon GetWeapon(PlayerMovement player);
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -20,7 +19,7 @@ public abstract class WeaponPickUpBase: MonoBehaviourPun
 
         PlayerMovement player = other.GetComponent<PlayerMovement>();
         WeaponController controller = player.GetComponentInChildren<WeaponController>();
-        if (player != null /*&& controller.activeSecondaryGun == null*/)
+        if (player != null && controller != null)
         {
             StartCoroutine(ActivateGunPickup(player, controller));
         }
@@ -28,15 +27,29 @@ public abstract class WeaponPickUpBase: MonoBehaviourPun
 
     private IEnumerator ActivateGunPickup(PlayerMovement player, WeaponController controller)
     {
-        //controller.activeSecundaryGun = this;
+        Weapon weapon = GetWeapon(player);
 
-        GiveWeapon(player);
-        MeshRenderer meshRenderer = this.GetComponentInChildren<MeshRenderer>();
+        if (controller.currentSecondaryWeapon == null)
+        {
+            GiveWeapon(player);
+            controller.SetActiveSecondaryWeapon(weapon);
+        }
+        else
+        {
+            Debug.Log("A secondary weapon is already active. Cannot pick up a new one.");
+        }
+
+        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
         meshRenderer.enabled = false;
 
         yield return new WaitForSeconds(duration);
 
-        RemoveWeapon(player);
+        if (controller.currentSecondaryWeapon == weapon)
+        {
+            RemoveWeapon(player);
+            controller.RemoveActiveSecondaryWeapon(weapon);
+        }
+
         PhotonNetwork.Destroy(gameObject);
     }
 
@@ -49,3 +62,4 @@ public abstract class WeaponPickUpBase: MonoBehaviourPun
         }
     }
 }
+

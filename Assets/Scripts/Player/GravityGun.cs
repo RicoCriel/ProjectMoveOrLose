@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class GravityGun : MonoBehaviour
+public class GravityGun : Weapon
 {
     [SerializeField] private GameObject gravityBullet;
     [SerializeField] private GameObject gravityGun;
@@ -18,20 +18,12 @@ public class GravityGun : MonoBehaviour
 
     public bool canShootGravityGun = true;
     public bool IsGravityGunShooting = false;
-    public bool IsSecondaryGun = false;
-
-    private PhotonView photonView;
     private Coroutine countdown;
     private GravityAmmoType currentAmmoType;
 
-    private void Awake()
-    {
-        photonView = GetComponent<PhotonView>();
-    }
-
     public void Shoot(ref Transform playerView, float speedMultiplier)
     {
-        if (!canShootGravityGun && !IsSecondaryGun)
+        if (!canShootGravityGun || !IsSecondaryGun)
         {
             return;
         }
@@ -44,7 +36,6 @@ public class GravityGun : MonoBehaviour
         bullet.GetComponent<GravityProjectile>().player = playerMovement.gameObject;
         Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
         rbBullet.velocity = playerView.forward * gravityBulletSpeed * speedMultiplier;
-            
 
         gravityGunAnimator.SetTrigger("Shot");
         canShootGravityGun = false;
@@ -55,16 +46,21 @@ public class GravityGun : MonoBehaviour
         countdown = StartCoroutine(GravityGunCooldown(gravityGunCountDown));
     }
 
-    private void Update()
-    {
-        gravityGun.SetActive(IsSecondaryGun);
-    }
-
     IEnumerator GravityGunCooldown(float cd)
     {
         yield return new WaitForSeconds(cd);
         canShootGravityGun = true;
         gravityGunAnimator.ResetTrigger("Shot");
         IsGravityGunShooting = false;
+    }
+
+    protected override void OnActivate()
+    {
+        gravityGun.SetActive(true);
+    }
+
+    protected override void OnDeactivate()
+    {
+        gravityGun.SetActive(false);
     }
 }
