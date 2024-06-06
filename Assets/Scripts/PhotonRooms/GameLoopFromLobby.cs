@@ -241,27 +241,27 @@ namespace DefaultNamespace.PhotonRooms
         public void ReloadScene()
         {
             // view.RPC("ReloadSceneRPC", RpcTarget.All);
-            PhotonNetwork.LoadLevel(_sceneToReload);
+            PhotonNetwork.LoadLevel(2);
         }
         [PunRPC]
         public void ReloadSceneRPC()
         {
             ExitGames.Client.Photon.Hashtable properties = new ExitGames.Client.Photon.Hashtable();
-            PhotonNetwork.LoadLevel(_sceneToReload);
+            PhotonNetwork.LoadLevel(2);
         }
 
         public void BackToLobby()
         {
             // view.RPC("BackToLobbyRPC", RpcTarget.All);
             PhotonNetwork.LeaveRoom();
-            PhotonNetwork.LoadLevel(_SceneReturnToLobby);
+            PhotonNetwork.LoadLevel(1);
         }
 
         [PunRPC]
         public void BackToLobbyRPC()
         {
             PhotonNetwork.LeaveRoom();
-            PhotonNetwork.LoadLevel(_SceneReturnToLobby);
+            PhotonNetwork.LoadLevel(1);
         }
 
 
