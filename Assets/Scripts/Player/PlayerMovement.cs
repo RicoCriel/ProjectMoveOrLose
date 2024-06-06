@@ -61,12 +61,19 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     [SerializeField] private bool disableMesh;
     [SerializeField] private bool enableRandomGravity;
 
+    [SerializeField] private GameObject gravityCanvas;
+    private GravityUI gravityUI;
+
     private Quaternion targetRotation;
     private Coroutine rotating;
     private Coroutine randomGravity;
     private Coroutine playerShot;
+    private Coroutine gravityCooldown;
+
     private bool isFalling;
     private bool changingGravityState = false;
+    private bool gravityOnCoolDown;
+
     private float fallStartTime;
     private float fallDuration;
     private float originalGravityForce;
@@ -138,6 +145,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         if (view.IsMine)
         {
             robotMesh.enabled = false;
+            gravityCanvas = PhotonNetwork.Instantiate(gravityCanvas.name, transform.position, Quaternion.identity);
+            gravityUI = gravityCanvas.GetComponent<GravityUI>();
         }
 
         InitializeDictionaries();
@@ -260,15 +269,33 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         moveHorizontal = Input.GetAxis("Horizontal");
         moveVertical = Input.GetAxis("Vertical");
         jump = Input.GetKey(KeyCode.Space);
+        
         if (Input.GetKeyDown(KeyCode.E) && !IsShot)
         {
-            SetGravityStateBasedOnLookDirection();
-            cameraController.PlayLinesVFX();
-            Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
-            rb.AddForce(oppositeGravityDirection * 2.5f, ForceMode.Impulse);
-
+            HandleGravityChange();
         }
         mouseX = Input.GetAxis("Mouse X");
+    }
+
+    void HandleGravityChange()
+    {
+        if (!gravityOnCoolDown)
+        {
+            ApplyGravityChange();
+        }
+        else
+        {
+            gravityUI.DisplayGravityUI();
+        }
+    }
+
+    void ApplyGravityChange()
+    {
+        SetGravityStateBasedOnLookDirection();
+        cameraController.PlayLinesVFX();
+        Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
+        rb.AddForce(oppositeGravityDirection * 2.5f, ForceMode.Impulse);
+        gravityOnCoolDown = true;
     }
 
     void HandleMovement()
@@ -566,9 +593,19 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             currentRotationLerp = 0f;
 
             isRotating = true;
+            if(gravityCooldown != null)
+                StopCoroutine(GravityCoolDown(2f));
 
+            gravityCooldown = StartCoroutine(GravityCoolDown(2f));
             ApplyGravity();
         }
+    }
+
+    private IEnumerator GravityCoolDown(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        gravityOnCoolDown = false;
+        gravityUI.HideGravityUI();
     }
 
     private void SetGravityShotValue()
@@ -577,8 +614,8 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             if(playerShot != null)
             {
-                StopCoroutine(HandleGravityShot(3f));
-                playerShot = StartCoroutine(HandleGravityShot(3f));
+                StopCoroutine(HandleGravityShot(4f));
+                playerShot = StartCoroutine(HandleGravityShot(4f));
             }
         }
     }
