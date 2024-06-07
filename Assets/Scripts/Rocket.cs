@@ -9,7 +9,7 @@ namespace DefaultNamespace
     {
         [Header("explosion")]
         [SerializeField] private float explosionRadius = 5f;
-        //[SerializeField] private bool destroyBlocks = true;
+        [SerializeField] private bool destroyBlocks = true;
         [SerializeField] private float explosionForce = 1000f;
         public float radiusDestroyMultiplier = 1.5f;
 

@@ -292,6 +292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 2.5
+  destroyBlocks: 1
   explosionForce: 50
   radiusDestroyMultiplier: 1.5
   minDamage: 2

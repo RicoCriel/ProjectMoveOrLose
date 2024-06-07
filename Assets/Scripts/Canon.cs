@@ -23,7 +23,7 @@ public class Canon : MonoBehaviour
     [SerializeField] private GameObject player;
     public float RadiusMultiplier;
     private PhotonView photonView;
-
+    private Coroutine canonCoolDown;
 
     private void Awake()
     {
@@ -34,7 +34,7 @@ public class Canon : MonoBehaviour
 
     public void Shoot(ref Transform playerView)
     {
-        if (canShootCanon)
+        if (canShootCanon && photonView.IsMine)
         {
             IsCanonShooting = true;
             photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
@@ -48,9 +48,12 @@ public class Canon : MonoBehaviour
             canonAnimator.SetTrigger("Shot");
 
             canShootCanon = false;
-            StartCoroutine(CanonCooldown(ReloadSpeed));
+            if(canonCoolDown != null)
+            {
+                StopCoroutine(canonCoolDown);
+            }
 
-            Debug.Log(bullet.GetComponent<Rocket>().radiusDestroyMultiplier);
+            canonCoolDown = StartCoroutine(CanonCooldown(ReloadSpeed));
         }
     }
 

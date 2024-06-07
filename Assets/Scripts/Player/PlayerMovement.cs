@@ -66,7 +66,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private Quaternion targetRotation;
     private Coroutine rotating;
-    private Coroutine randomGravity;
     private Coroutine playerShot;
     private Coroutine gravityCooldown;
 
@@ -152,13 +151,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         InitializeDictionaries();
         UpdateGravity();
         targetRotation = rotations[currentGravityState];
-        if (enableRandomGravity)
-        {
-            if (randomGravity != null)
-                StopCoroutine(randomGravity);
-
-            randomGravity = StartCoroutine(RandomGravitySwitch());
-        }
 
         originalGravityForce = gravityForce;
         adjustedGravityForce = gravityForce;
@@ -169,6 +161,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
         SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
     }
+
     private void SetRotationtimers()
     {
 
@@ -217,6 +210,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         };
     }
 
+
     void Update()
     {
         if (!view.IsMine)
@@ -230,7 +224,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             HandleInput();
             UpdatePlayerState();
             SetGravityShotValue();
-            Debug.Log(IsShot);
         }
     }
 
@@ -267,15 +260,18 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
 
     private void HandleInput()
     {
-        moveHorizontal = Input.GetAxis("Horizontal");
-        moveVertical = Input.GetAxis("Vertical");
-        jump = Input.GetKey(KeyCode.Space);
-        
-        if (Input.GetKeyDown(KeyCode.E) && !IsShot)
+        if(CanMove)
         {
-            HandleGravityChange();
+            moveHorizontal = Input.GetAxis("Horizontal");
+            moveVertical = Input.GetAxis("Vertical");
+            jump = Input.GetKey(KeyCode.Space);
+
+            if (Input.GetKeyDown(KeyCode.E) && !IsShot)
+            {
+                HandleGravityChange();
+            }
+            mouseX = Input.GetAxis("Mouse X");
         }
-        mouseX = Input.GetAxis("Mouse X");
     }
 
     void HandleGravityChange()
@@ -284,7 +280,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         {
             ApplyGravityChange();
         }
-        else
+        else if(gravityOnCoolDown)
         {
             gravityUI.DisplayGravityUI();
         }
@@ -459,15 +455,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         Physics.gravity = gravityDirections[currentGravityState] * originalGravityForce;
     }
 
-    private IEnumerator RandomGravitySwitch()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(10f);
-            SetGravityState((GravityState)UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(GravityState)).Length));
-        }
-    }
-
     void Jump()
     {
         Vector3 oppositeGravityDirection = -gravityDirections[currentGravityState];
@@ -494,7 +481,6 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         RaycastHit hit;
 
-        // Debug.DrawRay(rb.position, newGravetyDirection * 1f,Color.red);
         if (Physics.Raycast(rb.position, newGravetyDirection, out hit, groundLayer))
         {
             distance = hit.distance;
@@ -594,8 +580,11 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             currentRotationLerp = 0f;
 
             isRotating = true;
+            
             if(gravityCooldown != null)
-                StopCoroutine(GravityCoolDown(2f));
+            {
+                StopCoroutine(gravityCooldown);
+            }
 
             gravityCooldown = StartCoroutine(GravityCoolDown(2f));
             ApplyGravity();
@@ -606,23 +595,41 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
         yield return new WaitForSeconds(duration);
         gravityOnCoolDown = false;
-        gravityUI.HideGravityUI();
+        if(gravityUI != null)
+        {
+            gravityUI.HideGravityUI();
+        }
     }
 
     private void SetGravityShotValue()
     {
         if (IsShot)
         {
-            gravityUI.DisplayGravityUI();
+            gravityOnCoolDown = true;
+
+            if (gravityUI != null)
+            {
+                gravityUI.DisplayGravityUI();
+            }
+
             StartCoroutine(HandleGravityShot(4f));
         }
     }
 
     private IEnumerator HandleGravityShot(float duration)
     {
-       yield return new WaitForSeconds(duration);
-       IsShot = false;
-       gravityUI.HideGravityUI();
+        Debug.Log($"HandleGravityShot started. Duration: {duration} seconds");
+        yield return new WaitForSeconds(duration);
+        Debug.Log("HandleGravityShot duration ended.");
+
+        IsShot = false;
+        gravityOnCoolDown = false;
+
+        if (gravityUI != null)
+        {
+            gravityUI.HideGravityUI();
+            Debug.Log("Gravity UI hidden.");
+        }
     }
 
     public void SetCurrentGravityAmmoType(GravityAmmoType ammoType)
