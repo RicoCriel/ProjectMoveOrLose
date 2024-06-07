@@ -94,6 +94,11 @@ namespace DefaultNamespace.PhotonRooms
             {
                 { "PlayerReady", true }
             });
+            
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+            {
+                { "PlayerDead", false }
+            });
 
             Debug.Log("Player marked as ready");
             PlayerSpawn();
@@ -317,6 +322,8 @@ namespace DefaultNamespace.PhotonRooms
             {
                 { "PlayerReady", false }
             });
+            
+         
             
             PhotonNetwork.Destroy(player.gameObject);
             PhotonNetwork.LeaveRoom();
