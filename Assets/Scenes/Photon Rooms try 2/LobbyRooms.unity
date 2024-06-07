@@ -827,7 +827,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 824924417}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999881
+  m_Size: 0.99910754
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2089,7 +2089,7 @@ MonoBehaviour:
   playerItemPrefab: {fileID: 9140469983049980575, guid: abd1e1a7b1d545d4a86e658598ab2fb4, type: 3}
   playerItemParent: {fileID: 2139034394}
   startGameButton: {fileID: 768148319}
-  gameSceneToLoad: GameScene
+  gameSceneToLoad: GameSceneNew
 --- !u!4 &975833998
 Transform:
   m_ObjectHideFlags: 0
@@ -2160,7 +2160,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000017385248}
+  m_AnchoredPosition: {x: 0, y: 0.00009380255}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1120161097
