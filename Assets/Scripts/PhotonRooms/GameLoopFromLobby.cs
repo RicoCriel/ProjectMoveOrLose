@@ -36,6 +36,10 @@ namespace DefaultNamespace.PhotonRooms
         [SerializeField]
         private GameObject _pauseScreen;
 
+        [Header("PauseScreen")]
+        [SerializeField]
+        private GameObject _iAmDeadScreen;
+
         [Header("GameLoopSettings")]
         public GameObject playerPrefabs;
         public Transform[] spawnPoints;
@@ -94,7 +98,7 @@ namespace DefaultNamespace.PhotonRooms
             {
                 { "PlayerReady", true }
             });
-            
+
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
             {
                 { "PlayerDead", false }
@@ -106,7 +110,7 @@ namespace DefaultNamespace.PhotonRooms
             CheckAllPlayersReady();
         }
 
-        
+
         private void CheckAllPlayersReady()
         {
             // Only the master client should check player readiness
@@ -120,7 +124,7 @@ namespace DefaultNamespace.PhotonRooms
             while (true)
             {
                 readyPlayers = 0;
-                foreach (var player in PhotonNetwork.PlayerList)
+                foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
                 {
                     if (player.CustomProperties.ContainsKey("PlayerReady") && (bool)player.CustomProperties["PlayerReady"])
                     {
@@ -240,25 +244,69 @@ namespace DefaultNamespace.PhotonRooms
             {
                 Vector3 playerPosition = player.transform.position;
 
+                // view.RPC("SendDebugMessage", RpcTarget.All, "player " + PhotonNetwork.LocalPlayer.NickName + " getting checked for death");
+
                 // Check if the player is outside the x bounds
                 if (playerPosition.x < MapGenerator.instance.XBoundaryDeath.X || playerPosition.x > MapGenerator.instance.XBoundaryDeath.Y)
                 {
+                    // view.RPC("SendDebugMessage", RpcTarget.All, "player " + PhotonNetwork.LocalPlayer.NickName + " is outside the x bounds");
                     HandlePlayerDeath();
                 }
                 // Check if the player is outside the y bounds
                 else if (playerPosition.y < MapGenerator.instance.YBoundaryDeath.X || playerPosition.y > MapGenerator.instance.YBoundaryDeath.Y)
                 {
+                    // view.RPC("SendDebugMessage", RpcTarget.All, "player " + PhotonNetwork.LocalPlayer.NickName + " is outside the y bounds");
                     HandlePlayerDeath();
                 }
                 // Check if the player is outside the z bounds
                 else if (playerPosition.z < MapGenerator.instance.ZBoundaryDeath.X || playerPosition.z > MapGenerator.instance.ZBoundaryDeath.Y)
                 {
+                    // view.RPC("SendDebugMessage", RpcTarget.All, "player " + PhotonNetwork.LocalPlayer.NickName + " is outside the z bounds");
                     HandlePlayerDeath();
                 }
 
                 HandleLocalPauseScreen();
-
             }
+        }
+
+        private void HandlePlayerDeath()
+        {
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
+            {
+                { "PlayerDead", true }
+            });
+
+            _iAmDeadScreen.SetActive(true);
+
+            view.RPC("PlayerDiedMessage", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);
+            PhotonNetwork.Destroy(player.gameObject);
+            // view.RPC("DestroyPlayerRPC", RpcTarget.All);
+
+            int deadPlayers = 0;
+            Player survivingPlayer = null;
+
+            foreach (Player foundPlayer in PhotonNetwork.CurrentRoom.Players.Values)
+            {
+                if (foundPlayer.CustomProperties.TryGetValue("PlayerDead", out object property))
+                {
+                    if ((bool)property)
+                    {
+                        deadPlayers++;
+                    }
+                    else
+                    {
+                        survivingPlayer = foundPlayer;
+                    }
+                }
+            }
+
+            view.RPC("SendDebugMessage", RpcTarget.All, "players in room: " + PhotonNetwork.CurrentRoom.PlayerCount + " dead players: " + deadPlayers);
+            
+            if (PhotonNetwork.CurrentRoom.PlayerCount - 1 == deadPlayers)
+            {
+                // view.RPC("Endgame", RpcTarget.All, survivingPlayer.UserId);
+            }
+
         }
         public void HandleLocalPauseScreen()
         {
@@ -284,19 +332,26 @@ namespace DefaultNamespace.PhotonRooms
             }
         }
 
-        private void HandlePlayerDeath()
-        {
-            PhotonNetwork.Destroy(player.gameObject);
-
-            view.RPC("Endgame", RpcTarget.All);
-      
-        }
-
         [PunRPC]
         void Endgame(string id)
         {
             _replayScreen.SetActive(true);
             player.CanMove = false;
+            if (PhotonNetwork.IsMasterClient)
+            {
+                PhotonNetwork.Destroy(player.gameObject);
+                _replayScreen.SetActive(true);
+            }
+            else
+            {
+                FightText.gameObject.SetActive(true);
+                FightText.text = "Waiting for Lobby Leader to Restart or quit game";
+                FightText.transform.localScale = Vector3.zero;
+                Sequence fightSequence = DOTween.Sequence();
+                fightSequence.Append(FightText.transform.DOScale(1.2f, 0.5f));
+                fightSequence.Append(FightText.transform.DOScale(1f, 0.5f));
+                fightSequence.Play();
+            }
             // PhotonNetwork.Destroy(player.gameObject);
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;
@@ -304,8 +359,8 @@ namespace DefaultNamespace.PhotonRooms
 
         public void ReloadScene()
         {
-            // view.RPC("ReloadSceneRPC", RpcTarget.All);
-            PhotonNetwork.LoadLevel(_sceneToReload);
+            view.RPC("ReloadSceneRPC", RpcTarget.All);
+            // PhotonNetwork.LoadLevel(_sceneToReload);
         }
         [PunRPC]
         public void ReloadSceneRPC()
@@ -317,14 +372,12 @@ namespace DefaultNamespace.PhotonRooms
         public void BackToLobby()
         {
             view.RPC("PlayerLeftGameMessage", RpcTarget.All);
-            
+
             PhotonNetwork.LocalPlayer.SetCustomProperties(new ExitGames.Client.Photon.Hashtable
             {
                 { "PlayerReady", false }
             });
-            
-         
-            
+
             PhotonNetwork.Destroy(player.gameObject);
             PhotonNetwork.LeaveRoom();
             PhotonNetwork.LoadLevel(_SceneReturnToLobby);
@@ -334,13 +387,31 @@ namespace DefaultNamespace.PhotonRooms
         public void PlayerLeftGameMessage()
         {
             notificationManager.ShowNotification("Player " + PhotonNetwork.LocalPlayer.NickName + " has left the game");
-           
+
         }
 
         [PunRPC]
         public void PlayerJoinedGameMessage()
         {
             notificationManager.ShowNotification("Player " + PhotonNetwork.LocalPlayer.NickName + " has joined the game");
+        }
+
+        [PunRPC]
+        public void PlayerDiedMessage(string name)
+        {
+            notificationManager.ShowNotification("Player " + name + " has died");
+        }
+
+        [PunRPC]
+        public void DestroyPlayerRPC()
+        {
+            PhotonNetwork.Destroy(player.gameObject);
+        }
+
+        [PunRPC]
+        public void SendDebugMessage(string message)
+        {
+            Debug.Log(message);
         }
 
 

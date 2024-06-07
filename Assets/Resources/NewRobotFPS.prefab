@@ -1247,6 +1247,7 @@ MonoBehaviour:
   mouseSensitivity: 30
   robotArms: {fileID: 7271102529883445765}
   robotArmsOffset: {x: 0, y: -0.5, z: -0.3}
+  playerMovement: {fileID: 0}
   lines: {fileID: 5523819757207279807, guid: 1cd31fb6582bc984ab71626f88ab28b0, type: 3}
 --- !u!114 &2108740036227087724
 MonoBehaviour:
