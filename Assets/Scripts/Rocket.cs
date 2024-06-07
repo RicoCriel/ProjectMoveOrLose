@@ -57,7 +57,7 @@ namespace DefaultNamespace
             if (exploded) return;
             exploded = true;
 
-            if (PhotonNetwork.IsMasterClient)
+            if(photonView.IsMine)
             {
                 Explosion();
             }

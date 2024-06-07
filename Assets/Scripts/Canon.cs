@@ -37,7 +37,7 @@ public class Canon : MonoBehaviour
         if (canShootCanon && photonView.IsMine)
         {
             IsCanonShooting = true;
-            photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
+            //photonView.RPC("SpawnMuzzleFlash", RpcTarget.All);
             GameObject bullet = PhotonNetwork.Instantiate(rocketBullet.name, rocketBulletExit.transform.position, rocketBulletExit.transform.rotation);
             Rigidbody rbBullet = bullet.GetComponent<Rigidbody>();
             bullet.GetComponent<Rocket>().view = bullet.GetComponent<PhotonView>();

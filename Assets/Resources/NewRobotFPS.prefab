@@ -363,7 +363,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shotgunBulletExit: {fileID: 3144577296269852693}
-  shotgunRange: 50
+  shotgunRange: 25
   shotgun: {fileID: 6711700074882249080}
   shotgunAnimator: {fileID: 6558077758268500055}
   bulletTrail: {fileID: 4438397624373600073, guid: c0d028a85e3a7024fbde8f07a396f6c6, type: 3}
