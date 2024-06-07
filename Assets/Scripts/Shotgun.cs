@@ -16,16 +16,11 @@ public class Shotgun : Weapon
     [SerializeField] private int shotgunPellets = 5;
     [SerializeField] private float shotgunSpreadAngle = 10f;
 
-    private ExplosionManager explosionManager;
+    public ExplosionManager explosionManager;
 
     public float reloadSpeed = 1f;
     public float ShotgunForce = 400f;
     public bool canShootShotgun = true;
-
-    private void Awake()
-    {
-        explosionManager = GetComponent<ExplosionManager>();
-    }
 
     public void Shoot()
     {
@@ -59,6 +54,7 @@ public class Shotgun : Weapon
                 }
                 else
                 {
+                    Debug.Log(hit.collider.name);
                     explosionManager.view.RPC("triggerEffectRPC", RpcTarget.All, hit.point, new Vector3(0.2f, 0.2f, 0.2f));
                     StartCoroutine(explosionManager.ExplosionAtPoint(hit.point));
                 }

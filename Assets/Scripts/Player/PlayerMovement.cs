@@ -230,6 +230,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
             HandleInput();
             UpdatePlayerState();
             SetGravityShotValue();
+            Debug.Log(IsShot);
         }
     }
 
@@ -613,11 +614,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
         if (IsShot)
         {
             gravityUI.DisplayGravityUI();
-            if (playerShot != null)
-            {
-                StopCoroutine(HandleGravityShot(4f));
-                playerShot = StartCoroutine(HandleGravityShot(4f));
-            }
+            StartCoroutine(HandleGravityShot(4f));
         }
     }
 
@@ -625,7 +622,7 @@ public class PlayerMovement : MonoBehaviour, IPunObservable
     {
        yield return new WaitForSeconds(duration);
        IsShot = false;
-        gravityUI.HideGravityUI();
+       gravityUI.HideGravityUI();
     }
 
     public void SetCurrentGravityAmmoType(GravityAmmoType ammoType)

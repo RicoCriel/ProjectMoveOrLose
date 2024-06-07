@@ -46,15 +46,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c120122d1734fe292d858507471db16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minTimeBetweenSpawns: 60
-  _maxTimeBetweenSpawns: 120
-  MinAmountToSpawn: 1
-  MaxAmountToSpawn: 4
+  _minTimeBetweenSpawns: 30
+  _maxTimeBetweenSpawns: 60
+  MinAmountToSpawn: 10
+  MaxAmountToSpawn: 20
   _powerUpsToSpawn:
-  - {fileID: 136528358794237342, guid: d33f14f08499cbb49841fdd3e84ede13, type: 3}
+  - {fileID: -4286263166671562217, guid: ea37f9abedb97ea40b885666d871f578, type: 3}
+  - {fileID: 7025556390127166356, guid: d33f14f08499cbb49841fdd3e84ede13, type: 3}
   - {fileID: 7817379241246212584, guid: 02aa34fa9e9b325469d209b70f56f5b7, type: 3}
   - {fileID: 6153291478886726206, guid: 72e16500ead7a38439714644f14a1ed7, type: 3}
-  - {fileID: 7662995169160150818, guid: ea37f9abedb97ea40b885666d871f578, type: 3}
 --- !u!114 &6309927999952907648
 MonoBehaviour:
   m_ObjectHideFlags: 0

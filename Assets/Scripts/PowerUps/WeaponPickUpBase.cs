@@ -33,14 +33,15 @@ public abstract class WeaponPickUpBase : MonoBehaviourPun
         {
             GiveWeapon(player);
             controller.SetActiveSecondaryWeapon(weapon);
+            foreach (MeshRenderer renderer in GetComponentsInChildren<MeshRenderer>())
+            {
+                renderer.enabled = false;
+            }
         }
         else
         {
             Debug.Log("A secondary weapon is already active. Cannot pick up a new one.");
         }
-
-        MeshRenderer meshRenderer = GetComponentInChildren<MeshRenderer>();
-        meshRenderer.enabled = false;
 
         yield return new WaitForSeconds(duration);
 

@@ -62,8 +62,6 @@ public class WeaponController : MonoBehaviour
             gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
             HandleGravityStrength();
         }
-
-        Debug.Log(currentSecondaryWeapon);
     }
 
     private void FixedUpdate()
@@ -122,6 +120,7 @@ public class WeaponController : MonoBehaviour
         if (Input.GetButtonDown("Fire1"))
         {
             gravityGunChargeTime = 0f;
+            HandleShotGun();
         }
 
         if (Input.GetButtonUp("Fire1"))
@@ -150,6 +149,15 @@ public class WeaponController : MonoBehaviour
             isFiringGravityGun = true;
             gravityGun.Shoot(ref cameraView, gravityGunChargeTime);
         }
+    }
+
+    private void HandleShotGun()
+    {
+        if (!currentSecondaryWeapon == shotgun)
+            return;
+
+        shotgun.canShootShotgun = true;
+        shotgun.Shoot();
     }
 
     private void HandleCanon()

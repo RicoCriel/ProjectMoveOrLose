@@ -370,6 +370,7 @@ MonoBehaviour:
   muzzleFlashVFX: {fileID: 5474502038078615458, guid: 83361978cea202545b74894ca0468dcb, type: 3}
   shotgunPellets: 5
   shotgunSpreadAngle: 10
+  explosionManager: {fileID: 7591317613064029999}
   reloadSpeed: 1
   ShotgunForce: 400
   canShootShotgun: 1
@@ -763,7 +764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canon: {fileID: 7811762089347705185}
   gravityGun: {fileID: 5389697315595559143}
-  shotgun: {fileID: 0}
+  shotgun: {fileID: 4434746858356446338}
   explosionManager: {fileID: 7591317613064029999}
   playerMovement: {fileID: 4350699908551451183}
   cameraView: {fileID: 7919198137481756516}
