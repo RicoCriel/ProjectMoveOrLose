@@ -10,6 +10,9 @@ public class CameraController : MonoBehaviourPun, IPunObservable
     private float xRotation = 0f;
     private bool canControl = true;
 
+    [SerializeField]
+    private PlayerMovement playerMovement;
+
     private PhotonView view;
     private Camera mainCamera;
     [SerializeField]
@@ -20,6 +23,8 @@ public class CameraController : MonoBehaviourPun, IPunObservable
     {
         view = GetComponent<PhotonView>();
         Cursor.lockState = CursorLockMode.Locked;
+        
+        playerMovement = GetComponentInParent<PlayerMovement>();
 
         if (view.IsMine)
         {
@@ -29,7 +34,7 @@ public class CameraController : MonoBehaviourPun, IPunObservable
             mainCamera.transform.localRotation = Quaternion.identity;
             lines = PhotonNetwork.Instantiate(lines.name, mainCamera.transform.position, Quaternion.identity);
             lines.transform.SetParent(mainCamera.transform);
-            lines.transform.localPosition = new Vector3(0,0,50f);
+            lines.transform.localPosition = new Vector3(0, 0, 50f);
             lines.transform.localRotation = Quaternion.identity;
             lineVFX = lines.GetComponent<VisualEffect>();
 
@@ -53,11 +58,14 @@ public class CameraController : MonoBehaviourPun, IPunObservable
 
     void RotateCamera()
     {
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+        if (playerMovement.CanMove)
+        {
+            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+            transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        }
     }
 
     void UpdateRobotArmsPosition()
@@ -93,11 +101,9 @@ public class CameraController : MonoBehaviourPun, IPunObservable
 
     public void StopLinesVFX()
     {
-        if(lines != null)
+        if (lines != null)
         {
             lineVFX.Stop();
         }
     }
 }
-
-

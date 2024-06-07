@@ -16,7 +16,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private Transform cameraView;
     [SerializeField] private GameObject player;
-    
+
     private PhotonView view;
     private Rigidbody playerRb;
 
@@ -26,17 +26,17 @@ public class WeaponController : MonoBehaviour
 
     public float gravityGunChargeTime;
     private const float maxChargeTime = 5.0f;
-    private const float minChargeTime = 0.25f; 
+    private const float minChargeTime = 0.25f;
     private float originalGravityIncreaseRate;
     private float currentGravityIncreaseRate;
     private float smoothTime = 1f;
 
     [SerializeField]
-    private GameObject canvasPrefab; 
+    private GameObject canvasPrefab;
     private GravityGunChargeUI gravityGunChargeUI;
     private CanonUI canonUI;
 
-    public Weapon currentSecondaryWeapon { get; private set; }
+    public Weapon currentSecondaryWeapon{ get; private set; }
 
     private void Start()
     {
@@ -57,10 +57,13 @@ public class WeaponController : MonoBehaviour
     {
         if (view.IsMine)
         {
-            HandleShootingInput();
-            HandleGravityGunCharging();
-            gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
-            HandleGravityStrength();
+            if (playerMovement.CanMove)
+            {
+                HandleShootingInput();
+                HandleGravityGunCharging();
+                gravityGunChargeUI.ChargeTime = gravityGunChargeTime;
+                HandleGravityStrength();
+            }
         }
     }
 
@@ -112,6 +115,7 @@ public class WeaponController : MonoBehaviour
 
     private void HandleShootingInput()
     {
+
         if (Input.GetButtonDown("Fire2"))
         {
             HandleCanon();
@@ -128,6 +132,7 @@ public class WeaponController : MonoBehaviour
             HandleGravityGun();
             gravityGunChargeUI.ResetFillAmount();
         }
+
     }
 
     private void HandleGravityGunCharging()
@@ -201,7 +206,7 @@ public class WeaponController : MonoBehaviour
 
     private IEnumerator CanonCooldown()
     {
-        yield return new WaitForSeconds(canon.ReloadSpeed); 
+        yield return new WaitForSeconds(canon.ReloadSpeed);
         cannonOnCooldown = false;
         canonUI.StopFading();
     }
